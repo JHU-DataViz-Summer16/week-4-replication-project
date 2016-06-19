@@ -1,0 +1,15 @@
+{
+  "name": "replication-project",
+  "private": true,
+  "dependencies": {
+    "d3": "~3.5.17",
+    "science": "~1.9.3",
+    "simple-statistics": "~2.0.0"
+  },
+  "devDependencies": {
+    "reload": "0.7.0"
+  },
+  "scripts": {
+    "watch": "reload -b"
+  }
+}
