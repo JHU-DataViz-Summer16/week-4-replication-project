@@ -96,6 +96,15 @@
 
   // FETCH DATA
 
+  d3.json('data.json', function(error, json){
+    if (error) { throw error; }
+
+    data=json;
+
+    setup();
+    update();
+  });
+
   function setup() {
     // SVG
 
