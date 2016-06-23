@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Week 4: Replication Project</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <style>
+    .section {
+      padding: 1em 0;
+    }
+
+    .header {
+      background: linear-gradient(to bottom, #337ab7 0%, #135a97 100%);
+      color: white;
+      padding: 1em 0 2em;
+    }
+
+    svg {
+      display: block;
+      margin: 0 auto;
+    }
+
+    .axis path, .axis line {
+      fill: none;
+      stroke: #ccc;
+      shape-rendering: crispEdges;
+    }
+
+    .axis text {
+      font-size: 11px;
+    }
+
+    .label {
+      font-weight: 700;
+    }
+
+    .point {
+      stroke: rgb(51, 122, 183);
+      stroke-width: 1;
+      fill: rgba(51, 122, 183, .5);
+      opacity: .5;
+    }
+
+    .point.filtered {
+      opacity: .05;
+    }
+
+    .bar {
+      fill: rgb(51, 122, 183);
+    }
+
+    .line {
+      stroke: rgb(175, 80, 75);
+      stroke-width: 2;
+    }
+  </style>
+</head>
+<body>
+<div class="header section">
+  <div class="container">
+    <h1>Week 4: Replication Project</h1>
+    <p>Let's build a complex interactive graphic.</p>
+  </div>
+</div>
+<div class="controls section">
+  <div class="container">
+    <div class="btn-toolbar">
+      <label for="year-range">Year range: </label>
+        
+<!--        drop down menu-->
+      <select id="year-range">                                  
+        <option value="all">All (1948&ndash;2016)</option>
+        <option value="1955-1971">1955&ndash;1971</option>
+        <option value="1974-1984">1974&ndash;1984</option>
+        <option value="1985-1992">1985&ndash;1992</option>
+        <option value="1997-2007">1997&ndash;2007</option>
+        <option value="2008-2016">2008&ndash;2016</option>
+      </select>
+    </div>
+  </div>
+</div>
+<div class="main section">
+  <div class="container">
+    <div id="chart"></div>
+  </div>
+</div>
+<script type="text/javascript" src="https://npmcdn.com/d3@3.5.17/d3.min.js"></script>
+<script type="text/javascript" src="https://npmcdn.com/science@1.9.3/science.v1.min.js"></script>
+<script type="text/javascript" src="https://npmcdn.com/simple-statistics@2.0.0/dist/simple-statistics.min.js"></script>
+<script>
+  var data = [];
+  var options = {
+    yearRange: 'all'
+  };
+
+  var svg;
+
+  // FETCH DATA
+    
+    d3.json('data.json', function (error, data) {
+       if (error) { throw error; } 
+        
+        
+    });
+    
+
+  function setup() {
+    // SVG
+
+    svg = d3.select('#chart')
+      .append('svg');
+
+    // SCALES
+
+    // AXES
+
+    // EVENT HANDLERS
+
+    d3.select('#year-range').on('change', function () {
+      options.yearRange = d3.event.target.value;
+      update();
+    });
+  }
+
+  function update() {
+    // TRANSFORM
+    txData = data.slice();
+
+    if (options.yearRange !== 'all') {
+      var yearRange = options.yearRange.split('-');
+      txData = txData.filter(function (d) {
+        return d.year >= yearRange[0] && d.year <= yearRange[1];
+      });
+    }
+
+    // SCATTERPLOT
+
+    // HISTOGRAMS
+
+    // REGRESSION LINE
+  }
+</script>
+</body>
+</html>
