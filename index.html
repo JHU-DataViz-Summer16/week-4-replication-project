@@ -42,6 +42,10 @@
       opacity: .5;
     }
 
+    .circle.filtered {
+      opacity: .05;
+    }
+
     .bar {
       fill: rgb(51, 122, 183);
     }
@@ -49,6 +53,12 @@
     .line {
       stroke: rgb(175, 80, 75);
       stroke-width: 2;
+    }
+
+    .loess {
+      stroke: rgb(175, 80, 75);
+      stroke-width: 3;
+      fill: none;
     }
   </style>
 </head>
@@ -79,28 +89,102 @@
     <div id="chart"></div>
   </div>
 </div>
-<script type="text/javascript" src="node_modules/d3/d3.min.js"></script>
-<script type="text/javascript" src="node_modules/science/science.v1.min.js"></script>
-<script type="text/javascript" src="node_modules/simple-statistics/dist/simple-statistics.min.js"></script>
+<script type="text/javascript" src="https://npmcdn.com/d3@3.5.17/d3.min.js"></script>
+<script type="text/javascript" src="https://npmcdn.com/science@1.9.3/science.v1.min.js"></script>
+<script type="text/javascript" src="https://npmcdn.com/simple-statistics@2.0.0/dist/simple-statistics.min.js"></script>
 <script>
   var data = [];
   var options = {
     yearRange: 'all'
   };
 
-  var svg;
+  var svg, x, y;
+
+  var margin = { top: 15, right: 15, bottom: 30, left: 45 };
+
+  var width = 640 - margin.right - margin.left;
+  var height = 480 - margin.top - margin.bottom;
+
+  var xTicks = 10;
+  var yTicks = 10;
+
+  var circleRadius = 5;
+  var barScaleFactor = 4;
 
   // FETCH DATA
+
+  d3.json('data.json', function (error, json) {
+    if (error) { throw error; }
+
+    data = json;
+
+    setup();
+    update();
+  });
 
   function setup() {
     // SVG
 
     svg = d3.select('#chart')
-      .append('svg');
+      .append('svg')
+      .attr('width', width + margin.right + margin.left)
+      .attr('height', height + margin.top + margin.bottom)
+      .append('g')
+      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
     // SCALES
 
+    x = d3.scale.linear()
+      .domain([0, d3.max(data, function (d) { return d.unemployment; })])
+      .range([0, width])
+      .nice();
+
+    y = d3.scale.linear()
+      .domain(d3.extent(data, function (d) { return d.inflation; }))
+      .range([height, 0])
+      .nice();
+
     // AXES
+
+    var xAxis = d3.svg.axis()
+      .scale(x)
+      .ticks(xTicks)
+      .tickSize(-height)
+      .tickPadding(6)
+      .tickFormat(d3.format('.0%'))
+      .orient('bottom');
+
+    var yAxis = d3.svg.axis()
+      .scale(y)
+      .ticks(yTicks)
+      .tickSize(-width)
+      .tickPadding(6)
+      .tickFormat(d3.format('.0%'))
+      .orient('left');
+
+    svg.append('g')
+      .attr('class', 'x axis')
+      .attr('transform', 'translate(0,' + (height) + ')')
+      .call(xAxis)
+      .append('text')
+      .attr('class', 'label')
+      .attr('dy', '.71em')
+      .attr('y', 20)
+      .attr('x', width / 2)
+      .style('text-anchor', 'middle')
+      .text('Unemployment Rate');
+
+    svg.append('g')
+      .attr('class', 'y axis')
+      .call(yAxis)
+      .append('text')
+      .attr('class', 'label')
+      .attr('transform', 'rotate(-90)')
+      .attr('dy', '.71em')
+      .attr('y', -40)
+      .attr('x', -height / 2)
+      .style('text-anchor', 'middle')
+      .text('Inflation Rate (CPI-U)');
 
     // EVENT HANDLERS
 
@@ -123,9 +207,119 @@
 
     // SCATTERPLOT
 
+    var circles = svg.selectAll('.circle')
+      .data(data)
+
+    circles.enter().append('circle')
+      .attr('class', 'circle')
+      .attr('r', circleRadius);
+
+    if (options.yearRange !== 'all') {
+      var yearRange = options.yearRange.split('-');
+      circles.classed('filtered', function (d) {
+        return !(d.year >= yearRange[0] && d.year <= yearRange[1]);
+      });
+    } else {
+      circles.classed('filtered', false);
+    }
+
+    circles
+      .attr('cx', function (d) { return x(d.unemployment); })
+      .attr('cy', function (d) { return y(d.inflation); });
+
+    circles.exit()
+      .remove();
+
     // HISTOGRAMS
 
+    var xBins = d3.layout.histogram()
+      .value(function (d) { return d.unemployment; })
+      .bins(x.ticks(xTicks))
+      (txData);
+
+    var yBins = d3.layout.histogram()
+      .value(function (d) { return d.inflation; })
+      .bins(y.ticks(yTicks))
+      (txData);
+
+    var xHistWidth = x(xBins[0].dx);
+    var yHistHeight = (y(0) - y(yBins[0].dx));
+
+    var histScale = d3.scale.linear()
+      .domain([0, d3.max(xBins.concat(yBins), function (d) { return d.length; })])
+      .range([0, Math.min(xHistWidth, yHistHeight)]);
+
+    var xBars = svg.selectAll('.x.bar')
+      .data(xBins);
+
+    xBars.enter().append('rect')
+      .attr('class', 'x bar');
+
+    xBars
+      .transition()
+      .attr('x', function (d) { return x(d.x) + xHistWidth * (0.5 - 1 / barScaleFactor / 2); })
+      .attr('y', function (d) { return height - histScale(d.length); })
+      .attr('width', xHistWidth / barScaleFactor)
+      .attr('height', function (d) { return histScale(d.length); });
+
+    xBars.exit()
+      .remove();
+
+    var yBars = svg.selectAll('.y.bar')
+      .data(yBins)
+
+    yBars.enter().append('rect')
+      .attr('class', 'y bar');
+
+    yBars
+      .transition()
+      .attr('x', 0)
+      .attr('y', function (d) { return y(d.x) - yHistHeight * (0.5 + 1 / barScaleFactor / 2); })
+      .attr('width', function (d) { return histScale(d.length); })
+      .attr('height', yHistHeight / barScaleFactor);
+
+    yBars.exit()
+      .remove();
+
     // REGRESSION LINE
+
+    var regression = ss.linearRegression(
+      txData.map(function (d) { return [d.unemployment, d.inflation]; })
+    );
+
+    var line = svg.selectAll('.line')
+      .data([regression]);
+
+    line.enter().append('line')
+      .attr('class', 'line');
+
+    line
+      .transition()
+      .attr('x1', x(x.domain()[0]))
+      .attr('y1', function (d) { return y(x.domain()[0] * d.m + d.b); })
+      .attr('x2', x(x.domain()[1]))
+      .attr('y2', function (d) { return y(x.domain()[1] * d.m + d.b); });
+
+    // LOESS SMOOTHING
+
+    // txData = txData.sort(function (a, b) { return a.unemployment - b.unemployment; });
+    // var xArr = txData.map(function (d) { return d.unemployment; });
+    // var yArr = txData.map(function (d) { return d.inflation; });
+    // var loess = science.stats.loess().bandwidth(0.8);
+    // var loessData = d3.zip(xArr, loess(xArr, yArr));
+
+    // var line = d3.svg.line()
+    //   .x(function (d) { return x(d[0]); })
+    //   .y(function (d) { return y(d[1]); });
+
+    // var path = svg.selectAll('.loess')
+    //   .data([loessData])
+
+    // path.enter().append('path')
+    //   .attr('class', 'loess');
+
+    // path
+    //   .attr('d', line);
   }
 </script>
 </body>
