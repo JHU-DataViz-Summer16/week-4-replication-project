@@ -94,14 +94,22 @@
     yearRange: 'all'
   };
 
-  var svg;
-
+  var svg, x, y;
+    
+    var margin = {top: 15, right: 15, bottom: 30, left: 45  };
+    
+    var width = 640 - margin.right - margin.left;
+    var height = 480 - margin.top - margin.bottom;
+    
   // FETCH DATA
     
-    d3.json('data.json', function (error, data) {
+    d3.json('data.json', function (error, json) {
        if (error) { throw error; } 
         
+        data = json;
         
+        setup();
+        update();        
     });
     
 
@@ -109,10 +117,25 @@
     // SVG
 
     svg = d3.select('#chart')
-      .append('svg');
+      .append('svg')
+    .attr('width', width + margin.right + margin.left)
+    .attr('height', height + margin.top + margin.bottom)
+    .append('g')           // this is actually a "g" and not svg
+    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');  
+      
 
+//      console.log(data);
     // SCALES
+      x = d3.scale.linear()
+      .domain([0, d3.max(data, function (d) { return d.unemployment; })])
+      .range([0, width])
+      .nice();
 
+      y = d3.scale.linear()
+      .domain([0, d3.max(data, function (d) { return d.inflation; })])
+      .range([height, 0])
+      .nice();      
+      
     // AXES
 
     // EVENT HANDLERS
@@ -136,6 +159,21 @@
 
     // SCATTERPLOT
 
+    var points = svg.selectAll('.point')
+    .data(txData);
+    
+    points.enter().append("circle")
+    .attr("class", "point")
+    .attr("r", 5);
+      
+    points  
+    .attr('cx', function(d) { return x(d.unemployment); })
+    .attr('cy', function(d) { return y(d.inflation); });
+      
+      
+    points.exit().remove();
+      
+      
     // HISTOGRAMS
 
     // REGRESSION LINE
