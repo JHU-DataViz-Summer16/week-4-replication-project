@@ -12,7 +12,7 @@
 
     .header {
       background: linear-gradient(to bottom, #337ab7 0%, #135a97 100%);
-      color: #ff0000;
+      color: white;
       padding: 1em 0 2em;
     }
 
@@ -92,17 +92,43 @@
     yearRange: 'all'
   };
 
-  var svg;
+  var svg, x, y;
+
+  var width = 640;
+  var height = 400;
 
   // FETCH DATA
 
-  function setup() {
+  d3.json('data.json', function (error, json){
+    // Call back function
+    if (error) { throw error; }
+
+    data = json;
+
+    setup();
+    update();
+  });
+
+  function setup( ) {
+
     // SVG
 
     svg = d3.select('#chart')
-      .append('svg');
+      .append('svg')
+      .attr('width', width)
+      .attr('height', height);
 
     // SCALES
+
+    x = d3.scale.linear()
+      .domain([0, d3.max(data, function (d){ return d.unemployment; } )])
+        .range([0,width])
+        .nice();
+
+    y = d3.scale.linear()
+      .domain(d3.extent(data, function (d){ return d.inflation; } ))
+      .range([height,0])
+      .nice();    
 
     // AXES
 
@@ -126,6 +152,13 @@
     }
 
     // SCATTERPLOT
+    var points = svg.selectAll('.point')
+      .data(txData)
+      .enter().append('circle')
+      .attr('class', 'point')
+      .attr('r', 5)
+      .attr('cx', function (d){return x(d.unemployment) ;})
+      .attr('cy', function (d){return y(d.inflation) ;});
 
     // HISTOGRAMS
 
@@ -134,3 +167,15 @@
 </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
