@@ -153,12 +153,17 @@
 
     // SCATTERPLOT
     var points = svg.selectAll('.point')
-      .data(txData)
-      .enter().append('circle')
+      .data(txData);
+
+    points.enter().append('circle')
       .attr('class', 'point')
       .attr('r', 5)
+
+    points
       .attr('cx', function (d){return x(d.unemployment) ;})
       .attr('cy', function (d){return y(d.inflation) ;});
+
+    points.exit().remove();
 
     // HISTOGRAMS
 
