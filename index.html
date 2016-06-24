@@ -92,7 +92,9 @@
     yearRange: 'all'
   };
 
-  var svg;
+  var svg, x, y;
+  var width=640;
+  var height=400;
 
   // FETCH DATA
 
@@ -109,10 +111,21 @@
     // SVG
 
     svg = d3.select('#chart')
-      .append('svg');
+      .append('svg')
+      .attr('width', width)
+      .attr('height', height);
 
-    // SCALES
+    // SCALES, domain min to max (which ends up at width)
 
+    x = d3.scale.linear()
+      .domain([0, d3.max(data, function (d) {return d.unemployment;})])
+      .range([0, width])
+      .nice();
+
+    y = d3.scale.linear()
+      .domain([0, d3.max(data, function (d) {return d.inflation;})])
+      .range([0, width])
+      .nice();
     // AXES
 
     // EVENT HANDLERS
@@ -135,6 +148,15 @@
     }
 
     // SCATTERPLOT
+
+    var points=svg.selectAll('.point')
+      .data(txData)
+      .enter().append('circle')
+      .attr('class', 'point')
+      .attr('r', 5)
+      .attr('cx', function(d) { return x(d.unemployment); })
+      .attr('cy',  function(d) { return y(d.inflation); });
+
 
     // HISTOGRAMS
 
