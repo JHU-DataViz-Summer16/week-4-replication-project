@@ -94,8 +94,10 @@
 
   var svg, x, y;
 
-  var width = 640;
-  var height = 400;
+  var margin = { top: 15, right: 15, bottom: 30, left: 45 };
+
+  var width = 640 - margin.right - margin.left;
+  var height = 400 - margin.top - margin.bottom;
 
   // FETCH DATA
 
@@ -113,8 +115,10 @@
 
     svg = d3.select('#chart')
       .append('svg')
-      .attr('width', width)
-      .attr('height', height);
+      .attr('width', width + margin.right + margin.left)
+      .attr('height', height + margin.top + margin.bottom)
+      .append('g')
+      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
     // SCALES
 
@@ -152,12 +156,17 @@
     // SCATTERPLOT
 
     var points = svg.selectAll('.point')
-      .data(txData)
-      .enter().append('circle')
+      .data(txData);
+
+    points.enter().append('circle')
       .attr('class', 'point')
-      .attr('r', 5)
+      .attr('r', 5);
+
+    points
       .attr('cx', function (d) { return x(d.unemployment); })
       .attr('cy', function (d) { return y(d.inflation); });
+
+    points.exit().remove();
 
     // HISTOGRAMS
 
