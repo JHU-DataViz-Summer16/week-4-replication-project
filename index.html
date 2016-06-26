@@ -9,47 +9,38 @@
     .section {
       padding: 1em 0;
     }
-
     .header {
-      background: linear-gradient(to bottom, #337ab7 0%, #135a97 100%);
+      background: linear-gradient(to bottom, #667F57 0%, #9ABF82 100%);
       color: white;
       padding: 1em 0 2em;
     }
-
     svg {
       display: block;
       margin: 0 auto;
     }
-
     .axis path, .axis line {
       fill: none;
       stroke: #ccc;
       shape-rendering: crispEdges;
     }
-
     .axis text {
       font-size: 11px;
     }
-
     .label {
       font-weight: 700;
     }
-
     .point {
       stroke: rgb(51, 122, 183);
       stroke-width: 1;
       fill: rgba(51, 122, 183, .5);
       opacity: .5;
     }
-
     .point.filtered {
       opacity: .05;
     }
-
     .bar {
       fill: rgb(51, 122, 183);
     }
-
     .line {
       stroke: rgb(175, 80, 75);
       stroke-width: 2;
@@ -60,7 +51,7 @@
 <div class="header section">
   <div class="container">
     <h1>Week 4: Replication Project</h1>
-    <p>Let's build a complex interactive graphic.</p>
+    <p>CPI vs. Federal Funds Interest Rate</p>
   </div>
 </div>
 <div class="controls section">
@@ -68,8 +59,8 @@
     <div class="btn-toolbar">
       <label for="year-range">Year range: </label>
       <select id="year-range">
-        <option value="all">All (1948&ndash;2016)</option>
-        <option value="1955-1971">1955&ndash;1971</option>
+        <option value="all">All (1954&ndash;2016)</option>
+        <option value="1955-1971">1954&ndash;1971</option>
         <option value="1974-1984">1974&ndash;1984</option>
         <option value="1985-1992">1985&ndash;1992</option>
         <option value="1997-2007">1997&ndash;2007</option>
@@ -91,44 +82,62 @@
   var options = {
     yearRange: 'all'
   };
-
-  var svg;
-
+  var svg, x, y;
+  var margin = { top: 15, right: 15, bottom: 30, left: 45 };
+  var width = 640 - margin.right - margin.left;
+  var height = 400 - margin.top - margin.bottom;
   // FETCH DATA
-
+  d3.json('data-cpi.json', function (error, json) {
+    if (error) { throw error; }
+    data = json;
+    setup();
+    update();
+  });
   function setup() {
     // SVG
-
     svg = d3.select('#chart')
-      .append('svg');
-
+      .append('svg')
+      .attr('width', width + margin.right + margin.left)
+      .attr('height', height + margin.top + margin.bottom)
+      .append('g')
+      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
     // SCALES
-
+    x = d3.scale.linear()
+      .domain([0, d3.max(data, function (d) { return d.FEDFUNDS; })])
+      .range([0, width])
+      .nice();
+    y = d3.scale.linear()
+//      .domain(d3.extent(data, function (d) { return d.CPI; }))
+      .domain([0, d3.max(data, function (d) { return d.CPI; })])    
+      .range([height, 0])
+      .nice();
     // AXES
-
     // EVENT HANDLERS
-
     d3.select('#year-range').on('change', function () {
       options.yearRange = d3.event.target.value;
       update();
     });
   }
-
   function update() {
     // TRANSFORM
     txData = data.slice();
-
     if (options.yearRange !== 'all') {
       var yearRange = options.yearRange.split('-');
       txData = txData.filter(function (d) {
-        return d.year >= yearRange[0] && d.year <= yearRange[1];
+        return d.Year >= yearRange[0] && d.Year <= yearRange[1];
       });
     }
-
     // SCATTERPLOT
-
+    var points = svg.selectAll('.point')
+      .data(txData);
+    points.enter().append('circle')
+      .attr('class', 'point')
+      .attr('r', 5);
+    points
+      .attr('cx', function (d) { return x(d.FEDFUNDS); })
+      .attr('cy', function (d) { return y(d.CPI); });
+    points.exit().remove();
     // HISTOGRAMS
-
     // REGRESSION LINE
   }
 </script>
