@@ -66,14 +66,14 @@
 <div class="controls section">
   <div class="container">
     <div class="btn-toolbar">
-      <label for="year-range">Year range: </label>
-      <select id="year-range">
-        <option value="all">All (1948&ndash;2016)</option>
-        <option value="1955-1971">1955&ndash;1971</option>
-        <option value="1974-1984">1974&ndash;1984</option>
-        <option value="1985-1992">1985&ndash;1992</option>
-        <option value="1997-2007">1997&ndash;2007</option>
-        <option value="2008-2016">2008&ndash;2016</option>
+      <label for="SOC-group">Occupational Group: </label>
+      <select id="SOC-group">
+        <option value="all">All Occupational Groups</option>
+        <option value="MgtProfRelated">Management Professional and Related</option>
+        <option value="Service">Services</option>
+        <option value="SalesOffice">Sales and Office</option>
+        <option value="NatResConstMaint">Natural Resources Construction and Maintenance</option>
+        <option value="ProdTransMat">Production Transportation and Materials</option>
       </select>
     </div>
   </div>
@@ -89,7 +89,7 @@
 <script>
   var data = [];
   var options = {
-    yearRange: 'all'
+    SOCGroup: 'all'
   };
 
   var svg, x, y;
@@ -123,20 +123,20 @@
     // SCALES, domain min to max (which ends up at width)
 
     x = d3.scale.linear()
-      .domain([0, d3.max(data, function (d) {return d.unemployment;})])
+      .domain([0, d3.max(data, function (d) {return d.WF_Female;})])
       .range([0, width])
       .nice();
 
     y = d3.scale.linear()
-      .domain(d3.extent(data, function (d) {return d.inflation; }))
+      .domain(d3.extent(data, function (d) {return d.MedEarn; }))
       .range([height, 0])
       .nice();
     // AXES
 
     // EVENT HANDLERS
 
-    d3.select('#year-range').on('change', function () {
-      options.yearRange = d3.event.target.value;
+    d3.select('#SOC-group').on('change', function () {
+      options.SOCGroup = d3.event.target.value;
       update();
     });
   }
@@ -145,10 +145,9 @@
     // TRANSFORM
     txData = data.slice();
 
-    if (options.yearRange !== 'all') {
-      var yearRange = options.yearRange.split('-');
+    if (options.SOCGroup !== 'all') {
       txData = txData.filter(function (d) {
-        return d.year >= yearRange[0] && d.year <= yearRange[1];
+        return d.SuperGroup ===SOCGroup;
       });
     }
 
@@ -163,8 +162,8 @@
       .attr('r', 5)
 
       points
-      .attr('cx', function(d) { return x(d.unemployment); })
-      .attr('cy',  function(d) { return y(d.inflation); });
+      .attr('cx', function(d) { return x(d.WF_Female); })
+      .attr('cy',  function(d) { return y(d.MedEarn); });
 
       points.exit().remove();
 
