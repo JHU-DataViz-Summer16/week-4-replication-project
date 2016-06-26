@@ -69,11 +69,11 @@
       <label for="SOC-group">Occupational Group: </label>
       <select id="SOC-group">
         <option value="all">All Occupational Groups</option>
-        <option value="MgtProfRelated">Management Professional and Related</option>
+        <option value="MgtProfRelated">Management, Professional and Related</option>
         <option value="Service">Services</option>
         <option value="SalesOffice">Sales and Office</option>
-        <option value="NatResConstMaint">Natural Resources Construction and Maintenance</option>
-        <option value="ProdTransMat">Production Transportation and Materials</option>
+        <option value="NatResConstMaint">Natural Resources, Construction and Maintenance</option>
+        <option value="ProdTransMat">Production, Transportation and Materials</option>
       </select>
     </div>
   </div>
@@ -131,7 +131,34 @@
       .domain(d3.extent(data, function (d) {return d.MedEarn; }))
       .range([height, 0])
       .nice();
+    
     // AXES
+    var formatAsPercentage = d3.format(".0%");
+
+    var xAxis = d3.svg.axis()
+                  .scale(x)
+                  .tickFormat(formatAsPercentage)
+                  .orient("bottom");
+
+    svg.append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(0," + (height) + ")")
+        .call(xAxis);
+
+    var formatAsDollars = d3.format("$1,000")
+
+    var yAxis = d3.svg.axis()
+                      .scale(y)
+                      .orient("left")
+                      .tickFormat(formatAsDollars)
+                      .ticks(4);
+
+    svg.append("g")
+        .attr("class", "axis")
+        .call(yAxis)
+
+
+
 
     // EVENT HANDLERS
 
