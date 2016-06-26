@@ -59,8 +59,8 @@
 <body>
 <div class="header section">
   <div class="container">
-    <h1>Week 4: Replication Project</h1>
-    <p>Let's build a complex interactive graphic.</p>
+    <h1>Median Weekly Earnings Decline as Share of Women Increases</h1>
+    <p>Median Weekly 2015 Earnings - Current Population Survey. From the <a href="http://www.bls.gov/cps/cpsaat39.htm"><font color="FF00CC">Bureau of Labor Statistics</font></a></p>
   </div>
 </div>
 <div class="controls section">
@@ -146,8 +146,9 @@
     txData = data.slice();
 
     if (options.SOCGroup !== 'all') {
+      var SOCGroup=options.SOCGroup;
       txData = txData.filter(function (d) {
-        return d.SuperGroup ===SOCGroup;
+        return d.SuperGroup === SOCGroup;
       });
     }
 
