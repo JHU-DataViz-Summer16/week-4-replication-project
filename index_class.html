@@ -132,7 +132,7 @@
       .nice();
 
       y = d3.scale.linear()
-      .domain([0, d3.max(data, function (d) { return d.inflation; })])
+      .domain(d3.extent(data, function (d) { return d.inflation; }))
       .range([height, 0])
       .nice();      
       
