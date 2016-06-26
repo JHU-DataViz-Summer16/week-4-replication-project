@@ -111,23 +111,19 @@
     y = d3.scale.linear()
       .domain([0, d3.max(data, function (d) { return d.CPI; })])    
 //      .range([height, 0])
-      .range([0, height])    
+      .range([height, 0])    
       .nice();
     // AXES
       
       
-//      var xAxis = d3.svg.axis().scale(xScale).orient("bottom");
+      var xAxis = d3.svg.axis().scale(x).orient("bottom");
+      var yAxis = d3.svg.axis().scale(y).orient("left");   
+//      console.log("yAxis", yAxis);
       
-//      var xAxis = d3.svg.axis().scale(xScale);
-//      var yAxis = d3.svg.axis().scale(yScale);     
-      
-      var xAxis = d3.svg.axis().scale(x);
-      var yAxis = d3.svg.axis().scale(y);        
-      
-      svg.append('g').call(xAxis);
-//      svg.append('g').attr('class', 'axis').call(xAxis);      
-//      svg.append('g').attr('class', 'axis').call(yAxis);      
-//      svg.append('g').call(yAxis);            
+      svg.append('g').attr('class', 'axis')
+        .attr("transform", "translate(0," + (height) + ")")
+        .call(xAxis);      
+      svg.append('g').attr('class', 'axis').call(yAxis);           
       
       
       
@@ -140,6 +136,7 @@
   function update() {
     // TRANSFORM
     txData = data.slice();
+      console.log("tx", txData[0]);
     if (options.yearRange !== 'all') {
       var yearRange = options.yearRange.split('-');
       txData = txData.filter(function (d) {
