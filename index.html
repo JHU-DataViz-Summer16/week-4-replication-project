@@ -138,16 +138,18 @@
                   .scale(x)
                   .orient("bottom");
 
-    svg.attr("class","axis")
-      .attr("transform", "translate(0,100)")
+    svg.append("g")
+      .attr("class","axis")
+      .attr("transform", "translate(0," + (height) + ")")
       .call(xAxis);
 
     var yAxis = d3.svg.axis()
                 .scale(y) 
                 .orient("left")
 
-    svg.attr("class","axis")
-      .attr("transform","translate(40,0)")
+    svg.append("g")
+      .attr("class","axis")
+      .attr("transform","translate(0,0)")
        .call(yAxis);
 
 
