@@ -83,7 +83,7 @@
     yearRange: 'all'
   };
   var svg, x, y;
-  var margin = { top: 15, right: 15, bottom: 100, left: 145 };
+  var margin = { top: 15, right: 15, bottom: 100, left: 140 };
   var width = 850 - margin.right - margin.left;
   var height = 500 - margin.top - margin.bottom;
 //    console.log("width", "height", width, height);
@@ -125,10 +125,11 @@
           .attr('class', 'x axis')
           .call(xAxis)
           .attr('transform', 'translate(0,' + (height) + ')')
+//          .tickFormat(function(t) {return (t) + '%'; } )
         .append('text')
-          .attr('x', 10)
-          .attr('y', 10)
-          .text('Federal Funds Interest Rate')
+          .attr('x', 200)
+          .attr('y', 70)
+          .text('Federal Funds Interest Rate, percent')
       ;      
       
       svg.append('g')
