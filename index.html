@@ -20,11 +20,11 @@
     }
     .axis path, .axis line {
       fill: none;
-      stroke: #cccccc;
+      stroke: #404040;
       shape-rendering: crispEdges;
     }
     .axis text {
-      font-size: 11px;
+      font-size: 14px;
     }
     .label {
       font-weight: 700;
@@ -83,9 +83,9 @@
     yearRange: 'all'
   };
   var svg, x, y;
-  var margin = { top: 15, right: 15, bottom: 30, left: 45 };
-  var width = 640 - margin.right - margin.left;
-  var height = 400 - margin.top - margin.bottom;
+  var margin = { top: 15, right: 15, bottom: 100, left: 145 };
+  var width = 850 - margin.right - margin.left;
+  var height = 500 - margin.top - margin.bottom;
 //    console.log("width", "height", width, height);
     
   // FETCH DATA
@@ -116,14 +116,30 @@
     // AXES
       
       
-      var xAxis = d3.svg.axis().scale(x).orient("bottom");
-      var yAxis = d3.svg.axis().scale(y).orient("left");   
+//      var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(10, '%');
+      var xAxis = d3.svg.axis().scale(x).orient("bottom");      
+      var yAxis = d3.svg.axis().scale(y).orient("left") ;   
 //      console.log("yAxis", yAxis);
       
-      svg.append('g').attr('class', 'axis')
-        .attr("transform", "translate(0," + (height) + ")")
-        .call(xAxis);      
-      svg.append('g').attr('class', 'axis').call(yAxis);           
+      svg.append('g')
+          .attr('class', 'x axis')
+          .call(xAxis)
+          .attr('transform', 'translate(0,' + (height) + ')')
+        .append('text')
+          .attr('x', 10)
+          .attr('y', 10)
+          .text('Federal Funds Interest Rate')
+      ;      
+      
+      svg.append('g')
+          .attr('class', 'y axis')
+          .call(yAxis)
+        .append('text')
+          .attr('transform', 'rotate(-90)')
+          .attr('y', -70)
+//        .style('text-anchor', 'end')
+          .attr('x', -350)
+          .text('Consumer Price Index, 1982-1984=100');           
       
       
       
@@ -136,7 +152,7 @@
   function update() {
     // TRANSFORM
     txData = data.slice();
-      console.log("tx", txData[0]);
+//      console.log("tx", txData[0]);
     if (options.yearRange !== 'all') {
       var yearRange = options.yearRange.split('-');
       txData = txData.filter(function (d) {
