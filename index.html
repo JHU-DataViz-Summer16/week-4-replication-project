@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Week 4: Replication Project</title>
+  <title>Week 4: Replication Project (Brad Matheson)</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
   <style>
     .section {
@@ -60,20 +60,18 @@
 <div class="header section">
   <div class="container">
     <h1>Week 4: Replication Project</h1>
-    <p>Let's build a complex interactive graphic.</p>
+    <p>Comparing congressional candidate partisanship to district partisanship</p>
   </div>
 </div>
 <div class="controls section">
   <div class="container">
     <div class="btn-toolbar">
-      <label for="year-range">Year range: </label>
-      <select id="year-range">
-        <option value="all">All (1948&ndash;2016)</option>
-        <option value="1955-1971">1955&ndash;1971</option>
-        <option value="1974-1984">1974&ndash;1984</option>
-        <option value="1985-1992">1985&ndash;1992</option>
-        <option value="1997-2007">1997&ndash;2007</option>
-        <option value="2008-2016">2008&ndash;2016</option>
+      <label for="party">Party: </label>
+      <select id="party">
+        <option value="all">All</option>
+        <option value="rep">Republican</option>
+        <option value="dem">Democrat</option>
+        <option value="oth">Other</option>
       </select>
     </div>
   </div>
@@ -89,7 +87,7 @@
 <script>
   var data = [];
   var options = {
-    yearRange: 'all'
+    party: 'all'
   };
 
   var svg, x, y;
@@ -125,21 +123,38 @@
     // SCALES
 
     x = d3.scale.linear()
-      .domain([0, d3.max(data, function (d){ return d.unemployment; } )])
+      .domain([d3.min(data,function (d){ return d.cfScore;}), d3.max(data, function (d){ return d.cfScore; } )])
         .range([0,width])
         .nice();
 
     y = d3.scale.linear()
-      .domain(d3.extent(data, function (d){ return d.inflation; } ))
+      .domain(d3.extent(data, function (d){ return d.distPart; } ))
       .range([height,0])
       .nice();    
 
     // AXES
 
+    var xAxis = d3.svg.axis()
+                  .scale(x)
+                  .orient("bottom");
+
+    svg.attr("class","axis")
+      .attr("transform", "translate(0,100)")
+      .call(xAxis);
+
+    var yAxis = d3.svg.axis()
+                .scale(y) 
+                .orient("left")
+
+    svg.attr("class","axis")
+      .attr("transform","translate(40,0)")
+       .call(yAxis);
+
+
     // EVENT HANDLERS
 
-    d3.select('#year-range').on('change', function () {
-      options.yearRange = d3.event.target.value;
+    d3.select('#party').on('change', function () {
+      options.party = d3.event.target.value;
       update();
     });
   }
@@ -148,12 +163,14 @@
     // TRANSFORM
     txData = data.slice();
 
-    if (options.yearRange !== 'all') {
-      var yearRange = options.yearRange.split('-');
+    if (options.party !== 'all') {
+      var party = options.party;
       txData = txData.filter(function (d) {
-        return d.year >= yearRange[0] && d.year <= yearRange[1];
+        return d.party === party;
       });
     }
+
+console.log(party)
 
     // SCATTERPLOT
     var points = svg.selectAll('.point')
@@ -164,8 +181,8 @@
       .attr('r', 5)
 
     points
-      .attr('cx', function (d){return x(d.unemployment) ;})
-      .attr('cy', function (d){return y(d.inflation) ;});
+      .attr('cx', function (d){return x(d.cfScore) ;})
+      .attr('cy', function (d){return y(d.distPart) ;});
 
     points.exit().remove();
 
