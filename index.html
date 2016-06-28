@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Replication Project</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300,700' rel='stylesheet' type='text/css'>
+
   <style>
     .section {padding: 1em 0;} 
 
@@ -71,21 +73,19 @@
 <body>
 <div class="header section">
   <div class="container">
-    <h1>Week 4: Replication Project</h1>
-    <p>Source: World Database of Happiness, Erasmus University Rotterdam</p>
+    <h1>Per Capita Spending on Healthcare vs. ER Visits Among Medicare Beneficiaries</h1>
+    <p>Medicare Data on Geographic Variation</p>
+    <p>Note: Each point represents a county in the U.S.</p>
   </div>
 </div>
 <div class="controls section">
   <div class="container">
     <div class="btn-toolbar">
-      <label for="year-range">Year range: </label>
+      <label for="year-range">Years: </label>
       <select id="year-range">
-        <option value="all">All (1948&ndash;2016)</option>
-        <option value="1955-1971">1955&ndash;1971</option>
-        <option value="1974-1984">1974&ndash;1984</option>
-        <option value="1985-1992">1985&ndash;1992</option>
-        <option value="1997-2007">1997&ndash;2007</option>
-        <option value="2008-2016">2008&ndash;2016</option>
+        <option value="all">All (2007&ndash;2010)</option>
+        <option value="2007-2008">2007&ndash;2008</option>
+        <option value="2009-2010">2009&ndash;2010</option>
       </select>
     </div>
   </div>
@@ -135,12 +135,12 @@
     // SCALES
 
     x = d3.scale.linear()
-      .domain([0, d3.max(data, function (d) { return d.unemployment; })])
+      .domain(d3.extent(data, function (d) { return d.costs; }))
       .range([0, width])
       .nice();
 
     y = d3.scale.linear()
-      .domain(d3.extent(data, function (d) { return d.inflation; }))
+      .domain(d3.extent(data, function (d) { return d.visits; }))
       .range([height, 0])
       .nice();
 
@@ -175,8 +175,8 @@
       .attr('r', 5);
 
     points
-      .attr('cx', function (d) { return x(d.unemployment); })
-      .attr('cy', function (d) { return y(d.inflation); });
+      .attr('cx', function (d) { return x(d.costs); })
+      .attr('cy', function (d) { return y(d.visits); });
 
     points.exit().remove();
 
