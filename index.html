@@ -47,6 +47,7 @@
       opacity: .5;
     }
 
+   
     .point.filtered {
       opacity: .05;
     }
@@ -59,13 +60,15 @@
       stroke: rgb(175, 80, 75);
       stroke-width: 2;
     }
+
+
   </style>
 </head>
 <body>
 <div class="header section">
   <div class="container">
     <h1>Median Weekly Earnings Decline as Share of Women Increases</h1>
-    <p>Median Weekly 2015 Earnings - Current Population Survey. From the <a href="http://www.bls.gov/cps/cpsaat39.htm"><font color="FF00CC">Bureau of Labor Statistics</font></a></p>
+    <p>Median Weekly 2015 Earnings - Current Population Survey. From the <a href="http://www.bls.gov/cps/cpsaat39.htm"><font color="F3FF19">Bureau of Labor Statistics</font></a></p>
   </div>
 </div>
 <div class="controls section">
@@ -99,7 +102,7 @@
 
   var svg, x, y;
 
-  var margin = { top: 15, right: 15, bottom: 30, left: 45};
+  var margin = { top: 15, right: 35, bottom: 30, left: 50};
 
   var width=640 - margin.right - margin.left;
   var height=400 - margin.top - margin.bottom;
@@ -173,8 +176,8 @@
         .call(yAxis)
       .append("text")
         .attr("transform", "rotate(-90)")
-        .attr("x", -200)
-        .attr("y", 0)
+        .attr("x", -225)
+        .attr("y", -50)
         .attr("dy", ".71em")
         .style("text-anchor", "start")
         .text("Median Weekly Earnings");
@@ -187,7 +190,7 @@
           .classed("minor", true);
 
       gy.selectAll("text")
-          .attr("x", 4)
+          .attr("x", -35)
           .attr("dy", -4);
     
     // EVENT HANDLERS
@@ -221,9 +224,11 @@
 
       points
       .attr('cx', function(d) { return x(d.WF_Female); })
-      .attr('cy',  function(d) { return y(d.MedEarn); });
+      .attr('cy',  function(d) { return y(d.MedEarn); })
+
 
       points.exit().remove();
+
 
     // HISTOGRAMS
 
