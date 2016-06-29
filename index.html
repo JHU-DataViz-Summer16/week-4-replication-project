@@ -154,11 +154,12 @@
 
     // AXES
 
-    var formatAsDollarAmt = d3.format
+    var formatNumber = d3.format(".1f");
 
     var xAxis = d3.svg.axis()
                   .scale(x)
                   //.tickSize(width)
+                  .tickFormat(formatCurrency)
                   .orient("bottom"); 
                   //.orient("top");
 
@@ -197,6 +198,13 @@
       gy.selectAll("text")
         .attr("x", -35)
         .attr("dy", -4);
+
+      function formatCurrency(d) {
+        var s = formatNumber(d / 1e3);
+        return d === x.domain()[1]
+        ? "$" + s + " thousand"
+        : s;
+      }
 
     // EVENT HANDLERS
 
