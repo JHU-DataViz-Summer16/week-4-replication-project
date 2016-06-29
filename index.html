@@ -11,7 +11,10 @@
 	font-family: "Trebuchet MS", Helvetica, sans-serif;
 	font-size: 16px;	
     }     
-
+    a:link, a:visited {
+    color: #ffb1b9;          
+                  
+      }
     .section {
       padding: 1em 0;
     }
@@ -50,19 +53,15 @@
     .line {
       stroke: rgb(175, 80, 75);
       stroke-width: 2;
-    }
-      
-    a:link, a:visited {
-    color: #ffb1b9;          
-                  
-      }      
+    } 
+        
   </style>
 </head>
 <body>
 <div class="header section">
   <div class="container">
     <h1>Week 4: Replication Project</h1>
-    <p>Consumer Price Index (CPI) for All Urban Consumers vs. Federal Funds Interest Rate, percent, not seasonally adjusted</p>
+    <p>Consumer Price Index (CPI) for All Urban Consumers vs. Federal Funds Interest Rate, percent, not seasonally adjusted.</p>
     <p>In the United States, the federal funds rate is the interest rate at which depository institutions (banks and credit unions) lend reserve balances to other depository institutions overnight, on an uncollateralized basis.</p>
       
     <p>Source: <a href="https://fred.stlouisfed.org/">FRED Economic Data</a></p>  
@@ -100,9 +99,9 @@
     yearRange: 'all'
   };
   var svg, x, y;
-  var margin = { top: 15, right: 15, bottom: 100, left: 140 };
-  var width = 850 - margin.right - margin.left;
-  var height = 500 - margin.top - margin.bottom;
+  var margin = { top: 15, right: 15, bottom: 100, left: 70 };
+  var width = 800 - margin.right - margin.left;
+  var height = 600 - margin.top - margin.bottom;
 //    console.log("width", "height", width, height);
     
   // FETCH DATA
@@ -130,13 +129,10 @@
 //      .range([height, 0])
       .range([height, 0])    
       .nice();
+      
     // AXES
-      
-      
-//      var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(10, '%');
       var xAxis = d3.svg.axis().scale(x).orient("bottom");      
       var yAxis = d3.svg.axis().scale(y).orient("left") ;   
-//      console.log("yAxis", yAxis);
       
       svg.append('g')
           .attr('class', 'x axis')
@@ -144,8 +140,9 @@
           .attr('transform', 'translate(0,' + (height) + ')')
 //          .tickFormat(function(t) {return (t) + '%'; } )
         .append('text')
-          .attr('x', 200)
+          .attr('x', width/2)
           .attr('y', 70)
+          .style('text-anchor', 'middle')
           .text('Federal Funds Interest Rate, percent')
       ;      
       
@@ -154,9 +151,9 @@
           .call(yAxis)
         .append('text')
           .attr('transform', 'rotate(-90)')
-          .attr('y', -70)
-//        .style('text-anchor', 'end')
-          .attr('x', -350)
+          .attr('y', -60)
+          .attr('x', -width/2)      
+          .style('text-anchor', 'bottom')      
           .text('Consumer Price Index, 1982-1984=100');           
       
       
