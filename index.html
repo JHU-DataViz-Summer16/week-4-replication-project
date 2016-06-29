@@ -9,47 +9,38 @@
     .section {
       padding: 1em 0;
     }
-
     .header {
       background: linear-gradient(to bottom, #337ab7 0%, #135a97 100%);
       color: white;
       padding: 1em 0 2em;
     }
-
     svg {
       display: block;
       margin: 0 auto;
     }
-
     .axis path, .axis line {
       fill: none;
       stroke: #ccc;
       shape-rendering: crispEdges;
     }
-
     .axis text {
       font-size: 11px;
     }
-
     .label {
       font-weight: 700;
     }
-
     .point {
       stroke: rgb(51, 122, 183);
       stroke-width: 1;
       fill: rgba(51, 122, 183, .5);
       opacity: .5;
     }
-
     .point.filtered {
       opacity: .05;
     }
-
     .bar {
       fill: rgb(51, 122, 183);
     }
-
     .line {
       stroke: rgb(175, 80, 75);
       stroke-width: 2;
@@ -68,7 +59,7 @@
     <div class="btn-toolbar">
       <label for="year-range">Year range: </label>
       <select id="year-range">
-        <option value="all">All (1948&ndash;2016)</option>
+        <option value="all">All (2001&ndash;2016)</option>
         <option value="1955-1971">1955&ndash;1971</option>
         <option value="1974-1984">1974&ndash;1984</option>
         <option value="1985-1992">1985&ndash;1992</option>
@@ -88,47 +79,103 @@
 <script type="text/javascript" src="https://npmcdn.com/simple-statistics@2.0.0/dist/simple-statistics.min.js"></script>
 <script>
   var data = [];
-  var options = {
+    var options = {
     yearRange: 'all'
   };
+  var svg, x, y, xAxis, yAxis; 
+  var margin = { top: 15, right: 15, bottom: 30, left: 45 };
+  var width = 640 - margin.right - margin.left;
+  var height = 400 - margin.top - margin.bottom;
+  var padding = 30;
 
-  var svg;
 
   // FETCH DATA
-
+  d3.json('data.json', function (error, json) {
+    if (error) { throw error; }
+    data = json;
+    setup();
+    update();
+  });
   function setup() {
+
     // SVG
 
+
     svg = d3.select('#chart')
-      .append('svg');
-
+      .append('svg')
+      .attr('width', width + margin.right + margin.left)
+      .attr('height', height + margin.top + margin.bottom)
+      .append('g')
+      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
     // SCALES
-
+    x = d3.scale.linear()
+      .domain([0, d3.max(data, function (d) { return d.unemployment; })])
+      .range([0, width])
+      .nice();
+    y = d3.scale.linear()
+      .domain(d3.extent(data, function (d) { return d.employment; }))
+      .range([height, 0])
+      .nice();
+    
     // AXES
+    //Define X axis
+      xAxis = d3.svg.axis()
+                .scale(x)
+                .orient("bottom")
+                .ticks(5);
+
+    //Define Y axis
+      yAxis = d3.svg.axis()
+                .scale(y)
+                .orient("left")
+                .ticks(5);
+
+
+
 
     // EVENT HANDLERS
-
     d3.select('#year-range').on('change', function () {
       options.yearRange = d3.event.target.value;
       update();
     });
   }
-
   function update() {
     // TRANSFORM
     txData = data.slice();
-
     if (options.yearRange !== 'all') {
       var yearRange = options.yearRange.split('-');
       txData = txData.filter(function (d) {
         return d.year >= yearRange[0] && d.year <= yearRange[1];
       });
     }
-
     // SCATTERPLOT
+    var points = svg.selectAll('.point')
+      .data(txData);
+    points.enter().append('circle')
+      .attr('class', 'point')
+      .attr('r', 5);
+    points
+      .attr('cx', function (d) { return x(d.unemployment); })
+      .attr('cy', function (d) { return y(d.employment); });
+    points.exit().remove();
+    
+    // Creating (printing the Axxis)
+    //Create X axis
+      svg.append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(0," + (height - padding) + ")")
+        .call(xAxis);
+      
+      //Create Y axis
+      svg.append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(" + padding + ",0)")
+        .call(yAxis);
+
+
+
 
     // HISTOGRAMS
-
     // REGRESSION LINE
   }
 </script>
