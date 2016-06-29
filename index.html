@@ -146,20 +146,25 @@
     var xAxis = d3.svg.axis()
                   .scale(x)
                   .tickFormat(formatAsPercentage)
+                  .tickSize(height)
                   .orient("bottom");
 
     svg.append("g")
         .attr("class", "x axis")
-        .attr("transform", "translate(0," + (height) + ")")
         .call(xAxis)
       .append("text")
         .attr("x", 200)
-        .attr("y", 20)
+        .attr("y", 370)
         .attr("dy", ".71em")
         .style("text-anchor", "start")
         .text("Percent of Workers that are Women");
 
+      var gx = svg.append("g")
+          .attr("class", "x axis")
+          .call(xAxis);
 
+      gx.selectAll("g").filter(function(d) { return d; })
+          .classed("minor", true);
 
 
     var formatAsDollars = d3.format("$1,000")
@@ -190,8 +195,7 @@
           .classed("minor", true);
 
       gy.selectAll("text")
-          .attr("x", -35)
-          .attr("dy", -4);
+          .attr("x", -35);
     
     // EVENT HANDLERS
 
