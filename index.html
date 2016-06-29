@@ -53,7 +53,7 @@
       stroke: rgb(51, 122, 183);
       stroke-width: 1;
       fill: rgba(51, 122, 183, .5);
-      opacity: .5;
+      opacity: .3;
     }
 
     .point.filtered {
@@ -106,10 +106,10 @@
 
   var svg, x, y;
 
-  var margin = { top: 15, right: 15, bottom: 30, left: 45 };
+  var margin = { top: 15, right: 40, bottom: 40, left: 60 };
 
-  var width = 1200 - margin.right - margin.left;
-  var height = 1000 - margin.top - margin.bottom;
+  var width = 800 - margin.right - margin.left;
+  var height = 600 - margin.top - margin.bottom;
 
   // FETCH DATA
 
@@ -135,12 +135,12 @@
     // SCALES
 
     x = d3.scale.linear()
-      .domain(d3.extent(data, function (d) { return d.costs; }))
+      .domain(d3.extent(data, function (a) {return a.costs; }))
       .range([0, width])
       .nice();
 
     y = d3.scale.linear()
-      .domain(d3.extent(data, function (d) { return d.visits; }))
+      .domain(d3.extent(data, function (a) {return a.visits; }))
       .range([height, 0])
       .nice();
 
@@ -156,9 +156,8 @@
        .call(xAxis)
       
        .append("text")
-       .attr("x", 400)
-       .attr("y", 17)
-       .attr("dy", ".9em")
+       .attr("x", 250)
+       .attr("y", 35)
        .style("text-anchor", "start")
        .text("Standardized, Risk-Adjusted Per Capita Medicare Spending");
 
@@ -175,8 +174,8 @@
 
        .append("text")
        .attr("transform", "rotate(-90)")
-       .attr("x", -440)
-       .attr("y", -47)
+       .attr("x", -300)
+       .attr("y", -60)
        .attr("dy", ".9em")
        .style("text-anchor", "start")
        .text("ER Visits per 100K");
@@ -221,8 +220,8 @@
       .attr('r', 2);
 
     points
-      .attr('cx', function (d) { return x(d.costs); })
-      .attr('cy', function (d) { return y(d.visits); });
+      .attr('cx', function (a) { return x(a.costs); })
+      .attr('cy', function (a) { return y(a.visits); });
 
     points.exit().remove();
 
