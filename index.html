@@ -10,12 +10,13 @@
 	background-color: #ecf3fa;
 	font-family: "Trebuchet MS", Helvetica, sans-serif;
 	font-size: 16px;	
-}  
+    }     
+
     .section {
       padding: 1em 0;
     }
     .header {
-      background: linear-gradient(to bottom, #2d76ba 0%, #9ac2e6 100%);
+      background: linear-gradient(to bottom, #205383 0%, #307fc8 100%);
       color: white;
       padding: 1em 0 2em;
     }
@@ -50,13 +51,21 @@
       stroke: rgb(175, 80, 75);
       stroke-width: 2;
     }
+      
+    a:link, a:visited {
+    color: #ffb1b9;          
+                  
+      }      
   </style>
 </head>
 <body>
 <div class="header section">
   <div class="container">
     <h1>Week 4: Replication Project</h1>
-    <p>Consumer Price Index (CPI) for All Urban Consumers vs. Federal Funds Interest Rate</p>
+    <p>Consumer Price Index (CPI) for All Urban Consumers vs. Federal Funds Interest Rate, percent, not seasonally adjusted</p>
+    <p>In the United States, the federal funds rate is the interest rate at which depository institutions (banks and credit unions) lend reserve balances to other depository institutions overnight, on an uncollateralized basis.</p>
+      
+    <p>Source: <a href="https://fred.stlouisfed.org/">FRED Economic Data</a></p>  
   </div>
 </div>
 <div class="controls section">
@@ -79,7 +88,10 @@
     <div id="chart"></div>
   </div>
 </div>
-<script type="text/javascript" src="https://npmcdn.com/d3@3.5.17/d3.min.js"></script>
+        
+
+    
+    <script type="text/javascript" src="https://npmcdn.com/d3@3.5.17/d3.min.js"></script>
 <script type="text/javascript" src="https://npmcdn.com/science@1.9.3/science.v1.min.js"></script>
 <script type="text/javascript" src="https://npmcdn.com/simple-statistics@2.0.0/dist/simple-statistics.min.js"></script>
 <script>
