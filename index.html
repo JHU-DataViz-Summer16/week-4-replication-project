@@ -157,11 +157,12 @@
     var formatAsDollarAmt = d3.format
 
     var xAxis = d3.svg.axis()
-                  .scale(x);
+                  .scale(x)
                   //.tickSize(width)
+                  .orient("bottom"); 
                   //.orient("top");
 
-    var groupx = svg.append("g")
+    svg.append("g")
        .attr("class", "x axis")
        .attr("transform", "translate(0," + (height) + ")")
        .call(xAxis)
@@ -177,9 +178,9 @@
                   .tickSize(width)
                   .orient("right");
 
-    var groupy = svg.append("g")
+    var gy = svg.append("g")
        .attr("class", "y axis")
-       .attr("transform","translate(0,0)")
+       //.attr("transform","translate(0,0)")
        .call(yAxis)
 
        .append("text")
@@ -189,10 +190,6 @@
        .attr("dy", ".9em")
        .style("text-anchor", "start")
        .text("ER Visits per 100K");
-
-      var gy = svg.append("g")
-                  .attr("class", "y axis")
-                  .call(yAxis);
 
       gy.selectAll("g").filter(function(a) {return a;})
         .classed("minor", true);
