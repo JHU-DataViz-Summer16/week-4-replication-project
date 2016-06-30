@@ -97,7 +97,7 @@
 <script>
   var data = [];
   var options = {
-    yearRange: 'all'
+    location: 'all'
   };
 
   var svg, x, y;
@@ -131,12 +131,12 @@
     // SCALES
 
     x = d3.scale.linear()
-      .domain([0, d3.max(data, function (d) { return d.unemployment; })])
+      .domain([0, d3.max(data, function (d) { return d.Year; })])
       .range([0, width])
       .nice();
 
     y = d3.scale.linear()
-      .domain(d3.extent(data, function (d) { return d.inflation; }))
+      .domain(d3.extent(data, function (d) { return d.Subsidy Value; }))
       .range([height, 0])
       .nice();
 
@@ -144,8 +144,8 @@
 
     // EVENT HANDLERS
 
-    d3.select('#year-range').on('change', function () {
-      options.yearRange = d3.event.target.value;
+    d3.select('#location').on('change', function () {
+      options.location = d3.event.target.value;
       update();
     });
   }
@@ -154,10 +154,10 @@
     // TRANSFORM
     txData = data.slice();
 
-    if (options.yearRange !== 'all') {
-      var yearRange = options.yearRange.split('-');
+    if (options.location !== 'all') {
+      var locationrange = options.location.split('-');
       txData = txData.filter(function (d) {
-        return d.year >= yearRange[0] && d.year <= yearRange[1];
+        return d.location >= locationrange[0] && d.location <= locationrange[1];
       });
     }
 
@@ -171,8 +171,8 @@
       .attr('r', 5);
 
     points
-      .attr('cx', function (d) { return x(d.unemployment); })
-      .attr('cy', function (d) { return y(d.inflation); });
+      .attr('cx', function (d) { return x(d.Year); })
+      .attr('cy', function (d) { return y(d.Subsidy Value); });
 
     points.exit().remove();
 
