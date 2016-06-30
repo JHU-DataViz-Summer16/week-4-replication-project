@@ -16,12 +16,27 @@
       padding: 1em 0 2em;
     }
 
+    .footer{
+      text-align: right;
+      background: linear-gradient(to bottom, #337ab7 0%, #135a97 100%);
+      color:#ECF0F1;
+      padding: 1em 2em; 
+    }
+
+    a {
+      color: white;
+    }
+
     svg {
       display: block;
       margin: 0 auto;
     }
 
-    .axis path, .axis line {
+    .axis path{
+      display: none;
+    }
+
+    .axis line {
       fill: none;
       stroke: #ccc;
       shape-rendering: crispEdges;
@@ -36,10 +51,18 @@
     }
 
     .point {
-      stroke: rgb(51, 122, 183);
       stroke-width: 1;
-      fill: rgba(51, 122, 183, .5);
       opacity: .5;
+    }
+
+    .D{
+      stroke: #2980B9;
+      fill: #2980B9;
+    }
+
+    .R{
+      stroke: #E74C3C;
+      fill: #E74C3C;
     }
 
     .point.filtered {
@@ -94,7 +117,7 @@
 
   var margin = { top: 15, right: 15, bottom: 30, left:45 };
 
-  var width = 640 - margin.right -  margin.left;;
+  var width = 640 - margin.right -  margin.left;
   var height = 400 - margin.top - margin.bottom;
 
   // FETCH DATA
@@ -124,34 +147,47 @@
 
     x = d3.scale.linear()
       .domain([d3.min(data,function (d){ return d.cfScore;}), d3.max(data, function (d){ return d.cfScore; } )])
-        .range([0,width])
+        .range([margin.left,(margin.left + width)])
         .nice();
 
     y = d3.scale.linear()
       .domain(d3.extent(data, function (d){ return d.distPart; } ))
-      .range([height,0])
+      .range([(height-margin.top),0])
       .nice();    
 
     // AXES
 
     var xAxis = d3.svg.axis()
-                  .scale(x)
-                  .orient("bottom");
-
-    svg.append("g")
-      .attr("class","axis")
-      .attr("transform", "translate(0," + (height) + ")")
-      .call(xAxis);
+      .scale(x)
+      .orient("bottom");
 
     var yAxis = d3.svg.axis()
-                .scale(y) 
-                .orient("left")
+      .scale(y)
+      .orient("left")
 
     svg.append("g")
-      .attr("class","axis")
-      .attr("transform","translate(0,0)")
-       .call(yAxis);
+      .classed("x axis", true)
+      .attr("transform", "translate(0," + (height-margin.top) + ")")
+      .call(xAxis);
 
+    svg.append("g")
+      .classed("y axis", true)
+      .attr("transform","translate(" + margin.left + ",0)")
+      .call(yAxis);
+
+    var line = d3.svg.line()
+      .x(function(d) { return xScale(d.x); })
+      .y(function(d) { return yScale(d.y); });
+
+    svg.append("text")
+        .attr("text-anchor", "  ")
+        .attr("transform", "translate(0,"+(height/2)+")rotate(-90)")
+        .text("District Partisanship");
+
+    svg.append("text")
+        .attr("text-anchor", "middle")
+        .attr("transform", "translate("+ (width/2) +","+(height + margin.top + (margin.bottom/2))+")")
+        .text("Candidate CF Score");
 
     // EVENT HANDLERS
 
@@ -172,14 +208,18 @@
       });
     }
 
-console.log(party)
-
     // SCATTERPLOT
     var points = svg.selectAll('.point')
       .data(txData);
 
     points.enter().append('circle')
-      .attr('class', 'point')
+      .classed("point", true)
+      .classed("R", function (d){
+        if (d.party === "rep") {return true}
+        })
+      .classed("D", function (d){
+        if (d.party === "dem") {return true}
+      })
       .attr('r', 5)
 
     points
@@ -192,7 +232,13 @@ console.log(party)
 
     // REGRESSION LINE
   }
+
 </script>
+
+<div class="footer section">
+  <p>Source: <a href="http://data.stanford.edu/dime"> <u>Database on Ideology, Money in Politics and Elections (DIME)</u></a></p>
+</div>
+
 </body>
 </html>
 
