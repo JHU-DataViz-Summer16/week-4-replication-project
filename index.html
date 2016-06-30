@@ -158,20 +158,18 @@
 
     var xAxis = d3.svg.axis()
                   .scale(x)
-                  //.tickSize(width)
                   .tickFormat(formatCurrency)
                   .tickSize(height)
                   .orient("bottom"); 
-                  //.orient("top");
 
     svg.append("g")
        .attr("class", "x axis")
-       .attr("transform", "translate(0," + (height) + ")")
+       //.attr("transform", "translate(0," + (height) + ")")
        .call(xAxis)
       
        .append("text")
        .attr("x", 250)
-       .attr("y", 35)
+       .attr("y", 580)
        .style("text-anchor", "start")
        .text("Standardized, Risk-Adjusted Per Capita Medicare Spending");
 
@@ -208,7 +206,7 @@
         .classed("minor", true);
 
       gy.selectAll("text")
-        .attr("x", -35)
+        .attr("x", -30)
         .attr("dy", -4);
 
       function formatCurrency(d) {
