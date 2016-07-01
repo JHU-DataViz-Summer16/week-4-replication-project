@@ -5,6 +5,6 @@
     "reload": "0.7.0"
   },
   "scripts": {
-    "watch": "reload -b"
+    "watch": "reload -b -p 4567"
   }
 }
