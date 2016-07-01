@@ -10,6 +10,8 @@ Be sure to read the documentation on `histogram.value()`.
 
 One additional note: we'll want the number of bins to equal the number of gaps between ticks on our axis. We briefly discussed in class how the `axis.ticks()` method passes through to the `scale.ticks()` method of its scale (set with `axis.scale()`) to figure out where to place its tick marks (and how many will fit nicely). We too can take advantage of `scale.ticks()`. Try running `x.ticks()` in the browser console and see if you can use that output when you create your histogram layout.
 
+![Finished Project](https://raw.githubusercontent.com/JHU-DataViz-Summer16/week-4-replication-project/master/finished.png)
+
 ## Task 2: Final project proposal (first draft)
 
 We're looking for a short proposal on what you want to explore with your final portfolio. One page of writing should be enough to get across these three things:
