@@ -1,32 +1,28 @@
-# Week 4: Replication Project
+# Week 5: Replication Project
 
-## Task 1: Bring your own data
-We need a dataset with somewhere between 200 and 1,000 observations (ideally) and two quantitative variables that have a potentially interesting relationship. We'll also need to identify at least one way in which we can filter that data.
+## Task 1: Add a histogram
 
-Working from where we ended class (the current state of this repository), replace the unemployment/inflation data in data.json with your own. As before, you can use [Mr. Data Converter](https://shancarter.github.io/mr-data-converter/) to transform a CSV into JSON.
+The example that we're replicating has a histogram that rises from the X and Y axes, showing the number of points in the scatterplot that appear between each axis tick (picture below).
 
-Update the references to the data variables `unemployment` and `inflation` as appropriate, and adjust the scales as needed. (Recall that the domain `[0, d3.max(...)]` gives us a scale ranging from 0 to the highest value of the data, while `d3.extent(...)` lets us look for both the min and the max value of the data simultaneously; there's also a `d3.min()` that works as you would expect.)
+We've seen bar charts in last week's reading and this week's class demo. Recall that we'll use the SVG [rect](http://www.w3schools.com/svg/svg_rect.asp) element for the bars. In order to take care of transforming our data into bins, we can use D3's [histogram layout](https://github.com/d3/d3-3.x-api-reference/blob/master/Histogram-Layout.md). We'll need to create a new linear scale for the height of the bars (corresponding to the number of points in the bin), but perhaps we can recycle the existing X and Y axes to position the bars?
 
-Finally, update the filter control to work with your data. There's no requirement to use a dropdown menu as is currently the case; you could also use buttons as we did in weeks 2 and 3, or some other control that we haven't discussed yet.
+Be sure to read the documentation on `histogram.value()`.
 
-## Task 2: Add axes
-The last thing we did in class was make space for the axes by adding margins to our chart. Now, following the examples shown in the reading (below), let's add an X and a Y axis. Three requirements here:
+One additional note: we'll want the number of bins to equal the number of gaps between ticks on our axis. We briefly discussed in class how the `axis.ticks()` method passes through to the `scale.ticks()` method of its scale (set with `axis.scale()`) to figure out where to place its tick marks (and how many will fit nicely). We too can take advantage of `scale.ticks()`. Try running `x.ticks()` in the browser console and see if you can use that output when you create your histogram layout.
 
-1. If an axis uses percentages or dollar figures, the tick labels should be formatted accordingly (note that the Scott Murray tutorial describes how to do this with percentages, for other kinds of formatting, see the [d3.format() documentation](https://github.com/d3/d3/wiki/Formatting)).
-2. We should add titles to each of the axes (see part 3 of the Bostock reading where he shows how to do this for the Y axis; we also need to label our X axis, of course).
-3. The finished project example that I showed had the axis lines make a grid pattern (similar to the [FiveThirtyEight house style](http://i2.wp.com/espnfivethirtyeight.files.wordpress.com/2015/01/roeder-worstgames-1.png)), as opposed to the standard tick mark configuration. D3's [SVG Axes documentation](https://github.com/d3/d3/wiki/SVG-Axes) links to [this block](http://bl.ocks.org/mbostock/3371592) as an example. Can you figure out how to extend that example to create a grid?
+## Task 2: Final project proposal (first draft)
+
+We're looking for a short proposal on what you want to explore with your final portfolio. One page of writing should be enough to get across these three things:
+
+1. What's the data? You want a specific dataset that has ideally 200 to 1,000 rows with a variety of different columns to explore. Having different types of data in the columns (dates, geographies, continuous variables and categorical ones, a hierarchy if possible) will give you a lot of flexibility in what you can explore. Once you choose your dataset, describe it for us. Number of rows, what is one row, number of columns, column types, data source, any anything else that might be important.
+
+2. Prior Art - what else has been done with this data? Specifically, having a sense for what prior visualizations of this data you  take inspiration from, what they did well, and their limits. What have former attempts to examine this data missed? What story did they fail to tell? If you don't know of, or can't find, graphs about this exact data, find some that are analogous. Make sure to link to (or include) any specific graphs so we can take a look at them.
+
+3. Novel Questions - have a sense of what you want to get out of the data. A lack of clarity is ok - even good - but you should have some initial sparks of curiosity. What are the ways we can potentially interrogate this data that are only possible through an interactive visualization? What's difficult to understand or comprehend about it? What potential stories could you discover?
 
 ## Reading
 
-* [Scott Murray, Intro to Axes](http://alignedleft.com/tutorials/d3/axes)
-* [Dashing D3.js, D3.js Axes](https://www.dashingd3js.com/d3js-axes)
-* [Mike Bostock, Let's Make a Bar Chart](https://bost.ocks.org/mike/bar/) ([part 2](https://bost.ocks.org/mike/bar/2/), [part 3](https://bost.ocks.org/mike/bar/3/))
-
-## Additional Resources
-
-* [Mike Bostock, General Update Pattern block](http://bl.ocks.org/mbostock/3808218) ([part 2](http://bl.ocks.org/mbostock/3808221), [part 3](http://bl.ocks.org/mbostock/3808234))
-* [Chris Given, Interactive Update Pattern block](https://bl.ocks.org/cmgiven/9d37c9478f325ce9370d)
-* [SVG Axes documentation](https://github.com/d3/d3/wiki/SVG-Axes)
-* [Formatting documentation](https://github.com/d3/d3/wiki/Formatting)
-* [MDN SVG documentation](https://developer.mozilla.org/en-US/docs/Web/SVG)
-* [MDN Basic Shapes tutorial](https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Basic_Shapes)
+* [Scott Murray on Layouts](http://chimera.labs.oreilly.com/books/1230000000345/ch11.html)
+* [Histogram layout documentation](https://github.com/d3/d3-3.x-api-reference/blob/master/Histogram-Layout.md)
+* [Bostock block using histogram layout](http://bl.ocks.org/mbostock/3048450) (Note that this example is using the v4 API; `histogram.domain()` and `histogram.thresholds()` replace `histogram.bins()` in the v3 API that we're using.)
+* [See, Think, Design, Produce by Jonathan Corum](http://style.org/stdp3/)
