@@ -28,7 +28,7 @@
     }
 
     .axis .minor line {
-      stroke: #777;
+      stroke: #ccc;
       stroke-dasharray: 2,2;
     }
 
@@ -102,7 +102,7 @@
 
   var svg, x, y;
 
-  var margin = { top: 15, right: 35, bottom: 30, left: 50};
+  var margin = { top: 15, right: 35, bottom: 30, left: 55};
 
   var width=640 - margin.right - margin.left;
   var height=400 - margin.top - margin.bottom;
@@ -150,13 +150,11 @@
                   .orient("bottom");
 
     svg.append("g")
-        .attr("class", "x axis")
-        .call(xAxis)
       .append("text")
-        .attr("x", 200)
-        .attr("y", 370)
+        .attr("x", width/2)
+        .attr("y", height+margin.top)
         .attr("dy", ".71em")
-        .style("text-anchor", "start")
+        .style("text-anchor", "middle")
         .text("Percent of Workers that are Women");
 
       var gx = svg.append("g")
@@ -177,14 +175,12 @@
                       .ticks(4);
 
     svg.append("g")
-        .attr("class", "y axis")
-        .call(yAxis)
       .append("text")
         .attr("transform", "rotate(-90)")
-        .attr("x", -225)
-        .attr("y", -50)
+        .attr("x", -1*(height/2))
+        .attr("y", -1*(width/11))
         .attr("dy", ".71em")
-        .style("text-anchor", "start")
+        .style("text-anchor", "middle")
         .text("Median Weekly Earnings");
 
       var gy = svg.append("g")
