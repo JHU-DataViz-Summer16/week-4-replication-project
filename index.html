@@ -231,6 +231,22 @@
 
 
     // HISTOGRAMS
+    var bins = d3.layout.histogram()
+      .bins(x.domain())
+      .bins(x.ticks(10))
+      (data)
+
+    var yHist = d3.scale.linear()
+      .domain([0,d3.max(bins, function(d) {return d.length})])
+      .range([height, 0]);
+
+    var bar = svg.selectAll(".bar")
+      .data(bins)
+      .enter().append("g")
+        .attr("class", "bar")
+        .attr("transform", function(d) { return "translate(" + x(d.x0) + "," + yHist(d.length) + ")"; });
+
+
 
     // REGRESSION LINE
   }
