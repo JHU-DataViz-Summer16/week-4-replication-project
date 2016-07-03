@@ -60,11 +60,12 @@
 <body>
 <div class="header section">
   <div class="container">
-    <h1>Week 4: Replication Project</h1>
-    <p>Consumer Price Index (CPI) for All Urban Consumers vs. Federal Funds Interest Rate, percent, not seasonally adjusted.</p>
-    <p>In the United States, the federal funds rate is the interest rate at which depository institutions (banks and credit unions) lend reserve balances to other depository institutions overnight, on an uncollateralized basis.</p>
+    <h1>Week 5: Replication Project</h1>
+    <p>Exchange Rate vs. Trade Balance for the US and Britain.</p>
+    <p>Exchange rate is GBP/USD (GBP = British pound). For example, the value 1.6 indicates £1 = $1.6. The Trade balance is the simple imports minus exports. Figures are in nominal USD, not seasonally adjusted. </p>
       
-    <p>Source: <a href="https://fred.stlouisfed.org/">FRED Economic Data</a></p>  
+    <p>Sources: <a href="https://www.census.gov/foreign-trade/balance/c4120.html">Census.gov Trade Data, </a>  
+    <a href="http://www.investing.com/currencies/gbp-usd-historical-data">Historical Exchange Rates</a></p>
   </div>
 </div>
 <div class="controls section">
@@ -141,6 +142,7 @@
       svg.append('g')
           .attr('class', 'y axis')
           .call(yAxis)
+//          .attr('transform', 'translate(400, 0)')
         .append('text')
           .attr('transform', 'rotate(-90)')
           .attr('y', -60)
@@ -179,4 +181,4 @@
   }
 </script>
 </body>
-</html>
+☺</html>
