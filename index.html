@@ -217,21 +217,20 @@
 
     points.enter().append('circle')
       .classed("point", true)
-      .classed("R", function (d){
-        if (d.party === "rep") {return true}
-        })
-      .classed("D", function (d){
-        if (d.party === "dem") {return true}
-      })
       .attr('r', 5)
 
     points
+      .classed('point',true)
+      .classed("R", function (d) {return d.party === "rep"})
+      .classed("D", function (d) {return d.party === "dem"})
       .attr('cx', function (d){return x(d.cfScore) ;})
       .attr('cy', function (d){return y(d.distPart) ;});
 
     points.exit().remove();
 
     // HISTOGRAMS
+
+
 
     // REGRESSION LINE
   }
