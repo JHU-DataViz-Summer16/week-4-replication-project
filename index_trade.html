@@ -72,12 +72,10 @@
     <div class="btn-toolbar">
       <label for="year-range">Year range: </label>
       <select id="year-range">
-        <option value="all">All (1964&ndash;2016)</option>
-        <option value="1964-1973">1964&ndash;1973</option>
-        <option value="1974-1983">1974&ndash;1983</option>
-        <option value="1984-1993">1984&ndash;1993</option>
-        <option value="1994-2003">1994&ndash;2003</option>
-        <option value="2004-2016">2004&ndash;2016</option>
+        <option value="all">All (1985&ndash;2016)</option>
+        <option value="1985-1994">1985&ndash;1994</option>
+        <option value="1995-2004">1995&ndash;2004</option>
+        <option value="2005-2016">2005&ndash;2016</option>
       </select>
     </div>
   </div>
@@ -102,7 +100,7 @@
   var height = 600 - margin.top - margin.bottom;
     
   // FETCH DATA
-  d3.json('data-cpi2.json', function (error, json) {
+  d3.json('data-exch.json', function (error, json) {
     if (error) { throw error; }
     data = json;
     setup();
@@ -118,11 +116,11 @@
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
     // SCALES
     x = d3.scale.linear()
-      .domain([0, d3.max(data, function (d) { return d.FEDFUNDS; })])
+      .domain(d3.extent(data, function (d) { return d.trade; }))
       .range([0, width])
       .nice();
     y = d3.scale.linear()
-      .domain([0, d3.max(data, function (d) { return d.CPI; })])    
+      .domain([0, d3.max(data, function (d) { return d.rate; })])    
       .range([height, 0])    
       .nice();
       
@@ -138,7 +136,7 @@
           .attr('x', width/2)
           .attr('y', 70)
           .style('text-anchor', 'middle')
-          .text('Federal Funds Interest Rate, percent');      
+          .text('Trade Balance');      
       
       svg.append('g')
           .attr('class', 'y axis')
@@ -148,7 +146,7 @@
           .attr('y', -60)
           .attr('x', -height/2)      
           .style('text-anchor', 'middle')      
-          .text('Consumer Price Index, 1982-1984=100');           
+          .text('Exchange Rate');           
       
             
     // EVENT HANDLERS
@@ -163,7 +161,7 @@
     if (options.yearRange !== 'all') {
       var yearRange = options.yearRange.split('-');
       txData = txData.filter(function (d) {
-        return d.Year >= yearRange[0] && d.Year <= yearRange[1];
+        return d.year >= yearRange[0] && d.year <= yearRange[1];
       });
     }
     // SCATTERPLOT
@@ -173,8 +171,8 @@
       .attr('class', 'point')
       .attr('r', 5);
     points
-      .attr('cx', function (d) { return x(d.FEDFUNDS); })
-      .attr('cy', function (d) { return y(d.CPI); });
+      .attr('cx', function (d) { return x(d.trade); })
+      .attr('cy', function (d) { return y(d.rate); });
     points.exit().remove();
     // HISTOGRAMS
     // REGRESSION LINE
