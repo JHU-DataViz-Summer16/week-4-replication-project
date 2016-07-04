@@ -58,12 +58,10 @@
       stroke-width: 2;
     } 
       
-/*
     .axis .minor line {
       stroke: #ff944d;
       stroke-dasharray: '3,3';
     }      
-*/
         
   </style>
 </head>
@@ -142,6 +140,7 @@
     // AXES
       var xAxis = d3.svg.axis()
       .scale(x)
+      .tickSize(-height)
       .orient("bottom");    
       
       var yAxis = d3.svg.axis()
@@ -176,8 +175,14 @@
       .call(yAxis);
       
       ygrid.selectAll('g').filter(function(d) { return d; })
-      .style('stroke-dasharray', ('2,2'))
-          .classed('minor', true);
+        .classed('minor', true);
+      
+      var xgrid = svg.append('g')
+      .attr('class', 'x axis')
+      .call(xAxis);
+      
+      xgrid.selectAll('g').filter(function(d) { return d; })
+        .classed('minor', true);
       
       
             
