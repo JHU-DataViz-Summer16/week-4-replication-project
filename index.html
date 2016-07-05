@@ -45,6 +45,16 @@
       stroke: rgb(175, 80, 75);
       stroke-width: 2;
     }
+
+    /*Style for the grid example from http://www.d3noob.org/2013/01/adding-grid-lines-to-d3js-graph.html*/ 
+    .grid .tick {
+      stroke: lightgrey;
+    opacity: 0.7;
+    }
+    .grid path {
+      stroke-width: 0;
+    }
+
   </style>
 </head>
 <body>
@@ -83,8 +93,23 @@
   var margin = { top: 15, right: 15, bottom: 30, left: 45 };
   var width = 640 - margin.right - margin.left;
   var height = 400 - margin.top - margin.bottom;
-  var xpadding = 35;
-  var ypadding = 10;
+  var xpadding = 0;
+  var ypadding = 0;
+  
+  // Creating GRID function
+  function make_x_axis() {        
+    return d3.svg.axis()
+        .scale(x)
+         .orient("bottom")
+         .ticks(5)
+  }
+
+  function make_y_axis() {        
+    return d3.svg.axis()
+        .scale(y)
+        .orient("left")
+        .ticks(5)
+  }
 
 
   // FETCH DATA
@@ -95,10 +120,7 @@
     update();
   });
   function setup() {
-
     // SVG
-
-
     svg = d3.select('#chart')
       .append('svg')
       .attr('width', width + margin.right + margin.left)
@@ -121,13 +143,11 @@
                 .scale(x)
                 .orient("bottom")
                 .ticks(5);
-
     //Define Y axis
       yAxis = d3.svg.axis()
                 .scale(y)
                 .orient("left")
                 .ticks(5);
-
     // EVENT HANDLERS
     d3.select('#year-range').on('change', function () {
       options.yearRange = d3.event.target.value;
@@ -184,6 +204,25 @@
         .attr("class", "axis")
         .attr("transform", "translate(" + ypadding + ",0)")
         .call(yAxis);
+
+    //CALLING THE GRID
+    svg.append("g")         
+        .attr("class", "grid")
+        .attr("transform", "translate(0," + height + ")")
+        .call(make_x_axis()
+            .tickSize(-height, 0, 0)
+            .tickFormat("")
+        )
+
+    svg.append("g")         
+        .attr("class", "grid")
+        .call(make_y_axis()
+            .tickSize(-width, 0, 0)
+            .tickFormat("")
+        )
+        
+
+      
 
 
 
