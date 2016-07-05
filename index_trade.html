@@ -62,6 +62,10 @@
       stroke: #ff944d;
       stroke-dasharray: '3,3';
     }      
+      
+    .bar rect {
+      fill: steelblue;
+    }     
         
   </style>
 </head>
@@ -70,7 +74,7 @@
   <div class="container">
     <h1>Week 5: Replication Project</h1>
     <p>Exchange Rate vs. Trade Balance for the US and Britain.</p>
-    <p>Exchange rate is GBP/USD (GBP = British pound). For example, the value 1.6 indicates £1 = $1.6. The Trade Balance is simply imports minus exports. Figures are in nominal USD, not seasonally adjusted. </p>
+    <p>Exchange rate is GBP/USD (GBP = British pound). For example, the value 1.6 indicates £1 = $1.6. The Trade Balance is simply exports minus imports. Figures are in nominal USD, not seasonally adjusted. </p>
       
     <p>Sources: <a href="https://www.census.gov/foreign-trade/balance/c4120.html">Census.gov Trade Data, </a>  
     <a href="http://www.investing.com/currencies/gbp-usd-historical-data">Historical Exchange Rates</a></p>
@@ -100,6 +104,7 @@
 <script type="text/javascript" src="https://npmcdn.com/simple-statistics@2.0.0/dist/simple-statistics.min.js"></script>
 <script>
   var data = [];
+    var tdata = [];
   var options = {
     yearRange: 'all'
   };
@@ -112,9 +117,14 @@
   d3.json('data-exch.json', function (error, json) {
     if (error) { throw error; }
     data = json;
+      tdata = data.trade;
+//    tdata = json.trade;
     setup();
     update();
+
   });
+
+    
   function setup() {
     // SVG
     svg = d3.select('#chart')
@@ -126,12 +136,11 @@
     // SCALES
       var xmin = d3.min(data, function (d) { return d.trade; });
       x = d3.scale.linear()
-//      .domain(d3.extent(data, function (d) { return d.trade; }))
         .domain([xmin, -xmin])
         .range([0, width])
         .nice();
 
-      console.log('xmin', xmin, -xmin);
+//      console.log('xmin', xmin, -xmin);
     y = d3.scale.linear()
       .domain([0, d3.max(data, function (d) { return d.rate; })])    
       .range([height, 0])    
@@ -140,8 +149,8 @@
     // AXES
       var xAxis = d3.svg.axis()
       .scale(x)
-      .tickSize(-height)
-      .orient("bottom");    
+      .tickSize(-height);
+//      .orient("bottom");    
       
       var yAxis = d3.svg.axis()
       .scale(y)
@@ -177,14 +186,23 @@
       ygrid.selectAll('g').filter(function(d) { return d; })
         .classed('minor', true);
       
-      var xgrid = svg.append('g')
+/*      var xgrid = svg.append('g')
       .attr('class', 'x axis')
       .call(xAxis);
       
-      xgrid.selectAll('g').filter(function(d) { return d; })
-        .classed('minor', true);
+      xgrid.select('g').filter(function(d) { return d; })
+        .classed('minor', true);*/
       
+      // HISTOGRAM
       
+      var xb = d3.scale.linear()
+    .range([0, width]);
+      
+//    var bins = d3.histogram()
+//        .domain(x.domain())
+//        .thresholds(x.ticks(20))
+//        (data[4]);
+
             
     // EVENT HANDLERS
     d3.select('#year-range').on('change', function () {
@@ -214,6 +232,7 @@
     // HISTOGRAMS
     // REGRESSION LINE
   }
+    console.log('jt', data);
 </script>
 </body>
 ☺</html>
