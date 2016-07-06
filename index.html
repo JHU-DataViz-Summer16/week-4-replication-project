@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Week 4: Replication Project</title>
+  <title>Week 4: Federal Procurement Procurement Data System</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
   <style>
     .section {
@@ -26,7 +26,10 @@
       stroke: #ccc;
       shape-rendering: crispEdges;
     }
-
+    .axis .minor line {
+      stroke:#777;
+      stroke-dasharray: 2,2;
+    }
     .axis text {
       font-size: 11px;
     }
@@ -39,6 +42,8 @@
       stroke: rgb(51, 122, 183);
       stroke-width: 1;
       fill: rgba(51, 122, 183, .5);
+      stroke:#FFFFFF;
+      fill: #358d88;
       opacity: .5;
     }
 
@@ -54,26 +59,50 @@
       stroke: rgb(175, 80, 75);
       stroke-width: 2;
     }
+     .category-label {
+       margin-right: 10px;
+       color: #ffffff;
+     }
+     .axis path,
+     .axis line {
+       fill: none;
+       stroke: #ffffff;
+       shape-rendering: crispEdges;
+     }
+     .axis text {
+       font-family: "Lato", sans-serif;
+       font-size: 11px;
+       fill: #ffffff;
+     }
+ 
+     p {
+       margin-top: 5px;
+     }
+ 
+     a {
+       font-size: 12px;
+       color: #ffffff;   
+     }
+     h1 {
+       margin-bottom: 20px;
+     }
   </style>
 </head>
 <body>
 <div class="header section">
   <div class="container">
-    <h1>Week 4: Replication Project</h1>
+    <h1>Week 4: Federal Procurement Data System</h1>
     <p>Let's build a complex interactive graphic.</p>
   </div>
 </div>
 <div class="controls section">
   <div class="container">
     <div class="btn-toolbar">
-      <label for="year-range">Year range: </label>
-      <select id="year-range">
-        <option value="all">All (1948&ndash;2016)</option>
-        <option value="1955-1971">1955&ndash;1971</option>
-        <option value="1974-1984">1974&ndash;1984</option>
-        <option value="1985-1992">1985&ndash;1992</option>
-        <option value="1997-2007">1997&ndash;2007</option>
-        <option value="2008-2016">2008&ndash;2016</option>
+      <label for="Contract_Date-range">Contract Date: </label>
+      <select id="Contract_Date-range">
+        <option value="all">All (2011&ndash;2012)</option>
+        <option value="2011">2011&ndash;2011</option>
+        <option value="2012">2012&ndash;2012</option>
       </select>
     </div>
   </div>
@@ -87,77 +116,126 @@
 <script type="text/javascript" src="https://npmcdn.com/science@1.9.3/science.v1.min.js"></script>
 <script type="text/javascript" src="https://npmcdn.com/simple-statistics@2.0.0/dist/simple-statistics.min.js"></script>
 <script>
-  var data = [];
+  var contracts = [];
   var options = {
-    yearRange: 'all'
+    Contract_DateRange: 'all'
   };
 
-  var svg, x,y;
-  var margin={top:15, right:15,bottom:30, left:45};
-  var width=640-margin.right-margin.left;
-  var height=400-margin.top-margin.bottom;
+  var svg, x, y;
+
+  var margin = {top:15, right:15, bottom:30, left:45};
+
+  var width= 640 -margin.right - margin.left;
+  var height= 400 -margin.top - margin.bottom;
 
   // FETCH DATA
+
   d3.json('data.json',function(error,json){
     if (error){throw error;}
-    data=json;
+
+    contracts=json;
+
     setup();
     update();
-  });//call back function
+  });
+  //call back function
 
-  function setup() {
+    function setup() {
     // SVG
 
     svg = d3.select('#chart')
       .append('svg')
-      .attr('width',width+margin.right+margin.left)
-      .attr('height',height+margin.top=margin.bottom)
+      .attr('width', width + margin.right + margin.left)
+      .attr('height',height + margin.top + margin.bottom)
       .append('g')
-      .attr('transform','translate(' +margin.right= ','+ margin.top + ')');
+      .attr('transform','translate(' + margin.right + ','+ margin.top + ')');
 
     // SCALES
-    x=d3.scale.linear()
-      .domain([0,d3.max(data, function(d){return d.unemployment;})])
+    x = d3.scale.linear()
+      .domain([0,d3.max(data, function(d){return d.Annual_Contract_Revenue;})])
       .range([0,width])
       .nice();
-    x=d3.scale.linear()
-      .domain([0,d3.max(data, function(d){return d.inflation;})])
+
+    y = d3.scale.linear()
+      .domain(d3.extent(data, function(d){return d.Percent_Total_Contract;}))
       .range([height,0])
       .nice();
+
     // AXES
+  var formatPercentage =d3.format('1%')
+  
+  var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient('bottom')
+    .tickSize(-height);
+
+  var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient('right')
+    .tickSize(-width);
+
+  var gx = svg.append('g')
+    .attr("class", "axis")
+    .attr("transform", "translate(0," + (height) + ")")
+    .call(xAxis)
+    gx.selectAll("g").filter(function(d) { return d;})
+      .classed("minor", true);
+    //   .attr("transform")
+    gx.selectAll("text")
+      .attr("transform", "translate(0," + (height) + ")")
+    gx.append("text")
+      .attr("text-anchor", "middle")
+      .attr("transform", "translate(" + (width /2) + " ," + ")")
+      .text("Percent of Total Contract Spend");
+  
+  var gy = svg.append("g")
+      .attr("class", "axis")
+      .attr("transform", "translate(" + padding + ",0)")
+      .call(yAxis)
+      gy.selectAll("g").filter(function(d) { return d;})
+        .classed("minor", true);
+ 
+      gy.selectAll("text") 
+        .attr("x", -25)
+        .attr("dy", -5);
+ 
+      gy.append("text")
+        .attr("text-anchor", "middle")
+        .attr("transform", "translate(" +","+(height/2))
+        .text("Contract Spend");
 
     // EVENT HANDLERS
 
-    d3.select('#year-range').on('change', function () {
-      options.yearRange = d3.event.target.value;
-      update();
-    });
+  d3.select('#Contract_Date-range').on('change', function () {
+    options.Contract_DateRange = d3.event.target.value;
+    update();
+  });
   }
 
   function update() {
     // TRANSFORM
-    txData = data.slice();
+    contractsData = data.slice();
 
-    if (options.yearRange !== 'all') {
-      var yearRange = options.yearRange.split('-');
-      txData = txData.filter(function (d) {
-        return d.year >= yearRange[0] && d.year <= yearRange[1];
+    if (options.Contract_DateRange !== 'all') {
+      var Contract_DateRange = options.Contract_DateRange.split('-');
+      contractsData = contractsData.filter(function (d) {
+        return d.Contract_Date >= Contract_DateRange[0] && d.Contract_Date <= Contract_DateRange[1];
       });
     }
 
     // SCATTERPLOT
-  var points=svg.selectAll('point')
-    .data(txData);
+  var points=svg.selectAll('.point')
+    .data(contractsData);
 
   points.enter().append('circle')
     .attr('class','point')
     .attr('r', 5)
 
-   points 
-    .attr('cx', function(d){return x(d.unemployment); })
-    .attr('cy', function(d){return y(d.inflation); });
+  points 
+    .attr('cx', function(d) {return x(d.Annual_Contract_Revenue); })
+    .attr('cy', function(d) {return y(d.Percent_Total_Contract); });
 
-  point.exit().remove();
+  points.exit().remove();
     // HISTOGRAMS
 
     // REGRESSION LINE
