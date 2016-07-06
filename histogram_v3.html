@@ -36,6 +36,7 @@ var data = [];                        //Initialize empty array
 for (var i = 0; i < 25; i++) {           //Loop 25 times
     var newNumber = Math.random() * 30;  //New random number (0-30)
     data.push(newNumber);             //Add new number to array    
+}
     
     console.log('hist', data[1]);
     console.log('ht', data);
@@ -53,11 +54,10 @@ var x = d3.scale.linear()
 var map = data.map(function(d) { return d;});    
     
 var bins = d3.layout.histogram()
-    .bins(10);
+    .bins(10)(map);
 
 //    bins(data).domain(x.domain()).count(10);
     
-//    bins.range(10);
     
 /*.domain(x.domain())
     .thresholds(x.ticks(20))
