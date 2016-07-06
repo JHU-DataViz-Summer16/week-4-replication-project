@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang='en'>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset='UTF-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
   <title>Week 4: Replication Project</title>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'>
   <style>
     body {
 	background-color: #3f3d4c;
-	font-family: "Trebuchet MS", Helvetica, sans-serif;
+	font-family: 'Trebuchet MS', Helvetica, sans-serif;
 	font-size: 16px;	
         color: #ff944d;
         
@@ -70,38 +70,38 @@
   </style>
 </head>
 <body>
-<div class="header section">
-  <div class="container">
+<div class='header section'>
+  <div class='container'>
     <h1>Week 5: Replication Project</h1>
     <p>Exchange Rate vs. Trade Balance for the US and Britain.</p>
     <p>Exchange rate is GBP/USD (GBP = British pound). For example, the value 1.6 indicates £1 = $1.6. The Trade Balance is simply exports minus imports. Figures are in nominal USD, not seasonally adjusted. </p>
       
-    <p>Sources: <a href="https://www.census.gov/foreign-trade/balance/c4120.html">Census.gov Trade Data, </a>  
-    <a href="http://www.investing.com/currencies/gbp-usd-historical-data">Historical Exchange Rates</a></p>
+    <p>Sources: <a href='https://www.census.gov/foreign-trade/balance/c4120.html'>Census.gov Trade Data, </a>  
+    <a href='http://www.investing.com/currencies/gbp-usd-historical-data'>Historical Exchange Rates</a></p>
   </div>
 </div>
-<div class="controls section">
-  <div class="container">
-    <div class="btn-toolbar">
-      <label for="year-range">Year range: </label>
-      <select id="year-range">
-        <option value="all">All (1985&ndash;2016)</option>
-        <option value="1985-1994">1985&ndash;1994</option>
-        <option value="1995-2004">1995&ndash;2004</option>
-        <option value="2005-2016">2005&ndash;2016</option>
+<div class='controls section'>
+  <div class='container'>
+    <div class='btn-toolbar'>
+      <label for='year-range'>Year range: </label>
+      <select id='year-range'>
+        <option value='all'>All (1985&ndash;2016)</option>
+        <option value='1985-1994'>1985&ndash;1994</option>
+        <option value='1995-2004'>1995&ndash;2004</option>
+        <option value='2005-2016'>2005&ndash;2016</option>
       </select>
     </div>
   </div>
 </div>
-<div class="main section">
-  <div class="container">
-    <div id="chart"></div>
+<div class='main section'>
+  <div class='container'>
+    <div id='chart'></div>
   </div>
 </div>
     
-    <script type="text/javascript" src="https://npmcdn.com/d3@3.5.17/d3.min.js"></script>
-<script type="text/javascript" src="https://npmcdn.com/science@1.9.3/science.v1.min.js"></script>
-<script type="text/javascript" src="https://npmcdn.com/simple-statistics@2.0.0/dist/simple-statistics.min.js"></script>
+    <script type='text/javascript' src='https://npmcdn.com/d3@3.5.17/d3.min.js'></script>
+<script type='text/javascript' src='https://npmcdn.com/science@1.9.3/science.v1.min.js'></script>
+<script type='text/javascript' src='https://npmcdn.com/simple-statistics@2.0.0/dist/simple-statistics.min.js'></script>
 <script>
   var data = [];
     var tdata = [];
@@ -150,7 +150,7 @@
       var xAxis = d3.svg.axis()
       .scale(x)
       .tickSize(-height);
-//      .orient("bottom");    
+//      .orient('bottom');    
       
       var yAxis = d3.svg.axis()
       .scale(y)
@@ -196,25 +196,26 @@
       // HISTOGRAM
       
     var map = data.map(function(d) { return d.trade; })
-    var hist = d3.layout.histogram()
-          .bins(7)(map);
+    var hist = d3.layout.histogram().bins(7)(map);
       
       console.log('his', hist);
       
-    var bars = svg.selectAll(".bar")
+    var bars = svg.selectAll('.bar')
         .data(hist)
         .enter()
-        .append("g")
-        .attr("class", "bar")
-        .attr("transform", function(d) { return "translate(" + x(d.x0) + "," + y(d.length) + ")"; });
+        .append('g')
+        .attr('class', 'bar');
+//        .attr('transform', function(d) { return 'translate(' + x(d.dx) + ',' + y(d.length) + ')'; });
+//        .attr('transform', function(d) { return 'translate(' + x(d.dx) + ')'; });
       
-    bars.append("rect")
-        .attr("x", function(d) { return d.x*15; })
-        .attr("y", height)
-        .attr("width", function(d) {return d.dx * 3; })
-        .attr("width", function(d) {return 20; })    
-//        .attr("height", function(d) { return d.y; })
-        .attr("height", function(d) { return 20; });    
+    bars.append('rect')
+        .attr('x', function(d) { return d.dx; })
+        .attr('y', height)
+//        .attr('y', function(d) { return height-(d.y); })
+        .attr('width', function(d) {return d.dx; })
+//        .attr('width', function(d) {return 20; })    
+        .attr('height', function(d) { return d.y; });
+//        .attr('height', function(d) { return 20; });    
       
 
       
