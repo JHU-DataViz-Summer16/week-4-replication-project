@@ -163,14 +163,16 @@
                   .orient("bottom"); 
 
     svg.append("g")
-       .attr("class", "x axis")
+       //.attr("class", "x axis")
        //.attr("transform", "translate(0," + (height) + ")")
-       .call(xAxis)
+       //.call(xAxis)
       
        .append("text")
-       .attr("x", 250)
+       .attr("x", 190)
        .attr("y", 580)
        .style("text-anchor", "start")
+       .style("font-family", "Open Sans Condensed, Helvetica, sans-serif")
+       .style("font-weight", "bold")
        .text("Standardized, Risk-Adjusted Per Capita Medicare Spending");
 
     var gx = svg.append("g")
@@ -186,16 +188,17 @@
                   .orient("right");
 
     svg.append("g")
-       .attr("class", "y axis")
-       .attr("transform","translate(0,0)")
-       .call(yAxis)
+       //.attr("transform","rotate(-90)")
+       //.call(yAxis)
 
        .append("text")
-       .attr("transform", "rotate(-90)")
-       .attr("x", -300)
+       .attr("transform","rotate(-90)")
+       .attr("x", -250)
        .attr("y", -60)
-       .attr("dy", ".9em")
-       .style("text-anchor", "start")
+       .attr("dy", ".71em")
+       .style("text-anchor", "middle")
+       .style("font-family", "Open Sans Condensed, Helvetica, sans-serif")
+       .style("font-weight", "bold")
        .text("ER Visits per 100K");
 
     var gy = svg.append("g")
@@ -206,8 +209,8 @@
         .classed("minor", true);
 
       gy.selectAll("text")
-        .attr("x", -30)
-        .attr("dy", -4);
+        .attr("x", -30);
+        //.attr("dy", -4);
 
       function formatCurrency(d) {
         var s = formatNumber(d / 1e3);
