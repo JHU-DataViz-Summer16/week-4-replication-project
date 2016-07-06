@@ -116,7 +116,7 @@
 <script type="text/javascript" src="https://npmcdn.com/science@1.9.3/science.v1.min.js"></script>
 <script type="text/javascript" src="https://npmcdn.com/simple-statistics@2.0.0/dist/simple-statistics.min.js"></script>
 <script>
-  var contracts = [];
+  var data = [];
   var options = {
     Contract_DateRange: 'all'
   };
@@ -125,22 +125,22 @@
 
   var margin = {top:15, right:15, bottom:30, left:45};
 
-  var width= 640 -margin.right - margin.left;
-  var height= 400 -margin.top - margin.bottom;
+  var width= 640 - margin.right - margin.left;
+  var height= 400 - margin.top - margin.bottom;
 
   // FETCH DATA
 
   d3.json('data.json',function(error,json){
     if (error){throw error;}
 
-    contracts=json;
+    data=json;
 
     setup();
     update();
   });
   //call back function
 
-    function setup() {
+  function setup() {
     // SVG
 
     svg = d3.select('#chart')
@@ -167,42 +167,49 @@
   var xAxis = d3.svg.axis()
     .scale(x)
     .orient('bottom')
-    .tickSize(-height);
+    .ticks(10)
+    .tickSize(height);
 
   var yAxis = d3.svg.axis()
     .scale(y)
     .orient('right')
-    .tickSize(-width);
+    .ticks(10)
+    .tickSize(width);
 
   var gx = svg.append('g')
-    .attr("class", "axis")
+    .attr("class", "x axis")
     .attr("transform", "translate(0," + (height) + ")")
     .call(xAxis)
-    gx.selectAll("g").filter(function(d) { return d;})
-      .classed("minor", true);
-    //   .attr("transform")
-    gx.selectAll("text")
-      .attr("transform", "translate(0," + (height) + ")")
-    gx.append("text")
-      .attr("text-anchor", "middle")
-      .attr("transform", "translate(" + (width /2) + " ," + ")")
-      .text("Percent of Total Contract Spend");
   
+  gx.selectAll("g").filter(function(d) { return d;})
+    .classed("minor", true);
+ 
+  //   .attr("transform")
+  gx.selectAll("text")
+    .attr("transform", "translate(0," + (height) + ")")
+  
+  gx.append("text")
+    .attr("text-anchor", "middle")
+    .attr("transform", "translate(" + (width /2) + " ," + ")")
+    .style("text-anchor", "middle")
+    .text("Percent of Total Contract Spend");
+
   var gy = svg.append("g")
-      .attr("class", "axis")
-      .attr("transform", "translate(" + padding + ",0)")
+      .attr("class", "y axis")
       .call(yAxis)
       gy.selectAll("g").filter(function(d) { return d;})
-        .classed("minor", true);
+            .classed("minor", true);
  
-      gy.selectAll("text") 
+  gy.selectAll("text") 
         .attr("x", -25)
         .attr("dy", -5);
  
-      gy.append("text")
-        .attr("text-anchor", "middle")
-        .attr("transform", "translate(" +","+(height/2))
-        .text("Contract Spend");
+  gy.append("text")
+    .attr("transform", "translate(" +","+(height/2))
+    .attr("y", -30)
+    .attr("x", 10)
+    .style("text-anchor", "middle")
+    .text("Contract Spend");
 
     // EVENT HANDLERS
 
@@ -217,12 +224,11 @@
     contractsData = data.slice();
 
     if (options.Contract_DateRange !== 'all') {
-      var Contract_DateRange = options.Contract_DateRange.split('-');
+      // var Contract_DateRange = options.Contract_DateRange.split('-');
       contractsData = contractsData.filter(function (d) {
-        return d.Contract_Date >= Contract_DateRange[0] && d.Contract_Date <= Contract_DateRange[1];
+        return d.Contract_Date === d3.event.target.value; 
       });
     }
-
     // SCATTERPLOT
   var points=svg.selectAll('.point')
     .data(contractsData);
@@ -237,6 +243,7 @@
 
   points.exit().remove();
     // HISTOGRAMS
+    
 
     // REGRESSION LINE
   }
