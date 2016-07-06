@@ -197,7 +197,9 @@
       
     var map = data.map(function(d) { return d.trade; })
     var hist = d3.layout.histogram()
-          .bins(10)(map);
+          .bins(7)(map);
+      
+      console.log('his', hist);
       
     var bars = svg.selectAll(".bar")
         .data(hist)
@@ -210,8 +212,9 @@
         .attr("x", function(d) { return d.x*15; })
         .attr("y", height)
         .attr("width", function(d) {return d.dx * 3; })
-        .attr("height", function(d) { return d.y; })
-        .attr("fill", "red");
+        .attr("width", function(d) {return 20; })    
+//        .attr("height", function(d) { return d.y; })
+        .attr("height", function(d) { return 20; });    
       
 
       
@@ -249,7 +252,7 @@
 
     // REGRESSION LINE
   }
-    console.log('jt', data);
+
 </script>
 </body>
-☺</html>
+</html>
