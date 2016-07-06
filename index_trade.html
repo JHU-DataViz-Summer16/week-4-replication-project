@@ -196,23 +196,24 @@
       // HISTOGRAM
       
     var map = data.map(function(d) { return d.trade; })
-    var hist = d3.layout.histogram().bins(7)(map);
+    var hist = d3.layout.histogram().bins(8)(map);
       
-      console.log('his', hist);
+      console.log('hist', hist);
       
     var bars = svg.selectAll('.bar')
         .data(hist)
         .enter()
         .append('g')
-        .attr('class', 'bar');
+        .attr('class', 'bar')
 //        .attr('transform', function(d) { return 'translate(' + x(d.dx) + ',' + y(d.length) + ')'; });
-//        .attr('transform', function(d) { return 'translate(' + x(d.dx) + ')'; });
+        .attr('transform', 'translate(100,0)');
       
     bars.append('rect')
-        .attr('x', function(d) { return d.dx; })
-        .attr('y', height)
-//        .attr('y', function(d) { return height-(d.y); })
-        .attr('width', function(d) {return d.dx; })
+//        .attr('x', function(d) { return d.dx; })
+        .attr("x", function(d, i) { return i * 100 })    
+//        .attr('y', height)
+        .attr('y', function(d) { return height-(d.y); })
+        .attr('width', function(d) {return d.dx/4; })
 //        .attr('width', function(d) {return 20; })    
         .attr('height', function(d) { return d.y; });
 //        .attr('height', function(d) { return 20; });    
