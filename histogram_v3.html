@@ -48,10 +48,11 @@ var margin = {top: 10, right: 30, bottom: 30, left: 30},
     height = 500 - margin.top - margin.bottom;
 
 var x = d3.scale.linear()
-    .rangeRound([0, width]);
+    .range([0, width]);
 
     
-var map = data.map(function(d) { return d;});    
+// var map = data.map(function(d) { return d;});    
+var map = d3.map(data);        
     
 var bins = d3.layout.histogram()
     .bins(10)(map);
@@ -77,14 +78,17 @@ var bar = svg.selectAll(".bar")
     .data(bins)
   .enter().append("g")
     .attr("class", "bar")
-    .attr("transform", function(d) { return "translate(" + x(d.x0) + "," + y(d.length) + ")"; });
+//    .attr("transform", function(d) { return "translate(" + x(d.x0) + "," + y(d.length) + ")"; });
+//    .attr("transform", 'translate('10','20')');
 
 bar.append("rect")
 //    .data(function(d) { return d; })
 //    .enter()
     .append('rect')
     .attr("x", 1)
-    .attr("width", x(bins[0].x1) - x(bins[0].x0) - 1)
+//    .attr("width", x(bins[0].x1) - x(bins[0].x0) - 1)
+ .attr("width", function(d) { x(bins[0].x1) - x(bins[0].x0) - 1 } )
+    .attr('width', 10)
     .attr("height", function(d) { return height - y(d.length); });
 
 /*bar.append("text")
