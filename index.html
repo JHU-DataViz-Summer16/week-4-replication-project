@@ -9,75 +9,60 @@
     .section {
       padding: 1em 0;
     }
-
     .header {
       background: linear-gradient(to bottom, #337ab7 0%, #135a97 100%);
       color: white;
       padding: 1em 0 2em;
     }
-
     .footer{
       text-align: right;
       background: linear-gradient(to bottom, #337ab7 0%, #135a97 100%);
       color:#ECF0F1;
       padding: 1em 2em; 
     }
-
     a {
       color: white;
     }
-
     svg {
       display: block;
       margin: 0 auto;
     }
-
     .axis path{
       display: none;
     }
-
     .axis line {
       fill: none;
       stroke: #ccc;
       shape-rendering: crispEdges;
     }
-
     .axis text {
       font-size: 11px;
     }
-
     .label {
       font-weight: 700;
     }
-
     .point {
       stroke-width: 1;
       opacity: .5;
     }
-
     .D{
       stroke: #2980B9;
       fill: #2980B9;
     }
-
     .R{
       stroke: #E74C3C;
       fill: #E74C3C;
     }
-
     .point.filtered {
       opacity: .05;
     }
-
     .bar {
       fill: rgb(51, 122, 183);
     }
-
     .line {
       stroke: rgb(175, 80, 75);
       stroke-width: 2;
     }
-
   </style>
 </head>
 <body>
@@ -113,39 +98,29 @@
   var options = {
     party: 'all'
   };
-
   var svg, x, y;
-
   var margin = { top: 15, right: 15, bottom: 30, left:45 };
-
   var width = 640 - margin.right -  margin.left;
   var height = 400 - margin.top - margin.bottom;
-
   // FETCH DATA
-
   d3.json('data.json', function (error, json){
     // Call back function
     if (error) { throw error; }
-
     data = json;
-
     setup();
     update();
   });
 
   function setup( ) {
-
     // SVG
-
     svg = d3.select('#chart')
       .append('svg')
       .attr('width', width + margin.right + margin.left)
       .attr('height', height + margin.top + margin.bottom)
       .append('g')
       .attr('transform','translate(' + margin.left + ',' + margin.top + ')');
-
+   
     // SCALES
-
     x = d3.scale.linear()
       .domain([d3.min(data,function (d){ return d.cfScore;}), d3.max(data, function (d){ return d.cfScore; } )])
         .range([margin.left,(margin.left + width)])
@@ -155,80 +130,100 @@
       .domain(d3.extent(data, function (d){ return d.distPart; } ))
       .range([(height-margin.top),0])
       .nice();    
-
+   
     // AXES
-
     var xAxis = d3.svg.axis()
       .scale(x)
       .tickSize(-height)
       .orient("bottom");
-
     var yAxis = d3.svg.axis()
       .scale(y)
       .tickSize(-width)
       .orient("left");
-
     svg.append("g")
       .classed("x axis", true)
       .attr("transform", "translate(0," + (height-margin.top) + ")")
       .call(xAxis);
-
     svg.append("g")
       .classed("y axis", true)
       .attr("transform","translate(" + margin.left + ",0)")
       .call(yAxis);
-
     var line = d3.svg.line()
       .x(function(d) { return xScale(d.x); })
       .y(function(d) { return yScale(d.y); });
-
     svg.append("text")
         .attr("text-anchor", "middle")
         .attr("transform", "translate(0,"+(height/2)+")rotate(-90)")
         .text("District Partisanship");
-
     svg.append("text")
         .attr("text-anchor", "middle")
         .attr("transform", "translate("+ (width/2) +","+(height + margin.top + (margin.bottom/2))+")")
         .text("Candidate CF Score");
-
     // EVENT HANDLERS
-
     d3.select('#party').on('change', function () {
       options.party = d3.event.target.value;
       update();
     });
   }
-
   function update() {
     // TRANSFORM
     txData = data.slice();
-
     if (options.party !== 'all') {
       var party = options.party;
       txData = txData.filter(function (d) {
         return d.party === party;
       });
     }
-
     // SCATTERPLOT
     var points = svg.selectAll('.point')
       .data(txData);
 
     points.enter().append('circle')
       .classed("point", true)
-      .attr('r', 5)
-
+      .attr('r', 5);
+    
     points
       .classed('point',true)
-      .classed("R", function (d) {return d.party === "rep"})
-      .classed("D", function (d) {return d.party === "dem"})
+      .classed("R", function (d) {return d.party === "rep";})
+      .classed("D", function (d) {return d.party === "dem";})
       .attr('cx', function (d){return x(d.cfScore) ;})
       .attr('cy', function (d){return y(d.distPart) ;});
 
     points.exit().remove();
-
+    
     // HISTOGRAMS
+ 
+    var xdata = data.map(function(d) { return d.cfScore; });
+    var dataHistX = d3.layout.histogram()
+    .bins(x.ticks())
+    (xdata);
+
+    var ymax = d3.max(dataHistX, function (i) {return i.y});
+    console.log(ymax);
+
+    var vert = d3.scale.linear()
+      .domain( [0, ymax] )
+      .range([ y.ticks()[0]*height , y.ticks()[1]*height ]);
+
+    console.log(vert)
+
+    var bar = svg.selectAll(".bar")
+        .data(dataHistX)
+      .enter().append("g")
+        .attr("class", "bar")
+        .attr("transform","translate(" + margin.left + ","+margin.top+")");
+
+    bar.append("rect")
+      .attr("x", function (d) { return d.x})
+      .attr("y", function (d) { return vert(d.y); })
+      .attr("width", 20)
+      .attr("height", function  (d) { return Math.abs(vert(d.y)); });
+
+    console.log(dataHistX)
+
+   
+
+
 
 
 
@@ -243,15 +238,3 @@
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
