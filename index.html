@@ -231,20 +231,31 @@
 
 
     // HISTOGRAMS
-    var bins = d3.layout.histogram()
-      .bins(x.domain())
-      .bins(x.ticks(10))
-      (data)
+    var map = data.map(function(d){return d.WF_Female;})
+
+    var histogram = d3.layout.histogram()
+                      .bins(10)(map)
+
+    var bars = svg.selectAll(".bar")
+                  .data(histogram)
+                  .enter();
+
+
 
     var yHist = d3.scale.linear()
-      .domain([0,d3.max(bins, function(d) {return d.length})])
-      .range([height, 0]);
+      .domain([0,d3.max(bars, function(d) {return d.length})])
+      .range([height, 0])
+      .nice();
 
-    var bar = svg.selectAll(".bar")
-      .data(bins)
-      .enter().append("g")
-        .attr("class", "bar")
-        .attr("transform", function(d) { return "translate(" + x(d.x0) + "," + yHist(d.length) + ")"; });
+    console.log(yHist(51))
+
+
+    bars.append("rect")
+      .attr("width", function(d) { return x(d.dx)/2; })
+      .attr("x", function(d) { return x(d.x)+10; })
+      .attr("y", function(d) { return height-(d.y); })
+      .attr("height", function(d) { return (d.y); })
+      .order();
 
 
 
