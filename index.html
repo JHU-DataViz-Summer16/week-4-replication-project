@@ -68,8 +68,8 @@
       opacity: .05;
     }
 
-    .bar {
-      fill: rgb(51, 122, 183);
+    .bar rect {
+      fill: #5A5050;
     }
 
     .line {
@@ -163,10 +163,6 @@
                   .orient("bottom"); 
 
     svg.append("g")
-       //.attr("class", "x axis")
-       //.attr("transform", "translate(0," + (height) + ")")
-       //.call(xAxis)
-      
        .append("text")
        .attr("x", 190)
        .attr("y", 580)
@@ -188,9 +184,6 @@
                   .orient("right");
 
     svg.append("g")
-       //.attr("transform","rotate(-90)")
-       //.call(yAxis)
-
        .append("text")
        .attr("transform","rotate(-90)")
        .attr("x", -250)
@@ -210,7 +203,7 @@
 
       gy.selectAll("text")
         .attr("x", -30);
-        //.attr("dy", -4);
+      //.attr("dy", -4);
 
       function formatCurrency(d) {
         var s = formatNumber(d / 1e3);
@@ -254,6 +247,27 @@
     points.exit().remove();
 
     // HISTOGRAMS
+    var map = data.map(function(d) { return d.costs; });
+
+    var histogram = d3.layout.histogram()
+                      .bins(x.ticks())
+                      (map);
+
+    var yHist = d3.scale.linear()
+                  .domain([0, d3.max(histogram, function(d) { return d.length; })])
+                  .range([height, 0]);
+
+    var bar = svg.selectAll(".bar")
+                 .data(histogram)
+                 .enter().append("g")
+                 .attr("class", "bar")
+                 .attr("transform","translate(" + margin.left + ","+margin.top+")");
+
+    bar.append("rect")
+       .attr("x", function (d) { return d.x})
+       .attr("y", function (d) { return yHist(d.y); })
+       .attr("width", 10)
+       .attr("height", function  (d) { return yHist(d.y); });
 
     // REGRESSION LINE
   }
