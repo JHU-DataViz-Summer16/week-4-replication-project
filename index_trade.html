@@ -117,11 +117,8 @@
   d3.json('data-exch.json', function (error, json) {
     if (error) { throw error; }
     data = json;
-      tdata = data.trade;
-//    tdata = json.trade;
     setup();
     update();
-
   });
 
     
@@ -185,7 +182,34 @@
       
       ygrid.selectAll('g').filter(function(d) { return d; })
         .classed('minor', true);
-  
+       
+    // EVENT HANDLERS
+    d3.select('#year-range').on('change', function () {
+      options.yearRange = d3.event.target.value;
+      update();
+    });
+  }
+    
+  function update() {
+    txData = data.slice();
+    if (options.yearRange !== 'all') {
+      var yearRange = options.yearRange.split('-');
+      txData = txData.filter(function (d) {
+        return d.year >= yearRange[0] && d.year <= yearRange[1];
+      });
+    }
+      
+    // SCATTERPLOT
+    var points = svg.selectAll('.point')
+      .data(txData);
+    points.enter().append('circle')
+      .attr('class', 'point')
+      .attr('r', 5);
+    points
+      .attr('cx', function (d) { return x(d.trade); })
+      .attr('cy', function (d) { return y(d.rate); });
+    points.exit().remove();
+
       // HISTOGRAM
       
       // x hist
@@ -202,21 +226,14 @@
         .enter()
         .append('g')
         .attr('class', 'bar')
-//        .attr('transform', function(d) { return 'translate(' + x(d.x) + ')'; });
-          .attr('transform', function(d, i) { return 'translate(' +  
+        .attr('transform', function(d, i) { return 'translate(' +  
               ( x(x.ticks()[i+1]) - (x(x.ticks()[1]))/2 - (bwidth/2) ) + ')'; });
-    
-      
+          
     bars.append('rect')
-//        .attr('x', function(d) { return x(d.x)/100 ;  })    
         .attr('x', 0)
-//        .attr('y', height)
         .attr('y', function(d) { return height-(d.y); })
-//        .attr('width', function(d) {return x(d.dx)/10; })
         .attr('width', bwidth)
-        .attr('height', function(d) { return d.y; });
-//        .attr('height', function(d) { return 20; });    
-      
+        .attr('height', function(d) { return d.y; }); 
   
       // y hist
       
@@ -230,46 +247,14 @@
         .enter()
         .append('g')
         .attr('class', 'bar')
-//        .attr('transform', 'translate(0,50)')
-    .attr("transform", function(d, i) { return "translate(0," + y(d.x) + ")"; });      
+    .attr("transform", function(d, i) { return 'translate(0,' + y(d.x) + ')'; });      
       
     bars.append('rect')
-//        .attr('x', function(d) { return x(d.x)/100 ;  })    
         .attr('x', 0)
-//        .attr('y', 2)
         .attr('y', function(d) { return y(d.x); })
         .attr('width', function(d) {return d.y; })
-//        .attr('width', 50)
-//        .attr('height', function(d, i) { return height-i*40; });
-        .attr('height', 30);  
-
-            
-    // EVENT HANDLERS
-    d3.select('#year-range').on('change', function () {
-      options.yearRange = d3.event.target.value;
-      update();
-    });
-  }
-  function update() {
-    // TRANSFORM
-    txData = data.slice();
-    if (options.yearRange !== 'all') {
-      var yearRange = options.yearRange.split('-');
-      txData = txData.filter(function (d) {
-        return d.year >= yearRange[0] && d.year <= yearRange[1];
-      });
-    }
-    // SCATTERPLOT
-    var points = svg.selectAll('.point')
-      .data(txData);
-    points.enter().append('circle')
-      .attr('class', 'point')
-      .attr('r', 5);
-    points
-      .attr('cx', function (d) { return x(d.trade); })
-      .attr('cy', function (d) { return y(d.rate); });
-    points.exit().remove();
-
+        .attr('height', 30);        
+      
     // REGRESSION LINE
   }
 
