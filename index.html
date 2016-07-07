@@ -123,9 +123,11 @@
    
     // SCALES
     x = d3.scale.linear()
-      .domain([d3.min(data,function (d){ return d.cfScore;}), d3.max(data, function (d){ return d.cfScore; } )])
+      .domain([d3.min(data,function (d){ return d.cfScore;}), Math.ceil(d3.max(data, function (d){ return d.cfScore; } )) ])
         .range([margin.left,(margin.left + width)])
         .nice();
+
+console.log(Math.ceil(d3.max(data, function (d){ return d.cfScore; } )))
 
     y = d3.scale.linear()
       .domain(d3.extent(data, function (d){ return d.distPart; } ))
@@ -192,7 +194,8 @@
 
     points.exit().remove();
     
-     // HISTOGRAMS
+    // HISTOGRAMS
+    // X-HIST
  
     var xdata = data.map(function(d) { return d.cfScore; });
     var dataHistX = d3.layout.histogram()
@@ -214,9 +217,10 @@
     bar.append("rect")
       .attr("x", function (d) { return x(d.x); })
       .attr("y", function (d) { return y(vert(d.y)); })
-      .attr("width", width/(x.ticks().length))
-      .attr("height", function (d) { return y(vert(d.y)); });
+      .attr("width", width/(x.ticks().length ))
+      .attr("height", function (d) { return d.y; });
 
+      // .attr("height", function (d) { return y(vert(d.y)); })
     console.log(dataHistX)
 
   
