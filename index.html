@@ -136,7 +136,7 @@
   // FETCH DATA
 
   d3.json('data.json',function(error,json){
-    if (error){throw json;}
+    if (error){throw error;}
 
     data=json;
 
@@ -157,14 +157,14 @@ console.log()
       .attr('transform','translate(' + margin.left + ','+ margin.top + ')');
 
     // SCALES
-    x = d3.scale.linear()
-      .domain([0,d3.max(data, function(d){return d.Percent_Total_Contract;})])
-      .range([0,width])
-      .nice();
-
-    y = d3.scale.linear()
+    
+    var y = d3.scale.linear()
       .domain(d3.extent(data, function(d){return d.Annual_Contract_Revenue;}))
       .range([height,0])
+      .nice();
+    var x = d3.scale.linear()
+      .domain([0,d3.max(data, function(d){return d.Percent_Total_Contract;})])
+      .range([0,width])
       .nice();
 
     // AXES
@@ -175,11 +175,11 @@ console.log()
     .orient("bottom")
     .ticks(10)
     .tickSize(10);
-  typeof(xAxis);
+  
 
   var gx = svg.append('g')
     .attr("class", "axis")
-    .attr("transform", "translate(0," + (height-padding) + ")")
+    .attr("transform", "translate(0," + (360) + ")")
     .call(xAxis);
   
   gx.selectAll("g").filter(function(d) { return d;})
@@ -187,11 +187,11 @@ console.log()
  
   //   .attr("transform")
   gx.selectAll("text")
-    .attr("transform", "translate(0," + (height) + ")")
+    .attr("transform", "translate(0," + (370) + ")")
   
   gx.append("text")
     .attr("text-anchor", "middle")
-    .attr("transform", "translate(" + (width) + " ," + ")")
+    
     .style("text-anchor", "middle")
     .text("Percent of Total Contract Spend");
 
@@ -202,7 +202,7 @@ console.log()
 
   var gy = svg.append("g")
       .attr("class", "axis")
-      .attr("transform", "translate(" + padding + "0)")
+   
       .call(yAxis);
 
   gy.selectAll("g").filter(function(d) { return d;})
@@ -213,9 +213,9 @@ console.log()
         .attr("y", 5);
  
   gy.append("text")
-    .attr("transform", "translate(" +","+(height))
-    .attr("y", 30)
-    .attr("x", 10)
+  
+    .attr("y", 20)
+    .attr("x", 20)
     .style("text-anchor", "middle")
     .text("Contract Spend");
 
@@ -230,12 +230,16 @@ console.log()
   function update() {
     // TRANSFORM
     contractsData = data.slice();
-
+    
+    console.log(data);
+    
     if (options.Contract_DateRange !== 'all') {
       // var Contract_DateRange = options.Contract_DateRange.split('-');
       contractsData = contractsData.filter(function (d) {
         return d.Contract_Date === d3.event.target.value; 
       });
+      console.log(data);
+      console.log(text);
     }
     // SCATTERPLOT
   var points=svg.selectAll('.point')
