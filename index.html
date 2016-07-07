@@ -173,13 +173,18 @@
 
     // SCALES
 
-    x = d3.scale.linear()
-          .domain([0, d3.max(data, function (d) { return d.democratContribution; })])
+    x = d3.scale.log()
+          .base(2)
+          .domain(d3.extent(data, function (d) { return d.democratContribution; }))
           .range([0, width])
           .nice();
 
-    y = d3.scale.linear()
-          .domain([0, d3.max(data, function (d) { return d.republicanContribution; })])
+console.log(d3.extent(data, function (d) { return d.democratContribution; }));
+console.log(d3.extent(data, function (d) { return d.republicanContribution; }));
+
+    y = d3.scale.log()
+          .base(2)
+          .domain(d3.extent(data, function (d) { return d.republicanContribution; }))
           .range([height, 0])
           .nice();
 
