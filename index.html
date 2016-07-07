@@ -199,8 +199,6 @@
                   .orient("left")
                   .tickFormat(formatAxis);
 
-
-
     svg.append("g")
        .attr("class", "axis") 
        .attr("transform", "translate(0," + (height) + ")")
@@ -237,14 +235,11 @@
     // TRANSFORM
     txData = data.slice();
 
-    console.log(txData);
 
     if (options.state !== 'all') {
       txData = txData.filter(function (d) {
         return d.state === options.state;
-      });
-
-    console.log(txData);  
+      }); 
     }
 
     // SCATTERPLOT
@@ -264,6 +259,28 @@
                     points.exit().remove();
 
     // HISTOGRAMS
+    
+    var demContr = txData.map(function (i) {return i.democratContribution});
+
+    var histogram = d3.layout.histogram()
+                             .bins(x.ticks())
+                             (demContr);
+
+    console.log(histogram);
+
+    var bars = svg.selectAll(".bar")
+                  .data(histogram)
+                  .enter().append("g")
+                  .attr("class", "bar")
+                  .attr("transform", "translate(0," + (height) + ")");
+
+   bars.append("rect")
+       .attr("x", 0)
+       .attr("y", 0)
+       .attr("width", 25)
+       .attr("height", function (d) { return -d.y});
+
+  
 
     // REGRESSION LINE
   }
