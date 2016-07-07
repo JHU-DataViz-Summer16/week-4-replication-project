@@ -250,24 +250,19 @@
     var map = data.map(function(d) { return d.costs; });
 
     var histogram = d3.layout.histogram()
-                      .bins(x.ticks())
-                      (map);
+                      .bins(8)(map); 
 
-    var yHist = d3.scale.linear()
-                  .domain([0, d3.max(histogram, function(d) { return d.length; })])
-                  .range([height, 0]);
-
-    var bar = svg.selectAll(".bar")
+    var bars = svg.selectAll(".bar")
                  .data(histogram)
-                 .enter().append("g")
-                 .attr("class", "bar")
-                 .attr("transform","translate(" + margin.left + ","+margin.top+")");
+                 .enter()
+                 .append("g")
+                 .attr("class", "bar"); 
 
-    bar.append("rect")
-       .attr("x", function (d) { return d.x})
-       .attr("y", function (d) { return yHist(d.y); })
-       .attr("width", 10)
-       .attr("height", function  (d) { return yHist(d.y); });
+    bars.append("rect")
+        .attr("x", function (d) { return d.dx;})
+        .attr("y", function (d) { return height-(d.y); })
+        .attr("width", 10)
+        .attr("height", function  (d) { return (d.y); });
 
     // REGRESSION LINE
   }
