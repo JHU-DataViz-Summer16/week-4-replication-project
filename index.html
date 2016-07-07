@@ -58,6 +58,7 @@
     }
     .bar {
       fill: rgb(51, 122, 183);
+      opacity: .5;
     }
     .line {
       stroke: rgb(175, 80, 75);
@@ -191,7 +192,7 @@
 
     points.exit().remove();
     
-    // HISTOGRAMS
+     // HISTOGRAMS
  
     var xdata = data.map(function(d) { return d.cfScore; });
     var dataHistX = d3.layout.histogram()
@@ -199,33 +200,26 @@
     (xdata);
 
     var ymax = d3.max(dataHistX, function (i) {return i.y});
-    console.log(ymax);
 
     var vert = d3.scale.linear()
       .domain( [0, ymax] )
-      .range([ y.ticks()[0]*height , y.ticks()[1]*height ]);
-
-    console.log(vert)
+      .range([ y.ticks()[0] , y.ticks()[1]]);
 
     var bar = svg.selectAll(".bar")
         .data(dataHistX)
       .enter().append("g")
-        .attr("class", "bar")
-        .attr("transform","translate(" + margin.left + ","+margin.top+")");
+        .attr("class", "bar");
+        // .attr("transform","translate(0," + margin.top + ")");
 
     bar.append("rect")
-      .attr("x", function (d) { return d.x})
-      .attr("y", function (d) { return vert(d.y); })
-      .attr("width", 20)
-      .attr("height", function  (d) { return Math.abs(vert(d.y)); });
+      .attr("x", function (d) { return x(d.x); })
+      .attr("y", function (d) { return y(vert(d.y)); })
+      .attr("width", width/(x.ticks().length))
+      .attr("height", function (d) { return y(vert(d.y)); });
 
     console.log(dataHistX)
 
-   
-
-
-
-
+  
 
     // REGRESSION LINE
   }
