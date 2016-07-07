@@ -253,15 +253,15 @@
                       .bins(x.ticks())
                       (map);
 
-    histScale = d3.scale.linear()
-                        .domain([0, d3.max(histogram, function (d) { return d.y; })])
-                        .range([0, height])
-                        .nice(); 
-
     var bars = svg.selectAll(".bar")
                   .data(histogram)
                   .enter().append("g")
                   .attr("class", "bar"); 
+
+    histScale = d3.scale.linear()
+                        .domain([0, d3.max(bars, function (d) { return d.length; })])
+                        .range([0, height])
+                        .nice(); 
 
     bars.append("rect")
         .attr("x", 0)
