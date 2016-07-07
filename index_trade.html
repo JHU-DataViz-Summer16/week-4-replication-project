@@ -195,20 +195,25 @@
       
       console.log('hist', xhist);
       
+      bwidth = x(x.ticks()[1])/2;
+      
     var bars = svg.selectAll('.bar')
         .data(xhist)
         .enter()
         .append('g')
         .attr('class', 'bar')
-        .attr('transform', function(d) { return 'translate(' + x(d.x) + ')'; });
+//        .attr('transform', function(d) { return 'translate(' + x(d.x) + ')'; });
+          .attr('transform', function(d, i) { return 'translate(' +  
+              ( x(x.ticks()[i+1]) - (x(x.ticks()[1]))/2 - (bwidth/2) ) + ')'; });
+    
       
     bars.append('rect')
 //        .attr('x', function(d) { return x(d.x)/100 ;  })    
-        .attr('x', 17)
+        .attr('x', 0)
 //        .attr('y', height)
         .attr('y', function(d) { return height-(d.y); })
-        .attr('width', function(d) {return x(d.dx)/10; })
-//        .attr('width', 50)
+//        .attr('width', function(d) {return x(d.dx)/10; })
+        .attr('width', bwidth)
         .attr('height', function(d) { return d.y; });
 //        .attr('height', function(d) { return 20; });    
       
@@ -226,7 +231,7 @@
         .append('g')
         .attr('class', 'bar')
 //        .attr('transform', 'translate(0,50)')
-    .attr("transform", function(d, i) { return "translate(0," + i*20 + ")"; });      
+    .attr("transform", function(d, i) { return "translate(0," + y(d.x) + ")"; });      
       
     bars.append('rect')
 //        .attr('x', function(d) { return x(d.x)/100 ;  })    
