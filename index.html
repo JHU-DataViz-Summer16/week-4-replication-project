@@ -55,6 +55,16 @@
       stroke-width: 0;
     }
 
+    /* style for the histogram. Source http://bl.ocks.org/mbostock/3048450*/ 
+    .bar rect {
+      fill: steelblue;
+    }
+
+    .bar text {
+    fill: #fff;
+    font: 10px sans-serif;
+    }
+
   </style>
 </head>
 <body>
@@ -89,7 +99,7 @@
     var options = {
     yearRange: 'all'
   };
-  var svg, x, y, xAxis, yAxis; 
+  var svg, x, y, xAxis, yAxis, xh, yh; 
   var margin = { top: 15, right: 15, bottom: 30, left: 45 };
   var width = 640 - margin.right - margin.left;
   var height = 400 - margin.top - margin.bottom;
@@ -165,7 +175,7 @@
     }
     // SCATTERPLOT
     var points = svg.selectAll('.point')
-      .data(txData);
+      .data(data);
     points.enter().append('circle')
       .attr('class', 'point')
       .attr('r', 5);
@@ -175,8 +185,9 @@
     points.exit().remove();
     
     //Create labels
+    /*
       svg.selectAll("text")
-         .data(data)
+         .data(txData)
          .enter()
          .append("text")
          .text(function(d) {
@@ -191,13 +202,21 @@
          .attr("font-family", "sans-serif")
          .attr("font-size", "11px")
          .attr("fill", "red");
-    
+    */
+
         // Creating (printing the Axxis)
     //Create X axis
       svg.append("g")
         .attr("class", "axis")
         .attr("transform", "translate(0," + (height - xpadding) + ")")
-        .call(xAxis);
+        .call(xAxis)
+        .append("text")
+         .text("employment")
+         .attr("x", width - 50)
+         .attr("y", 0)
+         .attr("font-family", "sans-serif")
+         .attr("font-size", "11px")
+         .attr("fill", "red");
       
       //Create Y axis
       svg.append("g")
@@ -220,15 +239,98 @@
             .tickSize(-width, 0, 0)
             .tickFormat("")
         )
-        
-
-      
-
-
-
-
     // HISTOGRAMS
-    // REGRESSION LINE
+
+    var formatCount = d3.format(",.0f");
+
+    //var margin = {top: 10, right: 30, bottom: 30, left: 30},
+        //width = 960 - margin.left - margin.right,
+        //height = 500 - margin.top - margin.bottom;
+
+    //Yes, you do need to recreate the scale for the height of the rects in the histogram. Now, for each histogram, you are going to want a linear scale. This scale will have range and a domain, like other scales. 
+    //The domain should refer to your input data: What are the lowest and highest values that are important to the height of a histogram?
+    //The range should still be for the range of the output space, starting at 0, and going to the maximum height you would like the bars to going.
+    //Note that in the image Chris attached to the assignment, there is only one axis for each variable. So you don't have to recreate the axes.
+    
+    
+    xh = d3.scale.linear()
+        .rangeRound([0, width]);
+
+    /*
+    var bins = d3.layout.histogram()
+        .domain(xh.domain())
+        .thresholds(xh.ticks(4))
+        (data);
+    */
+
+    var bins = d3.layout.histogram()
+        .bins( [0, 50, 60] )(data);
+
+    yh = d3.scale.linear()
+        .domain([0, d3.max(bins, function(data) { return data.length; })])
+        .range([height, 0]);
+    
+/*
+ x = d3.scale.linear()
+      .domain([0, d3.max(data, function (d) { return d.unemployment; })])
+      .range([0, width])
+      .nice();
+    y = d3.scale.linear()
+      .domain(d3.extent(data, function (d) { return d.employment; }))
+      .range([height, 0])
+      .nice();
+*/
+
+    
+
+    //var svg = d3.select("body").append("svg")
+        //.attr("width", width + margin.left + margin.right)
+        //.attr("height", height + margin.top + margin.bottom)
+      //.append("g")
+        //.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var bar = svg.selectAll(".bar")
+        .data(bins)
+      .enter().append("g")
+        .attr("class", "bar")
+        .attr("transform", function(bin) { 
+          console.log( "x: " + bin.x );
+          console.log( "dx: " + bin.dx );
+          console.log( "y: " + bin.y );
+          
+          return "translate(" + xh(bin.dx) + "," + yh(bin.length) + ")"; 
+        });
+        //.attr("transform", function(bin) { return "translate(5," + yh(bin.length) + ")"; });
+
+    bar.append("rect")
+        .attr("x", 1)
+        //.attr("width", xh(bins[0].x1) - xh(bins[0].x0) - 1)
+        .attr("width", 10)
+        //.attr("height", function(bin) { return height - y(bin.length); });
+        .attr("height", 5);
+
+    bar.append("text")
+        .attr("dy", ".75em")
+        .attr("y", 0)
+        //.attr("x", (xh(bins[0].x1) - xh(bins[0].x0)) / 2)
+        .attr("x", 0)
+        .attr("text-anchor", "middle")
+        .text(function(d) { return formatCount(d.length); });
+
+    svg.append("g")
+        .attr("class", "axis axis--x")
+        .attr("transform", "translate(0," + height + ")")
+        //.call(d3.axis(xh).orient("bottom"));
+        .call(xAxis);
+
+
+
+
+
+
+
+
+  // REGRESSION LINE
   }
 </script>
 </body>

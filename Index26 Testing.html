@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+.bar rect {
+  fill: steelblue;
+}
+
+.bar text {
+  fill: #fff;
+  font: 10px sans-serif;
+}
+
+</style>
+<body>
+<script src="//d3js.org/d3.v4.0.0-alpha.45.min.js"></script>
+<script>
+
+var data = [
+
+{"year":2016,"period":4,"employment":58.76,"unemployment":9.02},
+{"year":2016,"period":3,"employment":56.88,"unemployment":10.14},
+{"year":2016,"period":2,"employment":57.93,"unemployment":10.00},
+{"year":2016,"period":1,"employment":56.86,"unemployment":11.91},
+{"year":2015,"period":12,"employment":59.52,"unemployment":8.59},
+{"year":2015,"period":11,"employment":60.88,"unemployment":7.27},
+{"year":2015,"period":10,"employment":61.41,"unemployment":8.19},
+{"year":2015,"period":9,"employment":58.71,"unemployment":8.98},
+{"year":2015,"period":8,"employment":58.86,"unemployment":9.09},
+{"year":2015,"period":7,"employment":58.35,"unemployment":8.84},
+{"year":2015,"period":6,"employment":59.10,"unemployment":8.25},
+{"year":2015,"period":5,"employment":58.81,"unemployment":8.93},
+{"year":2015,"period":4,"employment":59.27,"unemployment":9.50},
+{"year":2015,"period":3,"employment":58.23,"unemployment":8.86},
+{"year":2015,"period":2,"employment":57.39,"unemployment":9.86},
+{"year":2015,"period":1,"employment":56.94,"unemployment":10.79},
+{"year":2014,"period":12,"employment":58.88,"unemployment":8.72},
+{"year":2014,"period":11,"employment":60.33,"unemployment":7.71},
+{"year":2014,"period":10,"employment":61.27,"unemployment":7.86},
+{"year":2014,"period":9,"employment":59.16,"unemployment":8.35},
+{"year":2014,"period":8,"employment":58.97,"unemployment":8.90},
+{"year":2014,"period":7,"employment":57.64,"unemployment":9.29},
+{"year":2014,"period":6,"employment":58.35,"unemployment":9.19},
+{"year":2014,"period":5,"employment":58.32,"unemployment":8.80},
+{"year":2014,"period":4,"employment":58.12,"unemployment":8.97},
+{"year":2014,"period":3,"employment":56.72,"unemployment":9.73},
+{"year":2014,"period":2,"employment":56.29,"unemployment":10.68},
+{"year":2014,"period":1,"employment":56.56,"unemployment":11.10},
+{"year":2013,"period":12,"employment":59.06,"unemployment":8.44},
+{"year":2013,"period":11,"employment":58.84,"unemployment":8.48},
+{"year":2013,"period":10,"employment":60.92,"unemployment":7.79},
+{"year":2013,"period":9,"employment":58.01,"unemployment":8.98},
+{"year":2013,"period":8,"employment":58.59,"unemployment":9.27},
+{"year":2013,"period":7,"employment":57.81,"unemployment":9.88},
+{"year":2013,"period":6,"employment":57.84,"unemployment":9.24},
+{"year":2013,"period":5,"employment":58.73,"unemployment":9.42},
+{"year":2013,"period":4,"employment":57.00,"unemployment":10.17},
+{"year":2013,"period":3,"employment":56.47,"unemployment":10.21},
+{"year":2013,"period":2,"employment":56.20,"unemployment":11.79},
+{"year":2013,"period":1,"employment":56.16,"unemployment":12.07},
+{"year":2012,"period":12,"employment":58.41,"unemployment":9.55},
+{"year":2012,"period":11,"employment":58.36,"unemployment":9.25},
+{"year":2012,"period":10,"employment":59.94,"unemployment":8.85},
+{"year":2012,"period":9,"employment":57.27,"unemployment":9.94},
+{"year":2012,"period":8,"employment":58.14,"unemployment":9.75},
+{"year":2012,"period":7,"employment":57.22,"unemployment":10.86},
+{"year":2012,"period":6,"employment":58.79,"unemployment":10.03},
+{"year":2012,"period":5,"employment":58.26,"unemployment":10.71},
+{"year":2012,"period":4,"employment":57.48,"unemployment":10.86},
+{"year":2012,"period":3,"employment":57.52,"unemployment":10.36},
+{"year":2012,"period":2,"employment":56.73,"unemployment":11.87},
+{"year":2012,"period":1,"employment":55.95,"unemployment":12.48},
+{"year":2011,"period":12,"employment":58.52,"unemployment":9.82},
+{"year":2011,"period":11,"employment":59.49,"unemployment":9.22},
+{"year":2011,"period":10,"employment":60.87,"unemployment":9.00},
+{"year":2011,"period":9,"employment":57.66,"unemployment":9.74},
+{"year":2011,"period":8,"employment":56.43,"unemployment":10.08},
+{"year":2011,"period":7,"employment":56.00,"unemployment":11.54},
+{"year":2011,"period":6,"employment":56.05,"unemployment":10.91},
+{"year":2011,"period":5,"employment":56.39,"unemployment":11.24},
+{"year":2011,"period":4,"employment":55.75,"unemployment":11.19},
+{"year":2011,"period":3,"employment":55.81,"unemployment":10.87},
+{"year":2011,"period":2,"employment":54.42,"unemployment":12.86},
+{"year":2011,"period":1,"employment":54.07,"unemployment":13.56},
+{"year":2010,"period":12,"employment":55.93,"unemployment":11.12},
+{"year":2010,"period":11,"employment":56.82,"unemployment":10.79},
+{"year":2010,"period":10,"employment":57.37,"unemployment":10.15},
+{"year":2010,"period":9,"employment":56.65,"unemployment":10.57},
+{"year":2010,"period":8,"employment":55.55,"unemployment":11.16},
+{"year":2010,"period":7,"employment":54.63,"unemployment":12.68},
+{"year":2010,"period":6,"employment":55.15,"unemployment":11.64},
+{"year":2010,"period":5,"employment":54.89,"unemployment":12.04},
+{"year":2010,"period":4,"employment":55.40,"unemployment":12.24},
+{"year":2010,"period":3,"employment":54.26,"unemployment":11.81},
+{"year":2010,"period":2,"employment":54.59,"unemployment":12.59},
+{"year":2010,"period":1,"employment":53.02,"unemployment":14.62},
+{"year":2009,"period":12,"employment":55.50,"unemployment":11.31},
+{"year":2009,"period":11,"employment":55.92,"unemployment":11.08},
+{"year":2009,"period":10,"employment":56.55,"unemployment":11.55},
+{"year":2009,"period":9,"employment":53.31,"unemployment":12.16},
+{"year":2009,"period":8,"employment":53.34,"unemployment":11.74},
+{"year":2009,"period":7,"employment":53.88,"unemployment":12.63},
+{"year":2009,"period":6,"employment":54.20,"unemployment":11.34},
+{"year":2009,"period":5,"employment":54.40,"unemployment":11.66},
+{"year":2009,"period":4,"employment":54.09,"unemployment":12.14},
+{"year":2009,"period":3,"employment":53.38,"unemployment":11.99},
+{"year":2009,"period":2,"employment":52.20,"unemployment":12.49},
+{"year":2009,"period":1,"employment":50.33,"unemployment":14.25},
+{"year":2008,"period":12,"employment":52.22,"unemployment":10.61},
+{"year":2008,"period":11,"employment":51.33,"unemployment":10.80},
+{"year":2008,"period":10,"employment":52.72,"unemployment":10.12},
+{"year":2008,"period":9,"employment":52.11,"unemployment":10.95},
+{"year":2008,"period":8,"employment":51.48,"unemployment":11.22},
+{"year":2008,"period":7,"employment":51.61,"unemployment":12.06},
+{"year":2008,"period":6,"employment":50.78,"unemployment":11.17},
+{"year":2008,"period":5,"employment":52.74,"unemployment":10.84},
+{"year":2008,"period":4,"employment":52.93,"unemployment":11.13},
+{"year":2008,"period":3,"employment":53.00,"unemployment":11.22},
+{"year":2008,"period":2,"employment":51.90,"unemployment":11.99},
+{"year":2008,"period":1,"employment":50.13,"unemployment":13.08},
+{"year":2007,"period":12,"employment":52.43,"unemployment":9.89},
+{"year":2007,"period":11,"employment":54.06,"unemployment":9.42},
+{"year":2007,"period":10,"employment":54.56,"unemployment":10.05},
+{"year":2007,"period":9,"employment":52.07,"unemployment":10.84},
+{"year":2007,"period":8,"employment":51.26,"unemployment":10.73},
+{"year":2007,"period":7,"employment":51.34,"unemployment":11.16},
+{"year":2007,"period":6,"employment":51.53,"unemployment":11.16},
+{"year":2007,"period":5,"employment":51.08,"unemployment":11.53},
+{"year":2007,"period":4,"employment":52.30,"unemployment":10.90},
+{"year":2007,"period":3,"employment":50.43,"unemployment":11.93},
+{"year":2007,"period":2,"employment":51.21,"unemployment":12.83},
+{"year":2007,"period":1,"employment":48.97,"unemployment":13.90},
+{"year":2006,"period":12,"employment":50.88,"unemployment":11.78},
+{"year":2006,"period":11,"employment":50.82,"unemployment":10.94},
+{"year":2006,"period":10,"employment":51.20,"unemployment":11.35},
+{"year":2006,"period":9,"employment":49.99,"unemployment":12.89},
+{"year":2006,"period":8,"employment":50.87,"unemployment":12.79},
+{"year":2006,"period":7,"employment":52.86,"unemployment":12.39},
+{"year":2006,"period":6,"employment":54.23,"unemployment":10.61},
+{"year":2006,"period":5,"employment":52.67,"unemployment":11.88},
+{"year":2006,"period":4,"employment":52.06,"unemployment":12.01},
+{"year":2006,"period":3,"employment":53.96,"unemployment":11.34},
+{"year":2006,"period":2,"employment":52.56,"unemployment":13.00},
+{"year":2006,"period":1,"employment":52.05,"unemployment":13.41},
+{"year":2005,"period":12,"employment":55.16,"unemployment":10.33},
+{"year":2005,"period":11,"employment":54.69,"unemployment":10.21},
+{"year":2005,"period":10,"employment":55.42,"unemployment":9.96},
+{"year":2005,"period":9,"employment":53.68,"unemployment":11.17},
+{"year":2005,"period":8,"employment":53.06,"unemployment":11.75},
+{"year":2005,"period":7,"employment":54.05,"unemployment":12.00},
+{"year":2005,"period":6,"employment":52.52,"unemployment":11.52},
+{"year":2005,"period":5,"employment":52.85,"unemployment":12.31},
+{"year":2005,"period":4,"employment":52.84,"unemployment":12.06},
+{"year":2005,"period":3,"employment":52.20,"unemployment":12.95},
+{"year":2005,"period":2,"employment":51.69,"unemployment":14.23},
+{"year":2005,"period":1,"employment":52.39,"unemployment":13.22},
+{"year":2004,"period":12,"employment":53.56,"unemployment":12.07},
+{"year":2004,"period":11,"employment":54.40,"unemployment":11.78},
+{"year":2004,"period":10,"employment":53.80,"unemployment":12.59},
+{"year":2004,"period":9,"employment":53.06,"unemployment":12.51},
+{"year":2004,"period":8,"employment":52.77,"unemployment":13.09},
+{"year":2004,"period":7,"employment":53.52,"unemployment":12.94},
+{"year":2004,"period":6,"employment":51.59,"unemployment":14.00},
+{"year":2004,"period":5,"employment":53.12,"unemployment":13.75},
+{"year":2004,"period":4,"employment":52.69,"unemployment":14.68},
+{"year":2004,"period":3,"employment":53.71,"unemployment":13.62},
+{"year":2004,"period":2,"employment":52.53,"unemployment":15.69},
+{"year":2004,"period":1,"employment":52.13,"unemployment":17.00},
+{"year":2003,"period":12,"employment":55.23,"unemployment":12.19},
+{"year":2003,"period":11,"employment":55.58,"unemployment":12.91},
+{"year":2003,"period":10,"employment":55.50,"unemployment":13.70},
+{"year":2003,"period":9,"employment":54.28,"unemployment":14.26},
+{"year":2003,"period":8,"employment":54.14,"unemployment":14.43},
+{"year":2003,"period":7,"employment":52.97,"unemployment":14.44},
+{"year":2003,"period":6,"employment":52.53,"unemployment":14.14},
+{"year":2003,"period":5,"employment":54.89,"unemployment":12.89},
+{"year":2003,"period":4,"employment":53.35,"unemployment":14.80},
+{"year":2003,"period":3,"employment":54.47,"unemployment":12.98},
+{"year":2003,"period":2,"employment":52.57,"unemployment":16.28},
+{"year":2003,"period":1,"employment":51.95,"unemployment":16.12},
+{"year":2002,"period":12,"employment":52.24,"unemployment":15.77},
+{"year":2002,"period":11,"employment":53.67,"unemployment":14.71},
+{"year":2002,"period":10,"employment":53.87,"unemployment":14.81},
+{"year":2002,"period":9,"employment":52.18,"unemployment":14.56},
+{"year":2002,"period":8,"employment":51.60,"unemployment":15.78},
+{"year":2002,"period":7,"employment":52.79,"unemployment":15.41},
+{"year":2002,"period":6,"employment":51.33,"unemployment":16.25},
+{"year":2002,"period":5,"employment":53.02,"unemployment":14.43},
+{"year":2002,"period":4,"employment":52.53,"unemployment":16.14},
+{"year":2002,"period":3,"employment":52.55,"unemployment":14.95},
+{"year":2002,"period":2,"employment":52.72,"unemployment":15.85},
+{"year":2002,"period":1,"employment":52.19,"unemployment":17.87},
+{"year":2001,"period":12,"employment":55.23,"unemployment":13.84},
+{"year":2001,"period":11,"employment":55.93,"unemployment":13.55},
+{"year":2001,"period":10,"employment":53.81,"unemployment":14.59},
+{"year":2001,"period":9,"employment":53.88,"unemployment":14.28},
+{"year":2001,"period":8,"employment":52.94,"unemployment":14.71},
+{"year":2001,"period":7,"employment":52.10,"unemployment":15.02},
+{"year":2001,"period":6,"employment":51.76,"unemployment":15.23},
+{"year":2001,"period":5,"employment":51.23,"unemployment":14.23},
+{"year":2001,"period":4,"employment":51.45,"unemployment":14.59},
+{"year":2001,"period":3,"employment":53.02,"unemployment":15.71},
+{"year":2001,"period":2,"employment":52.71,"unemployment":17.31},
+{"year":2001,"period":1,"employment":53.01,"unemployment":16.69}
+
+];
+
+var formatCount = d3.format(",.0f");
+
+var margin = {top: 10, right: 30, bottom: 30, left: 30},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+// FETCH DATA
+  d3.json('data.json', function (error, json) {
+    if (error) { throw error; }
+    data = json;
+    setup();
+    update();
+  });
+  function setup() {
+
+var x = d3.scaleLinear()
+    .rangeRound([0, width]);
+
+var bins = d3.histogram()
+    .domain(x.domain())
+    .thresholds(x.ticks(20))
+    (data);
+
+var y = d3.scaleLinear()
+    .domain([0, d3.max(bins, function(d) { return d.length; })])
+    .range([height, 0]);
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+var bar = svg.selectAll(".bar")
+    .data(bins)
+  .enter().append("g")
+    .attr("class", "bar")
+    .attr("transform", function(d) { return "translate(" + x(d.x0) + "," + y(d.length) + ")"; });
+
+bar.append("rect")
+    .attr("x", 1)
+    .attr("width", x(bins[0].x1) - x(bins[0].x0) - 1)
+    .attr("height", function(d) { return height - y(d.length); });
+
+bar.append("text")
+    .attr("dy", ".75em")
+    .attr("y", 6)
+    .attr("x", (x(bins[0].x1) - x(bins[0].x0)) / 2)
+    .attr("text-anchor", "middle")
+    .text(function(d) { return formatCount(d.length); });
+
+svg.append("g")
+    .attr("class", "axis axis--x")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(x));
+
+</script>
