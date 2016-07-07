@@ -135,14 +135,13 @@
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
       
     // SCALES
-      var xmin = d3.min(data, function (d) { return d.trade; });
+      var xmin = d3.min(data, function (d) { return d.trade; }) - 500;
       
       x = d3.scale.linear()
         .domain([xmin, -xmin])
         .range([0, width])
         .nice();
 
-//      console.log('xmin', xmin, -xmin);
     y = d3.scale.linear()
       .domain([0, d3.max(data, function (d) { return d.rate; })])    
       .range([height, 0])    
@@ -152,7 +151,6 @@
       var xAxis = d3.svg.axis()
       .scale(x)
       .tickSize(-height);
-//      .orient('bottom');    
       
       var yAxis = d3.svg.axis()
       .scale(y)
@@ -167,7 +165,7 @@
           .attr('x', width/2)
           .attr('y', 70)
           .style('text-anchor', 'middle')
-          .text('Trade Balance');      
+          .text('Trade Balance Between US and UK');      
       
       svg.append('g')
           .attr('class', 'y axis')
@@ -177,7 +175,7 @@
           .attr('y', -60)
           .attr('x', -height/2)      
           .style('text-anchor', 'middle')      
-          .text('Exchange Rate');           
+          .text('Exchange Rate, GBP/USD');           
       
       // GRID LINES
       
@@ -190,9 +188,10 @@
   
       // HISTOGRAM
       
-    var map = data.map(function(d) { return d.trade; })
-//    var xhist = d3.layout.histogram().bins(8)(map);
-    var xhist = d3.layout.histogram().bins(x.ticks())(map);      
+      // x hist
+      
+    var xmap = data.map(function(d) { return d.trade; })
+    var xhist = d3.layout.histogram().bins(x.ticks())(xmap);      
       
       console.log('hist', xhist);
       
@@ -202,9 +201,6 @@
         .append('g')
         .attr('class', 'bar')
         .attr('transform', function(d) { return 'translate(' + x(d.x) + ')'; });
-//        .attr('transform', function(d, i) { return 'translate(' + i*88 + ')'; });    
-
-    b = '';  
       
     bars.append('rect')
 //        .attr('x', function(d) { return x(d.x)/100 ;  })    
@@ -216,12 +212,31 @@
         .attr('height', function(d) { return d.y; });
 //        .attr('height', function(d) { return 20; });    
       
-    console.log('b', b);
+  
+      // y hist
       
-//    var bins = d3.histogram()
-//        .domain(x.domain())
-//        .thresholds(x.ticks(20))
-//        (data[4]);
+    var ymap = data.map(function(d) { return d.rate; })
+    var yhist = d3.layout.histogram().bins(y.ticks())(ymap);      
+      
+      console.log('rate', yhist);
+      
+    var bars = svg.selectAll('.bar')
+        .data(yhist)
+        .enter()
+        .append('g')
+        .attr('class', 'bar')
+//        .attr('transform', 'translate(0,50)')
+    .attr("transform", function(d, i) { return "translate(0," + i*20 + ")"; });      
+      
+    bars.append('rect')
+//        .attr('x', function(d) { return x(d.x)/100 ;  })    
+        .attr('x', 0)
+//        .attr('y', 2)
+        .attr('y', function(d) { return y(d.x); })
+        .attr('width', function(d) {return d.y; })
+//        .attr('width', 50)
+//        .attr('height', function(d, i) { return height-i*40; });
+        .attr('height', 30);  
 
             
     // EVENT HANDLERS
