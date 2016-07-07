@@ -174,16 +174,13 @@
     // SCALES
 
     x = d3.scale.log()
-          .base(2)
+          .base(1.5)
           .domain(d3.extent(data, function (d) { return d.democratContribution; }))
           .range([0, width])
           .nice();
 
-console.log(d3.extent(data, function (d) { return d.democratContribution; }));
-console.log(d3.extent(data, function (d) { return d.republicanContribution; }));
-
     y = d3.scale.log()
-          .base(2)
+          .base(1.5)
           .domain(d3.extent(data, function (d) { return d.republicanContribution; }))
           .range([height, 0])
           .nice();
@@ -289,6 +286,7 @@ console.log(d3.extent(data, function (d) { return d.republicanContribution; }));
    // x axis histogram
    bars.attr("transform", function(d, i) { return "translate(" + ( ((x(x.ticks()[i+1]) - (x(x.ticks()[i])))/2) + x(x.ticks()[i]) - (barWidth/2) )  + ",0)"; })
        .append("rect")
+       .attr("y", function (d) { return height -  histScale(d.y)})
        .attr("width", barWidth)
        .attr("height", function (d) { return histScale(d.y)});
 
