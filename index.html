@@ -261,7 +261,7 @@
 
     // HISTOGRAMS
 
-    var barWidth = x(x.ticks()[1])/5;
+    var barWidth = ( x(x.ticks()[1]) - x(x.ticks()[0]) )/5;
 
 
     var demContr = txData.map(function (i) {return i.democratContribution});
