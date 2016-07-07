@@ -263,7 +263,6 @@
 
     var barWidth = x(x.ticks()[1])/5;
 
-    console.log(barWidth);
 
     var demContr = txData.map(function (i) {return i.democratContribution});
 
@@ -279,12 +278,12 @@
     var bars = svg.selectAll(".bar")
                   .data(histogram)
                   .enter().append("g")
-                  .attr("class", "bar")
-                  .attr("transform", function(d, i) { return "translate(" + ( x(x.ticks()[i+1]) - (x(x.ticks()[1]))/2 - (barWidth/2) )  + ",0)"; });
+                  .attr("class", "bar");
+                  
 
-  console.log( x(x.ticks()[2]) - (x(x.ticks()[1]))/2 );
-  console.log(x(x.ticks()[1]));
-   bars.append("rect")
+   // x axis histogram
+   bars.attr("transform", function(d, i) { return "translate(" + ( ((x(x.ticks()[i+1]) - (x(x.ticks()[i])))/2) + x(x.ticks()[i]) - (barWidth/2) )  + ",0)"; })
+       .append("rect")
        .attr("width", barWidth)
        .attr("height", function (d) { return histScale(d.y)});
 
