@@ -144,7 +144,7 @@
     state: 'all'
   };
 
-  var svg, x , y;
+  var svg, x , y, histScale;
   var margin = { top: 15, right: 15, bottom: 40, left: 60 }
   var width = 840 - margin.left - margin.right;
   var height = 600 - margin.top - margin.bottom;
@@ -192,6 +192,8 @@
                   .tickSize(-height)
                   .orient("bottom")
                   .tickFormat(formatAxis);
+
+    console.log(xAxis);
 
     var yAxis = d3.svg.axis()
                   .scale(y)
@@ -259,26 +261,31 @@
                     points.exit().remove();
 
     // HISTOGRAMS
-    
+
     var demContr = txData.map(function (i) {return i.democratContribution});
 
     var histogram = d3.layout.histogram()
                              .bins(x.ticks())
                              (demContr);
 
-    console.log(histogram);
+    histScale = d3.scale.linear()
+                        .domain([0, d3.max(histogram, function (d) { return d.y; })])
+                        .range([0, height/5])
+                        .nice();
 
     var bars = svg.selectAll(".bar")
                   .data(histogram)
                   .enter().append("g")
                   .attr("class", "bar")
-                  .attr("transform", "translate(0," + (height) + ")");
+                  //.attr("transform", function(d) { return "translate(" + x(d.x0) + "," + y(d.length) + ")"; });
+
+  console.log(histogram);
 
    bars.append("rect")
        .attr("x", 0)
        .attr("y", 0)
        .attr("width", 25)
-       .attr("height", function (d) { return -d.y});
+       .attr("height", function (d) { return histScale(d.y)});
 
   
 
