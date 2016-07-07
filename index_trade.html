@@ -201,19 +201,22 @@
         .enter()
         .append('g')
         .attr('class', 'bar')
-//        .attr('transform', function(d, i) { return 'translate(' + x(d.dx) + ')'; });
-        .attr('transform', function(d, i) { return 'translate(' + i*88 + ')'; });    
+        .attr('transform', function(d) { return 'translate(' + x(d.x) + ')'; });
+//        .attr('transform', function(d, i) { return 'translate(' + i*88 + ')'; });    
+
+    b = '';  
       
     bars.append('rect')
-//        .attr("x", function(d, i) { return i * 90 })    
+//        .attr('x', function(d) { return x(d.x)/100 ;  })    
+        .attr('x', 17)
 //        .attr('y', height)
         .attr('y', function(d) { return height-(d.y); })
-//        .attr('width', function(d) {return x(d.dx) + 'px'; })
-        .attr('width', 50)    
+        .attr('width', function(d) {return x(d.dx)/10; })
+//        .attr('width', 50)
         .attr('height', function(d) { return d.y; });
 //        .attr('height', function(d) { return 20; });    
       
-
+    console.log('b', b);
       
 //    var bins = d3.histogram()
 //        .domain(x.domain())
