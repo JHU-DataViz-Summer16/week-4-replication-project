@@ -46,10 +46,13 @@
       fill: rgba(51, 122, 183, .5);
       opacity: .5;
     }
-
    
     .point.filtered {
       opacity: .05;
+    }
+
+    .MgtProfRelated {
+      fill: rgba(98, 54, 164, .5);
     }
 
     .bar {
@@ -65,6 +68,14 @@
       stroke-width: 2;
     }
 
+    .tooltip {
+      padding: .5em 1em;
+      background: rgba(0,0,0,.75);
+      color: white;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1;
+    }
 
   </style>
 </head>
@@ -98,6 +109,7 @@
 <script type="text/javascript" src="https://npmcdn.com/d3@3.5.17/d3.min.js"></script>
 <script type="text/javascript" src="https://npmcdn.com/science@1.9.3/science.v1.min.js"></script>
 <script type="text/javascript" src="https://npmcdn.com/simple-statistics@2.0.0/dist/simple-statistics.min.js"></script>
+<script type="text/javascript" src="https://npmcdn.com/d3-tip@0.6.7/index.js"></script>
 <script>
   var data = [];
   var options = {
@@ -211,7 +223,16 @@
 
       gy.selectAll("text")
           .attr("x", -35);
+
+
     
+      chart.tooltip = d3.tip()
+        .attr('class', 'tooltip')
+        .offset([-6,0])
+        .html(function (d) {return d.length + ' Occupations'; });
+
+      chart.svg.call(chart.tooltip);
+
       chart.update()
   }
 
@@ -235,13 +256,13 @@
       .data(txData)
 
       points.enter().append('circle')
-      .attr('class', 'point')
-      .attr('r', 5)
+      .attr('class','point')
+//      .attr('class', function(d) { return d.SuperGroup;})
+      .attr('r', 5);
 
       points
       .attr('cx', function(d) { return x(d[chart.columnX]); })
-      .attr('cy',  function(d) { return y(d[chart.columnY]); })
-
+      .attr('cy',  function(d) { return y(d[chart.columnY]); });
 
       points.exit().remove();
 
@@ -267,6 +288,8 @@
       .attr('x', function (d) {return x(d.x)+barWidth/2;})
       .attr('height', 0)
       .attr('y', height)
+      .on('mouseover', chart.tooltip.show)
+      .on('mouseout', chart.tooltip.hide);
 
     bars
       .transition().duration(150).delay(function(d,i) {return i*50;})
