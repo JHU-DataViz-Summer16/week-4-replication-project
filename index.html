@@ -224,12 +224,17 @@
       gy.selectAll("text")
           .attr("x", -35);
 
+      chart.tooltip2 = d3.tip()
+        .attr('class', 'tooltip')
+        .html(function (d) {return d.SOCName; });
+//        .html(function (d) {return d.SOCName + "<br> Earn " + d.MedEarn; });
 
+      chart.svg.call(chart.tooltip2);
     
       chart.tooltip = d3.tip()
         .attr('class', 'tooltip')
         .offset([-6,0])
-        .html(function (d) {return d.length + ' Occupations'; });
+        .html(function (d) {return d.length + ' Occupations' ; });
 
       chart.svg.call(chart.tooltip);
 
@@ -258,7 +263,9 @@
       points.enter().append('circle')
       .attr('class','point')
 //      .attr('class', function(d) { return d.SuperGroup;})
-      .attr('r', 5);
+      .attr('r', 5)
+      .on('mouseover', chart.tooltip2.show)
+      .on('mouseout', chart.tooltip2.hide);
 
       points
       .attr('cx', function(d) { return x(d[chart.columnX]); })
@@ -297,7 +304,7 @@
       .attr('y', function (d) {return height - yHist(d.length); });
 
 
-    // REGRESSION LINE
+    // LINE for Total Median Weekly Earnings of $803
   }
 </script>
 </body>
