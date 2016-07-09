@@ -56,6 +56,10 @@
       fill: rgb(51, 122, 183);
     }
 
+    .bar:hover {
+      fill: #135a97;
+    }
+
     .line {
       stroke: rgb(175, 80, 75);
       stroke-width: 2;
@@ -100,8 +104,6 @@
     SOCGroup: 'all'
   };
 
-  var svg, x, y;
-
   var margin = { top: 15, right: 35, bottom: 30, left: 55};
 
   var width=640 - margin.right - margin.left;
@@ -116,14 +118,25 @@
 
     data=json;
 
-    setup();
-    update();
+    var chart = new Chart('#chart','WF_Female','MedEarn');
+
+    // EVENT HANDLERS
+
+    d3.select('#SOC-group').on('change', function () {
+      options.SOCGroup = d3.event.target.value;
+    });
   });
 
-  function setup() {
+
+  function Chart(selector,columnX,columnY) {
+    var chart = this;
+
+    chart.columnX = columnX;
+    chart.columnY = columnY;
+
     // SVG
 
-    svg = d3.select('#chart')
+    chart.svg = d3.select(selector)
       .append('svg')
       .attr('width', width + margin.right + margin.left)
       .attr('height', height + margin.top + margin.bottom)
@@ -133,12 +146,12 @@
     // SCALES, domain min to max (which ends up at width)
 
     x = d3.scale.linear()
-      .domain([0, d3.max(data, function (d) {return d.WF_Female;})])
+      .domain([0, d3.max(data, function (d) {return d[chart.columnX];})])
       .range([0, width])
       .nice();
 
     y = d3.scale.linear()
-      .domain(d3.extent(data, function (d) {return d.MedEarn; }))
+      .domain(d3.extent(data, function (d) {return d[chart.columnY]; }))
       .range([height, 0])
       .nice();
     
@@ -152,7 +165,7 @@
                   .tickSize(height)
                   .orient("bottom");
 
-    svg.append("g")
+    chart.svg.append("g")
       .append("text")
         .attr("x", width/2)
         .attr("y", height+margin.top)
@@ -160,7 +173,7 @@
         .style("text-anchor", "middle")
         .text("Percent of Workers that are Women");
 
-      var gx = svg.append("g")
+      var gx = chart.svg.append("g")
           .attr("class", "x axis")
           .call(xAxis);
 
@@ -177,7 +190,7 @@
                       .orient("right")
                       .ticks(4);
 
-    svg.append("g")
+    chart.svg.append("g")
       .append("text")
         .attr("transform", "rotate(-90)")
         .attr("x", -1*(height/2))
@@ -186,7 +199,7 @@
         .style("text-anchor", "middle")
         .text("Median Weekly Earnings");
 
-      var gy = svg.append("g")
+      var gy = chart.svg.append("g")
           .attr("class", "y axis")
           .call(yAxis);
 
@@ -196,15 +209,12 @@
       gy.selectAll("text")
           .attr("x", -35);
     
-    // EVENT HANDLERS
-
-    d3.select('#SOC-group').on('change', function () {
-      options.SOCGroup = d3.event.target.value;
-      update();
-    });
+      chart.update()
   }
 
-  function update() {
+  Chart.prototype.update = function () {
+    var chart = this;
+
     // TRANSFORM
     txData = data.slice();
 
@@ -218,7 +228,7 @@
 
     // SCATTERPLOT
 
-    var points=svg.selectAll('.point')
+    var points=chart.svg.selectAll('.point')
       .data(txData)
 
       points.enter().append('circle')
@@ -226,8 +236,8 @@
       .attr('r', 5)
 
       points
-      .attr('cx', function(d) { return x(d.WF_Female); })
-      .attr('cy',  function(d) { return y(d.MedEarn); })
+      .attr('cx', function(d) { return x(d[chart.columnX]); })
+      .attr('cy',  function(d) { return y(d[chart.columnY]); })
 
 
       points.exit().remove();
@@ -236,14 +246,14 @@
     // HISTOGRAMS
     var hist = d3.layout.histogram()
                       .bins(x.ticks(binCount))
-                      .value(function (d) {return d.WF_Female})
+                      .value(function (d) {return d[chart.columnX]})
                       (txData);
 
     var yHist = d3.scale.linear()
       .domain([0,d3.max(hist, function(d) {return d.length;})])
       .range([0, height/10]);
 
-    var bars = svg.selectAll(".bar")
+    var bars = chart.svg.selectAll(".bar")
                   .data(hist);
 
     var barWidth = x(hist[0].dx)/2; 
