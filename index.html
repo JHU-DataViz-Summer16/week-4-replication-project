@@ -56,9 +56,13 @@
     .point.filtered {
       opacity: .05;
     }
-    .bar {
-      fill: rgb(51, 122, 183);
+    .barX {
       opacity: .5;
+      fill: #B1E001;
+    }
+    .barY {
+      opacity: .5;
+      fill: #B1E001;
     }
     .line {
       stroke: rgb(175, 80, 75);
@@ -124,7 +128,7 @@
     // SCALES
     x = d3.scale.linear()
       .domain([d3.min(data,function (d){ return d.cfScore;}), d3.max(data, function (d){ return d.cfScore; } ) ])
-        .range([margin.left,(margin.left + width)])
+        .range([margin.left,width])
         .nice();
 
     y = d3.scale.linear()
@@ -159,7 +163,8 @@
         .text("District Partisanship");
     svg.append("text")
         .attr("text-anchor", "middle")
-        .attr("transform", "translate("+ (width/2) +","+(height + margin.top + (margin.bottom/2))+")")
+        .attr("transform", "translate("+ (width/2) +","+ height +")")
+        .attr('dy', '.71em')
         .text("Candidate CF Score");
     
     // EVENT HANDLERS
@@ -200,40 +205,71 @@
     // X-HIST
  
     var dataHistX = d3.layout.histogram()
-    .bins(x.ticks())
-    .value(function (d) {return d.cfScore} )
-    (txData);
+      .bins(x.ticks())
+      .value(function (d) {return d.cfScore} )
+      (txData);
 
     var histy = d3.scale.linear()
       .domain([0, d3.max(dataHistX, function (d){ return d.y; } ) ])
-      .range(d3.extent(data, function (d){ return d.distPart; } ));
+      .range([ y.ticks()[0] , y.ticks()[1]]);
 
     var histx = d3.scale.linear()
-      .domain([0,10])
+      .domain([0,11]) // needs to be updated to be dynamic
       .range([0,width]);
 
-    // var ymax = d3.max(dataHistX, function (i) {return i.y});
+    var barWidthX = (histx(dataHistX[0].dx)+1)/2 ;
 
-    // var vert = d3.scale.linear()
-    //   .domain( [0, ymax] )
-    //   .range([ y.ticks()[0] , y.ticks()[1]]);
+    var barX = svg.selectAll(".barX")
+      .data(dataHistX);
 
-    var barWidth = histx(dataHistX[0].dx) ;
+    barX.enter().append("g")
+      .append("rect")
+      .attr("class", "barX")
+      .attr("x", function (d) { return x(d.x) + barWidthX/2; })
+      .attr("width", barWidthX);
 
-    var bar = svg.selectAll(".bar")
-        .data(dataHistX)
-      .enter().append("g")
-        .attr("class", "bar");
-        // .attr("transform","translate(0," + margin.top + ")");
-
-    bar.append("rect")
-      .attr("x", function (d) { return x(d.x); })
-      .attr("width", barWidth)
+    barX
+      .transition()
       .attr("y", function (d) { return y(histy(d.y)); })
-      .attr("height", function (d) { return height - margin.top - y(histy(d.y)) ; });
-  
+      .attr("height", function (d) { return height - margin.top - y(histy(d.y)) ; })
 
-    // REGRESSION LINE
+    // X-HIST
+
+    var dataHistY = d3.layout.histogram()
+      .bins(y.ticks())
+      .value(function (d) {return d.distPart} )
+      (txData);
+
+    console.log(dataHistY)
+
+    var histx2 = d3.scale.linear()
+      .domain([0, d3.max(dataHistY, function (d){ return d.y; } ) ])
+      .range([ x.ticks()[0] , x.ticks()[1]]);
+
+console.log(x.ticks()[0])
+
+    var histy2 = d3.scale.linear()
+      .domain([0,4.5]) // needs to be updated to be dynamic
+      .range([0,height]);
+
+    var barWidthY = histy2(dataHistY[0].dx);
+
+    var barY = svg.selectAll(".barY")
+      .data(dataHistY);
+
+    barY.enter().append("g")
+      .append("rect")
+      .attr("class", "barY")
+      .attr("y", function (d) { return y(d.x) - (.75*barWidthY); })
+      .attr("height", function (d) { return barWidthY/2});
+
+    barY
+      .transition()
+      .attr("x", margin.left)
+      .attr("width", function (d) {return x(histx2(d.y))-margin.left });
+
+
+    // // REGRESSION LINE
   }
 
 </script>
