@@ -116,7 +116,7 @@
     SOCGroup: 'all'
   };
 
-  var margin = { top: 15, right: 35, bottom: 30, left: 55};
+  var margin = { top: 15, right: 85, bottom: 30, left: 55};
 
   var width=640 - margin.right - margin.left;
   var height=400 - margin.top - margin.bottom;
@@ -160,12 +160,12 @@
 
     // SCALES, domain min to max (which ends up at width)
 
-    x = d3.scale.linear()
+    chart.x = d3.scale.linear()
       .domain([0, d3.max(data, function (d) {return d[chart.columnX];})])
       .range([0, width])
       .nice();
 
-    y = d3.scale.linear()
+    chart.y = d3.scale.linear()
       .domain(d3.extent(data, function (d) {return d[chart.columnY]; }))
       .range([height, 0])
       .nice();
@@ -174,7 +174,7 @@
     var formatAsPercentage = d3.format(".0%");
 
     var xAxis = d3.svg.axis()
-                  .scale(x)
+                  .scale(chart.x)
                   .ticks(binCount)
                   .tickFormat(formatAsPercentage)
                   .tickSize(height)
@@ -199,7 +199,7 @@
     var formatAsDollars = d3.format("$1,000")
 
     var yAxis = d3.svg.axis()
-                      .scale(y)
+                      .scale(chart.y)
                       .tickFormat(formatAsDollars)
                       .tickSize(width)
                       .orient("right")
@@ -238,6 +238,22 @@
 
       chart.svg.call(chart.tooltip);
 
+     chart.svg.append("g")
+        .append("text")
+        .attr("x", width+5)
+        .attr("y", chart.y(870))
+        .attr("dy", ".71em")
+        .style("text-anchor", "start")
+        .text("Total Median");
+
+     chart.svg.append("g")
+        .append("text")
+        .attr("x", width+5)
+        .attr("y", chart.y(770))
+        .attr("dy", ".71em")
+        .style("text-anchor", "start")
+        .text("Earnings"); 
+
       chart.update()
   }
 
@@ -268,15 +284,15 @@
       .on('mouseout', chart.tooltip2.hide);
 
       points
-      .attr('cx', function(d) { return x(d[chart.columnX]); })
-      .attr('cy',  function(d) { return y(d[chart.columnY]); });
+      .attr('cx', function(d) { return chart.x(d[chart.columnX]); })
+      .attr('cy',  function(d) { return chart.y(d[chart.columnY]); });
 
       points.exit().remove();
 
 
     // HISTOGRAMS
     var hist = d3.layout.histogram()
-                      .bins(x.ticks(binCount))
+                      .bins(chart.x.ticks(binCount))
                       .value(function (d) {return d[chart.columnX]})
                       (txData);
 
@@ -287,12 +303,12 @@
     var bars = chart.svg.selectAll(".bar")
                   .data(hist);
 
-    var barWidth = x(hist[0].dx)/2; 
+    var barWidth = chart.x(hist[0].dx)/2; 
 
     bars.enter().append('rect')
       .attr('class', 'bar')
       .attr('width', barWidth)
-      .attr('x', function (d) {return x(d.x)+barWidth/2;})
+      .attr('x', function (d) {return chart.x(d.x)+barWidth/2;})
       .attr('height', 0)
       .attr('y', height)
       .on('mouseover', chart.tooltip.show)
@@ -305,6 +321,14 @@
 
 
     // LINE for Total Median Weekly Earnings of $803
+      var line = chart.svg.append('line')
+                    .attr('x1',0)
+                    .attr('y1',chart.y(803))
+                    .attr('x2',width)
+                    .attr('y2',chart.y(803))
+                    .attr('stroke-width',2)
+                    .attr('stroke','black');                   
+
   }
 </script>
 </body>
