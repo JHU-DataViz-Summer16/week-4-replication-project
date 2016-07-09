@@ -123,17 +123,15 @@
    
     // SCALES
     x = d3.scale.linear()
-      .domain([d3.min(data,function (d){ return d.cfScore;}), Math.ceil(d3.max(data, function (d){ return d.cfScore; } )) ])
+      .domain([d3.min(data,function (d){ return d.cfScore;}), d3.max(data, function (d){ return d.cfScore; } ) ])
         .range([margin.left,(margin.left + width)])
         .nice();
-
-console.log(Math.ceil(d3.max(data, function (d){ return d.cfScore; } )))
 
     y = d3.scale.linear()
       .domain(d3.extent(data, function (d){ return d.distPart; } ))
       .range([(height-margin.top),0])
       .nice();    
-   
+
     // AXES
     var xAxis = d3.svg.axis()
       .scale(x)
@@ -143,6 +141,7 @@ console.log(Math.ceil(d3.max(data, function (d){ return d.cfScore; } )))
       .scale(y)
       .tickSize(-width)
       .orient("left");
+
     svg.append("g")
       .classed("x axis", true)
       .attr("transform", "translate(0," + (height-margin.top) + ")")
@@ -162,6 +161,7 @@ console.log(Math.ceil(d3.max(data, function (d){ return d.cfScore; } )))
         .attr("text-anchor", "middle")
         .attr("transform", "translate("+ (width/2) +","+(height + margin.top + (margin.bottom/2))+")")
         .text("Candidate CF Score");
+    
     // EVENT HANDLERS
     d3.select('#party').on('change', function () {
       options.party = d3.event.target.value;
@@ -169,6 +169,7 @@ console.log(Math.ceil(d3.max(data, function (d){ return d.cfScore; } )))
     });
   }
   function update() {
+    
     // TRANSFORM
     txData = data.slice();
     if (options.party !== 'all') {
@@ -177,6 +178,7 @@ console.log(Math.ceil(d3.max(data, function (d){ return d.cfScore; } )))
         return d.party === party;
       });
     }
+    
     // SCATTERPLOT
     var points = svg.selectAll('.point')
       .data(txData);
@@ -197,16 +199,26 @@ console.log(Math.ceil(d3.max(data, function (d){ return d.cfScore; } )))
     // HISTOGRAMS
     // X-HIST
  
-    var xdata = data.map(function(d) { return d.cfScore; });
     var dataHistX = d3.layout.histogram()
     .bins(x.ticks())
-    (xdata);
+    .value(function (d) {return d.cfScore} )
+    (txData);
 
-    var ymax = d3.max(dataHistX, function (i) {return i.y});
+    var histy = d3.scale.linear()
+      .domain([0, d3.max(dataHistX, function (d){ return d.y; } ) ])
+      .range(d3.extent(data, function (d){ return d.distPart; } ));
 
-    var vert = d3.scale.linear()
-      .domain( [0, ymax] )
-      .range([ y.ticks()[0] , y.ticks()[1]]);
+    var histx = d3.scale.linear()
+      .domain([0,10])
+      .range([0,width]);
+
+    // var ymax = d3.max(dataHistX, function (i) {return i.y});
+
+    // var vert = d3.scale.linear()
+    //   .domain( [0, ymax] )
+    //   .range([ y.ticks()[0] , y.ticks()[1]]);
+
+    var barWidth = histx(dataHistX[0].dx) ;
 
     var bar = svg.selectAll(".bar")
         .data(dataHistX)
@@ -216,13 +228,9 @@ console.log(Math.ceil(d3.max(data, function (d){ return d.cfScore; } )))
 
     bar.append("rect")
       .attr("x", function (d) { return x(d.x); })
-      .attr("y", function (d) { return y(vert(d.y)); })
-      .attr("width", width/(x.ticks().length ))
-      .attr("height", function (d) { return d.y; });
-
-      // .attr("height", function (d) { return y(vert(d.y)); })
-    console.log(dataHistX)
-
+      .attr("width", barWidth)
+      .attr("y", function (d) { return y(histy(d.y)); })
+      .attr("height", function (d) { return height - margin.top - y(histy(d.y)) ; });
   
 
     // REGRESSION LINE
