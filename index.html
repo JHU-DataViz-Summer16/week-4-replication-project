@@ -118,12 +118,15 @@
 
     data=json;
 
-    var chart = new Chart('#chart','WF_Female','MedEarn');
+    var charts = [
+    new Chart('#chart','WF_Female','MedEarn')
+    ];
 
     // EVENT HANDLERS
 
     d3.select('#SOC-group').on('change', function () {
       options.SOCGroup = d3.event.target.value;
+      charts.forEach(function (d) {d.update(); }); 
     });
   });
 
