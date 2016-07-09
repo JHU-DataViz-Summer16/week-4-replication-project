@@ -107,6 +107,8 @@
   var width=640 - margin.right - margin.left;
   var height=400 - margin.top - margin.bottom;
 
+  var binCount = 10;
+
   // FETCH DATA
 
   d3.json('data.json', function(error, json){
@@ -145,6 +147,7 @@
 
     var xAxis = d3.svg.axis()
                   .scale(x)
+                  .ticks(binCount)
                   .tickFormat(formatAsPercentage)
                   .tickSize(height)
                   .orient("bottom");
@@ -231,35 +234,31 @@
 
 
     // HISTOGRAMS
-    var map = data.map(function(d){return d.WF_Female;})
-
-    var histogram = d3.layout.histogram()
-                      .bins(x.ticks())(map);
-
-    var bars = svg.selectAll(".bar")
-                  .data(histogram)
-                  .enter();
-
-   console.log(bars)
-    console.log(bars[0])
-
-     //console.log(d3.extent(bars, function(d) {return d[bars.length]}))
+    var hist = d3.layout.histogram()
+                      .bins(x.ticks(binCount))
+                      .value(function (d) {return d.WF_Female})
+                      (txData);
 
     var yHist = d3.scale.linear()
-      .domain([0,d3.max(bars, function(d) {return d.length})])
-      .range([height, 0])
-      .nice();
+      .domain([0,d3.max(hist, function(d) {return d.length;})])
+      .range([0, height/10]);
 
-    console.log(yHist(51))
+    var bars = svg.selectAll(".bar")
+                  .data(hist);
 
+    var barWidth = x(hist[0].dx)/2; 
 
-    bars.append("rect")
-      .attr("width", function(d) { return x(d.dx)/2; })
-      .attr("x", function(d) { return x(d.x)+10; })
-      .attr("y", function(d) { return height-(d.y); })
-      .attr("height", function(d) { return (d.y); })
+    bars.enter().append('rect')
       .attr('class', 'bar')
-      .order();
+      .attr('width', barWidth)
+      .attr('x', function (d) {return x(d.x)+barWidth/2;})
+      .attr('height', 0)
+      .attr('y', height)
+
+    bars
+      .transition().duration(150).delay(function(d,i) {return i*50;})
+      .attr('height', function (d) {return yHist(d.length); })
+      .attr('y', function (d) {return height - yHist(d.length); });
 
 
     // REGRESSION LINE
