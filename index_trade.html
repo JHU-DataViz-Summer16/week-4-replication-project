@@ -66,7 +66,12 @@
     .bar rect {
       fill: steelblue;
     }     
-        
+       
+    .ybar rect {
+      fill: red;
+    }     
+             
+      
   </style>
 </head>
 <body>
@@ -104,14 +109,16 @@
 <script type='text/javascript' src='https://npmcdn.com/simple-statistics@2.0.0/dist/simple-statistics.min.js'></script>
 <script>
   var data = [];
-    var tdata = [];
+
   var options = {
     yearRange: 'all'
   };
+    
   var svg, x, y;
   var margin = { top: 15, right: 55, bottom: 100, left: 70  };
   var width = 800 - margin.right - margin.left;
   var height = 600 - margin.top - margin.bottom;
+    var binCount = 10;
     
   // FETCH DATA
   d3.json('data-exch.json', function (error, json) {
@@ -182,7 +189,72 @@
       
       ygrid.selectAll('g').filter(function(d) { return d; })
         .classed('minor', true);
-       
+
+      // HISTOGRAM
+      
+      // x hist
+      
+    var xmap = data.map(function(d) { return d.trade; })
+    var xhist = d3.layout.histogram().bins(x.ticks())(xmap);   
+      
+//      var xhist = d3.layout.histogram()
+//      .value( function(d) { return d.trade; } )
+//      .bins(x.ticks(binCount));
+//      (txData);
+      
+      console.log('hist', xhist);
+      
+      bwidth = x(x.ticks()[1])/2;
+      
+/*    var xbars = svg.selectAll('.bar')
+        .data(xhist)
+        .enter()
+        .append('g')
+        .attr('class', 'bar')
+        .attr('transform', function(d, i) { return 'translate(' +  
+              ( x(x.ticks()[i+1]) - (x(x.ticks()[1]))/2 - (bwidth/2) ) + ')'; });
+          
+    xbars.append('rect')
+        .attr('x', 0)
+        .attr('y', function(d) { return height-(d.y); })
+        .attr('width', bwidth)
+        .attr('height', function(d) { return d.y; }); */
+  
+    var xbars = svg.selectAll('.bar')
+        .data(xhist);
+      
+      xbars.enter()
+        .append('rect')
+        .attr('class', 'bar')
+        .attr('transform', function(d, i) { return 'translate(' +  
+              ( x(x.ticks()[i+1]) - (x(x.ticks()[1]))/2 - (bwidth/2) ) + ')'; })
+          
+        .attr('x', 0)
+        .attr('y', function(d) { return height-(d.y); })
+        .attr('width', bwidth)
+        .attr('height', function(d) { return d.y; });       
+      
+      // y hist
+      
+    var ymap = data.map(function(d) { return d.rate; })
+    var yhist = d3.layout.histogram().bins(y.ticks())(ymap);      
+      
+      console.log('rate', yhist.reverse());
+      
+    var ybars = svg.selectAll('.ybar')
+        .data(yhist.reverse())
+        .enter()
+        .append('g')
+        .attr('class', 'ybar')
+    .attr("transform", function(d) { return 'translate(0,' + y(d.x) + ')'; });      
+//    .attr("transform", function(d, i) { return 'translate(0,' + (y(d.x)) + ')'; });            
+      
+    ybars.append('rect')
+        .attr('x', 0)
+        .attr('y', function(d) { return y(d.x); })
+        .attr('width', function(d) {return d.y; })
+        .attr('height', 30);        
+      
     // EVENT HANDLERS
     d3.select('#year-range').on('change', function () {
       options.yearRange = d3.event.target.value;
@@ -202,58 +274,18 @@
     // SCATTERPLOT
     var points = svg.selectAll('.point')
       .data(txData);
+      
     points.enter().append('circle')
       .attr('class', 'point')
       .attr('r', 5);
+      
     points
       .attr('cx', function (d) { return x(d.trade); })
       .attr('cy', function (d) { return y(d.rate); });
+      
     points.exit().remove();
 
-      // HISTOGRAM
-      
-      // x hist
-      
-    var xmap = data.map(function(d) { return d.trade; })
-    var xhist = d3.layout.histogram().bins(x.ticks())(xmap);      
-      
-      console.log('hist', xhist);
-      
-      bwidth = x(x.ticks()[1])/2;
-      
-    var bars = svg.selectAll('.bar')
-        .data(xhist)
-        .enter()
-        .append('g')
-        .attr('class', 'bar')
-        .attr('transform', function(d, i) { return 'translate(' +  
-              ( x(x.ticks()[i+1]) - (x(x.ticks()[1]))/2 - (bwidth/2) ) + ')'; });
-          
-    bars.append('rect')
-        .attr('x', 0)
-        .attr('y', function(d) { return height-(d.y); })
-        .attr('width', bwidth)
-        .attr('height', function(d) { return d.y; }); 
-  
-      // y hist
-      
-    var ymap = data.map(function(d) { return d.rate; })
-    var yhist = d3.layout.histogram().bins(y.ticks())(ymap);      
-      
-      console.log('rate', yhist);
-      
-    var bars = svg.selectAll('.bar')
-        .data(yhist)
-        .enter()
-        .append('g')
-        .attr('class', 'bar')
-    .attr("transform", function(d, i) { return 'translate(0,' + y(d.x) + ')'; });      
-      
-    bars.append('rect')
-        .attr('x', 0)
-        .attr('y', function(d) { return y(d.x); })
-        .attr('width', function(d) {return d.y; })
-        .attr('height', 30);        
+
       
     // REGRESSION LINE
   }
