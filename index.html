@@ -102,9 +102,9 @@
 
   var svg, x, y;
 
-  var margin = { top: 15, right: 15, bottom: 30, left: 80 };
+  var margin = { top: 15, right: 15, bottom: 30, left: 90 };
 
-  var width = 700 - margin.right - margin.left;
+  var width = 900 - margin.right - margin.left;
   var height = 500 - margin.top - margin.bottom;
 
   // FETCH DATA
@@ -146,6 +146,9 @@
     // format x axis
     var formatyears = d3.format("1000")
 
+    // format y axis
+    var formatmoney = d3.format("$1,000,000,000")
+
     //Define X axis
    
     var xAxis = d3.svg.axis()
@@ -159,7 +162,8 @@
     var yAxis = d3.svg.axis()
              .scale(y)
              .orient("left")
-             .ticks(5);
+             .ticks(5)
+             .tickFormat(formatmoney);
 
     
     //Create X axis
