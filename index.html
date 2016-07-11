@@ -155,6 +155,9 @@
              .orient("left")
              .ticks(5);
 
+    svg.append("g")
+        .call(xAxis);
+
     // EVENT HANDLERS
 
     d3.select('#location').on('change', function () {
