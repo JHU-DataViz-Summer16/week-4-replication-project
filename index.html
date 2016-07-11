@@ -143,11 +143,17 @@
     
     // AXES
 
+    // format x axis
+    var formatyears = d3.format("1000")
+
     //Define X axis
+   
     var xAxis = d3.svg.axis()
              .scale(x)
              .orient("bottom")
-             .ticks(5);
+             .ticks(20)
+             .tickFormat(formatyears);
+
 
     //Define Y axis
     var yAxis = d3.svg.axis()
