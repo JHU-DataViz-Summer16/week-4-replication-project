@@ -194,12 +194,21 @@
       .style("text-anchor", "end")
       .text("Inventive Value") 
 
+
+    //attempt at grid lines
     var gy = svg.append("g")
       .attr("class", "y axis")
       .call(yAxis);
 
     gy.selectAll("g").filter(function(d) { return d; })
       .classed("minor", true);
+
+    var gx = svg.append("g")
+      .attr("class", "x axis")
+      .call(xAxis);
+      
+    gx.select('g').filter(function(d) { return d; })
+        .classed("minor", true);
 
       // EVENT HANDLERS
 
