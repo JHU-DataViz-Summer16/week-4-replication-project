@@ -190,12 +190,4 @@
 {"location":"United States","year":2000,"value":4000000,"type":"federal grant","source":"federal"},
 {"location":"United States","year":2002,"value":4000000,"type":"federal grant","source":"federal"},
 {"location":"United States","year":2003,"value":4000000,"type":"federal grant","source":"federal"},
-{"location":"Missouri","year":2014,"value":4850000,"type":"training reimbursement","source":"state"},
-{"location":"Florida","year":2011,"value":6640000,"type":"grant/low-cost loan","source":"state"},
-{"location":"Missouri","year":2000,"value":8367275,"type":"tax credit/rebate","source":"state"},
-{"location":"Washington","year":2014,"value":19586512,"type":"tax credit/rebate","source":"state"},
-{"location":"Oklahoma","year":2015,"value":91755076,"type":"MEGADEAL","source":"state"},
-{"location":"South Carolina","year":2013,"value":120000000,"type":"MEGADEAL","source":"state"},
-{"location":"Missouri","year":2014,"value":229000000,"type":"MEGADEAL","source":"state"},
-{"location":"Washington","year":2003,"value":3244000000,"type":"MEGADEAL","source":"state"},
-{"location":"Washington","year":2013,"value":8700000000,"type":"MEGADEAL","source":"state"}]
+{"location":"Missouri","year":2014,"value":4850000,"type":"training reimbursement","source":"state"}]
