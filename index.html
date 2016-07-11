@@ -159,8 +159,15 @@
     //Create X axis
     svg.append("g")
         .attr("class", "axis")
-        .attr("transform", "translate(0," + (height) + ")")
+        .attr("transform", "translate(0," + height + ")")
         .call(xAxis);
+
+    //Create y axis
+    svg.append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(" + width + ",0)")
+        .call(yAxis);
+
 
       // EVENT HANDLERS
 
