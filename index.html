@@ -194,6 +194,13 @@
       .style("text-anchor", "end")
       .text("Inventive Value") 
 
+    var gy = svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis);
+
+    gy.selectAll("g").filter(function(d) { return d; })
+      .classed("minor", true);
+
       // EVENT HANDLERS
 
     d3.select('#location').on('change', function () {
