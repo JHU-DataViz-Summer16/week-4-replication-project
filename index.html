@@ -118,7 +118,7 @@
 
   var svg, x, y;
 
-  var margin = {top:15, right:15, bottom:120, left:120}
+  var margin = {top:15, right:15, bottom:120, left:100}
     padding = {top: 40, right: 100, bottom: 30, left:150};
 
 
@@ -151,7 +151,7 @@ console.log()
     // SCALES
     
     x = d3.scale.linear()
-      .domain([0,d3.max(data, function(d){return d.Percent_Total_Contract;})])
+      .domain([0,d3.max(data, function(d){return d.Percent_Total_Revenue;})])
       .range([0,width])
       .nice();
     
@@ -172,7 +172,7 @@ console.log()
 
   var gx = svg.append('g')
     .attr("class", "axis")
-    .attr("transform", "translate(0," + (506) + ")")
+    .attr("transform", "translate(0," + (505) + ")")
     .call(xAxis);
   
   gx.selectAll("g").filter(function(d) { return d;})
@@ -180,13 +180,13 @@ console.log()
  
   gx.selectAll("text")
     .attr('x', 0)
-    .attr('y', 50)
+    .attr('y', 47)
   
   gx.append("text")
     .attr('x', 70)
     .attr('y', 30)
     .style("text-anchor", "bottom")
-    .text("Percent of Contract Spend");
+    .text("Contract Spend (in % Contribution)");
 
   var yAxis = d3.svg.axis()
     .scale(y)
@@ -207,7 +207,7 @@ console.log()
  
   gy.append("text")
     .attr("y", -7)
-    .attr("x", -45)
+    .attr("x", -50)
     .style("text-anchor", "middle")
     .text("Contract Revenue");
 
@@ -239,7 +239,7 @@ console.log()
     .attr('class','point')
     .attr('r', 5);
     points
-    .attr('cx', function(d) {return x(d. Percent_Total_Contrac);})
+    .attr('cx', function(d) {return x(d. Percent_Total_Revenue);})
     .attr('cy', function(d) {return y(d. Annual_Contract_Revenue);});
    
     points.exit().remove();
