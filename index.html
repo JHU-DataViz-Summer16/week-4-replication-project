@@ -171,6 +171,11 @@
         .attr("class", "axis")
         .attr("transform", "translate(0," + height + ")")
         .call(xAxis);
+        .append("text")
+        .attr("x", 450)
+        .attr("y", 45)
+        .style("text-anchor", "end")
+        .text("Year");
 
     //Create y axis
     svg.append("g")
