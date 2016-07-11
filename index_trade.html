@@ -204,22 +204,9 @@
       
       console.log('hist', xhist);
       
-      bwidth = x(x.ticks()[1])/2;
+      barWidth = x(x.ticks()[1])/2;
+      console.log('bar', barWidth, x.ticks());
       
-/*    var xbars = svg.selectAll('.bar')
-        .data(xhist)
-        .enter()
-        .append('g')
-        .attr('class', 'bar')
-        .attr('transform', function(d, i) { return 'translate(' +  
-              ( x(x.ticks()[i+1]) - (x(x.ticks()[1]))/2 - (bwidth/2) ) + ')'; });
-          
-    xbars.append('rect')
-        .attr('x', 0)
-        .attr('y', function(d) { return height-(d.y); })
-        .attr('width', bwidth)
-        .attr('height', function(d) { return d.y; }); */
-  
     var xbars = svg.selectAll('.bar')
         .data(xhist);
       
@@ -227,11 +214,11 @@
         .append('rect')
         .attr('class', 'bar')
         .attr('transform', function(d, i) { return 'translate(' +  
-              ( x(x.ticks()[i+1]) - (x(x.ticks()[1]))/2 - (bwidth/2) ) + ')'; })
+              ( x(x.ticks()[i+1]) - (x(x.ticks()[1]))/2 - (barWidth/2) ) + ')'; })
           
         .attr('x', 0)
         .attr('y', function(d) { return height-(d.y); })
-        .attr('width', bwidth)
+        .attr('width', barWidth)
         .attr('height', function(d) { return d.y; });       
       
       // y hist
