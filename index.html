@@ -27,6 +27,11 @@
       shape-rendering: crispEdges;
     }
 
+    .axis .minor line {
+    stroke: #777;
+    stroke-dasharray: 2,2;
+    }
+    
     .axis text {
       font-size: 11px;
     }
@@ -171,11 +176,12 @@
         .attr("class", "axis")
         .attr("transform", "translate(0," + height + ")")
         .call(xAxis)
-        .append("text")
-        .attr("x", 900)
-        .attr("y", 45)
-        .style("text-anchor", "end")
-        .text("Year");
+      .append("text")
+      .attr("x", width)
+      .attr("y", height - 6)
+      .style("text-anchor", "end")
+      .text("Year");
+    //still missing label but no error
 
     //Create y axis
     svg.append("g")
