@@ -102,10 +102,10 @@
 
   var svg, x, y;
 
-  var margin = { top: 15, right: 15, bottom: 30, left: 45 };
+  var margin = { top: 15, right: 15, bottom: 30, left: 80 };
 
-  var width = 640 - margin.right - margin.left;
-  var height = 400 - margin.top - margin.bottom;
+  var width = 700 - margin.right - margin.left;
+  var height = 500 - margin.top - margin.bottom;
 
   // FETCH DATA
 
@@ -165,7 +165,7 @@
     //Create y axis
     svg.append("g")
         .attr("class", "axis")
-        .attr("transform", "translate(" + width + ",0)")
+        .attr("transform", "translate(" + ",0)")
         .call(yAxis);
 
 
