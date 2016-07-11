@@ -68,13 +68,26 @@
       opacity: .05;
     }
 
-    .bar rect {
+    .bar {
       fill: #5A5050;
+    }
+
+    .bar:hover { 
+      fill: #135A97; 
     }
 
     .line {
       stroke: rgb(175, 80, 75);
       stroke-width: 2;
+    }
+
+    .tooltip {
+      padding: .5em 1em;
+      background: rgba(0,0,0,.75);
+      color: white;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1;
     }
   </style>
 </head>
@@ -106,18 +119,21 @@
 <script type="text/javascript" src="https://npmcdn.com/d3@3.5.17/d3.min.js"></script>
 <script type="text/javascript" src="https://npmcdn.com/science@1.9.3/science.v1.min.js"></script>
 <script type="text/javascript" src="https://npmcdn.com/simple-statistics@2.0.0/dist/simple-statistics.min.js"></script>
+<script type="text/javascript" src="https://npmcdn.com/d3-tip@0.6.7/index.js"></script>
 <script>
   var data = [];
   var options = {
     yearRange: 'all'
   };
 
-  var svg, x, y, histScale;
+  //var svg, x, y;
 
   var margin = { top: 15, right: 40, bottom: 40, left: 60 };
 
   var width = 800 - margin.right - margin.left;
   var height = 600 - margin.top - margin.bottom;
+
+  var binCount = 10; 
 
   // FETCH DATA
 
@@ -126,102 +142,65 @@
 
     data = json;
 
-    setup();
-    update();
+    var chart = new Chart(); 
+
+  // EVENT HANDLERS
+  d3.select('#year-range').on('change', function () {
+    options.yearRange = d3.event.target.value;
+    //charts.forEach(function (chart) { chart.update(); });
+    //});
+    update(); 
+  }); 
   });
 
-  function setup() {
-    // SVG
+  function Chart() {
+    var chart = this;
 
-    svg = d3.select('#chart')
+    chart.svg = d3.select('#chart')
       .append('svg')
       .attr('width', width + margin.right + margin.left)
       .attr('height', height + margin.top + margin.bottom)
       .append('g')
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-
-    // SCALES
-
-    x = d3.scale.linear()
-      .domain(d3.extent(data, function (a) {return a.costs; }))
-      .range([0, width])
+    
+    chart.x = d3.scale.linear()
+      .domain([0, d3.max(data, function (d) { return d.costs; })])
+      .rangeRound([0, width])
       .nice();
-
-    y = d3.scale.linear()
-      .domain(d3.extent(data, function (a) {return a.visits; }))
-      .range([height, 0])
-      .nice();
-
-    // AXES
-
-    var formatNumber = d3.format(".0f");
 
     var xAxis = d3.svg.axis()
-                  .scale(x)
-                  .tickFormat(formatCurrency)
-                  .tickSize(height)
-                  .orient("bottom"); 
+      .scale(chart.x)
+      .ticks(binCount)
+      //.tickFormat(d3.format('.0%'))
+      .orient('bottom');
 
-    svg.append("g")
-       .append("text")
-       .attr("x", 190)
-       .attr("y", 580)
-       .style("text-anchor", "start")
-       .style("font-family", "Open Sans Condensed, Helvetica, sans-serif")
-       .style("font-weight", "bold")
-       .text("Standardized, Risk-Adjusted Per Capita Medicare Spending");
+    chart.svg.append('g')
+      .attr('class', 'x axis')
+      .attr('transform', 'translate(0,' + (height) + ')')
+      .call(xAxis)
+      .append('text')
+      .attr('class', 'label')
+      .attr('dy', '.71em')
+      .attr('y', 580)
+      .attr('x', 190)
+      .style('text-anchor', 'start')
+      .style("font-family", "Open Sans Condensed, Helvetica, sans-serif")
+      .style("font-weight", "bold")
+      .text('Standardized, Risk-Adjusted Per Capita Medicare Spending');
 
-    var gx = svg.append("g")
-                .attr("class", "x axis")
-                .call(xAxis);
-
-    gx.selectAll("g").filter(function(a) {return a;})
-      .classed("minor", true);
-
-    var yAxis = d3.svg.axis()
-                  .scale(y)
-                  .tickSize(width)
-                  .orient("right");
-
-    svg.append("g")
-       .append("text")
-       .attr("transform","rotate(-90)")
-       .attr("x", -250)
-       .attr("y", -60)
-       .attr("dy", ".71em")
-       .style("text-anchor", "middle")
-       .style("font-family", "Open Sans Condensed, Helvetica, sans-serif")
-       .style("font-weight", "bold")
-       .text("ER Visits per 100K");
-
-    var gy = svg.append("g")
-                .attr("class", "y axis")
-                .call(yAxis);
-
-      gy.selectAll("g").filter(function(a) {return a;})
-        .classed("minor", true);
-
-      gy.selectAll("text")
-        .attr("x", -30);
-      //.attr("dy", -4);
-
-      function formatCurrency(d) {
-        var s = formatNumber(d / 1e3);
-        return d === x.domain()[1]
-        ? "$" + s + " thousand"
-        : s;
-      }
-
-    // EVENT HANDLERS
-
-    d3.select('#year-range').on('change', function () {
-      options.yearRange = d3.event.target.value;
-      update();
-    });
+    chart.tooltip = d3.tip()
+      .attr('class', 'tooltip')
+      .offset([-6, 0])
+      .html(function(d) { return d.length + ' months'; });
+    
+    chart.tooltip(chart.svg);
+    
+    chart.update();
   }
 
-  function update() {
-    // TRANSFORM
+  Chart.prototype.update = function () {
+    var chart = this;
+
     txData = data.slice();
 
     if (options.yearRange !== 'all') {
@@ -231,46 +210,38 @@
       });
     }
 
-    // SCATTERPLOT
+    var hist = d3.layout.histogram()
+      .value(function (d) { return d[chart.variable]; })
+      .bins(chart.x.ticks(binCount))
+      (txData);
 
-    var points = svg.selectAll('.point')
-      .data(txData);
+    var y = d3.scale.linear()
+      .domain([0, d3.max(hist, function (d) { return d.length; })])
+      .range([0, height]);
 
-    points.enter().append('circle')
-      .attr('class', 'point')
-      .attr('r', 2);
+    var barWidth = chart.x(hist[1].x) - chart.x(hist[0].x) + 1;
+    
+    var bars = chart.svg.selectAll('.bar')
+      .data(hist);
 
-    points
-      .attr('cx', function (a) { return x(a.costs); })
-      .attr('cy', function (a) { return y(a.visits); });
+    tooltip.offset([barWidth / 2, 0]); 
 
-    points.exit().remove();
-
-    // HISTOGRAMS
-    var map = txData.map(function(d) { return d.costs });
-
-    var histogram = d3.layout.histogram()
-                      .bins(x.ticks())
-                      (map);
-
-    var bars = svg.selectAll(".bar")
-                  .data(histogram)
-                  .enter().append("g")
-                  .attr("class", "bar"); 
-
-    histScale = d3.scale.linear()
-                        .domain([0, d3.max(bars, function (d) { return d.length; })])
-                        .range([0, height])
-                        .nice(); 
-
-    bars.append("rect")
-        .attr("x", 0)
-        .attr("y", 0)
-        .attr("width", 20)
-        .attr("height", function (d) { return histScale(d.y)});
-
-    // REGRESSION LINE
-  }
+    // ENTER
+    bars.enter().append('rect')
+      .attr('class', 'bar')
+      .attr('x', function (d) { return chart.x(d.x); })
+      .attr('width', barWidth)
+      .attr('y', height)
+      .attr('height', 0)
+      .on('mouseover', chart.tooltip.show)
+      .on('mouseout', chart.tooltip.hide);
+    
+    // ALL
+    bars
+      .transition().duration(150).delay(function (d, i) { return i * 50; })
+      .attr('y', function (d) { return height - y(d.length); })
+      .attr('height', function (d) { return y(d.length); });
+  };
 </script>
 </body>
 </html>
