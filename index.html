@@ -36,7 +36,7 @@
       stroke-dasharray: 2,2;
     }
     .axis text {
-      font-family: sans-serif;
+      font-family: ,bold,sans-serif;
       font-size: 11px;
     }
 
@@ -48,8 +48,6 @@
       stroke: rgb(51, 122, 183);
       stroke-width: 1;
       fill: rgba(51, 122, 183, .5);
-      stroke:#FFFFFF;
-      fill: #358d88;
       opacity: .5;
     }
 
@@ -68,12 +66,6 @@
      .category-label {
        margin-right: 10px;
        color: #ffffff;
-     }
-     
-     .axis text {
-       font-family: "Lato", sans-serif;
-       font-size: 11px;
-       fill: #ffffff;
      }
      text{
         fill:black;
@@ -126,12 +118,12 @@
 
   var svg, x, y;
 
-  var margin = {top:20, right:10, bottom:20, left:10}
-    padding = {top: 60, right: 60, bottom: 60, left:60};
+  var margin = {top:15, right:15, bottom:120, left:120}
+    padding = {top: 40, right: 100, bottom: 30, left:150};
 
 
   var width= 680 - margin.left - margin.right;
-  var height= 400 - margin.top - margin.bottom;
+  var height= 640 - margin.top - margin.bottom;
 
   // FETCH DATA
 
@@ -149,7 +141,7 @@ console.log()
   function setup() {
     // SVG
 
-  var svg = d3.select('#chart')
+  svg = d3.select('#chart')
       .append('svg')
       .attr('width', width + margin.left + margin.right)
       .attr('height',height + margin.top + margin.bottom)
@@ -158,42 +150,43 @@ console.log()
 
     // SCALES
     
-    var y = d3.scale.linear()
-      .domain(d3.extent(data, function(d){return d.Annual_Contract_Revenue;}))
-      .range([height,0])
-      .nice();
-    var x = d3.scale.linear()
+    x = d3.scale.linear()
       .domain([0,d3.max(data, function(d){return d.Percent_Total_Contract;})])
       .range([0,width])
       .nice();
+    
+    y = d3.scale.linear()
+      .domain(d3.extent(data, function(d){return d.Annual_Contract_Revenue;}))
+      .range([height,0])
+      .nice();  
 
     // AXES
-  var formatPercentage =d3.format("1%"); 
-
   var xAxis = d3.svg.axis()
     .scale(x)
     .orient("bottom")
     .ticks(10)
     .tickSize(10);
-  
+
+  var ticks =x.ticks(10),
+    tickFormat = x.tickFormat(5, '+%'); 
 
   var gx = svg.append('g')
     .attr("class", "axis")
-    .attr("transform", "translate(0," + (360) + ")")
+    .attr("transform", "translate(0," + (506) + ")")
     .call(xAxis);
   
   gx.selectAll("g").filter(function(d) { return d;})
     .classed("minor", true);
  
-  //   .attr("transform")
   gx.selectAll("text")
-    .attr("transform", "translate(0," + (370) + ")")
+    .attr('x', 0)
+    .attr('y', 50)
   
   gx.append("text")
-    .attr("text-anchor", "middle")
-    
-    .style("text-anchor", "middle")
-    .text("Percent of Total Contract Spend");
+    .attr('x', 70)
+    .attr('y', 30)
+    .style("text-anchor", "bottom")
+    .text("Percent of Contract Spend");
 
   var yAxis = d3.svg.axis()
     .scale(y)
@@ -202,26 +195,25 @@ console.log()
 
   var gy = svg.append("g")
       .attr("class", "axis")
-   
+      .attr("transform", "translate(0," + (0) + ")")
       .call(yAxis);
 
   gy.selectAll("g").filter(function(d) { return d;})
             .classed("minor", true);
  
   gy.selectAll("text") 
-        .attr("x", 5)
-        .attr("y", 5);
+        .attr("x", -10)
+        .attr("y", 1);
  
   gy.append("text")
-  
-    .attr("y", 20)
-    .attr("x", 20)
+    .attr("y", -7)
+    .attr("x", -45)
     .style("text-anchor", "middle")
-    .text("Contract Spend");
+    .text("Contract Revenue");
 
     // EVENT HANDLERS
 
-  d3.select('#Contract_Date-range').on('change', function () {
+  d3.select('#Contract_Daterange').on('change', function () {
     options.Contract_DateRange = d3.event.target.value;
     update();
   });
@@ -229,31 +221,28 @@ console.log()
 
   function update() {
     // TRANSFORM
-    contractsData = data.slice();
+    txData = data.slice();
     
     console.log(data);
     
     if (options.Contract_DateRange !== 'all') {
       // var Contract_DateRange = options.Contract_DateRange.split('-');
-      contractsData = contractsData.filter(function (d) {
-        return d.Contract_Date === d3.event.target.value; 
+      txData = txData.filter(function (d) {
+        return d.Contract_Date >= Contract_DateRange[0] && d.Contract_Date <= Contract_DateRange[1]; 
       });
-      console.log(data);
-      console.log(text);
     }
     // SCATTERPLOT
   var points=svg.selectAll('.point')
     .data(data);
-
-  points.enter().append('circle')
+    points.enter()
+    .append('circle')
     .attr('class','point')
     .attr('r', 5);
-
-  points 
-    .attr('cx', function(d) {return x(d.Percent_Total_Contract); })
-    .attr('cy', function(d) {return y(d.Annual_Contract_Revenue); });
-
-  points.exit().remove();
+    points
+    .attr('cx', function(d) {return x(d. Percent_Total_Contrac);})
+    .attr('cy', function(d) {return y(d. Annual_Contract_Revenue);});
+   
+    points.exit().remove();
     // HISTOGRAMS
 
 
