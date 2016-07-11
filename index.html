@@ -155,10 +155,14 @@
              .orient("left")
              .ticks(5);
 
+    
+    //Create X axis
     svg.append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(0," + (height) + ")")
         .call(xAxis);
 
-    // EVENT HANDLERS
+      // EVENT HANDLERS
 
     d3.select('#location').on('change', function () {
       options.location = d3.event.target.value;
