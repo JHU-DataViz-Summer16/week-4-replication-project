@@ -180,8 +180,14 @@
     //Create y axis
     svg.append("g")
         .attr("class", "axis")
-        .call(yAxis);
-      
+        .call(yAxis)
+      .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("Inventive Value") 
+
       // EVENT HANDLERS
 
     d3.select('#location').on('change', function () {
