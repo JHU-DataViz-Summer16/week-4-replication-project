@@ -211,7 +211,7 @@
 
     var histy = d3.scale.linear()
       .domain([0, d3.max(dataHistX, function (d){ return d.y; } ) ])
-      .range([ y.ticks()[0] , y.ticks()[1]]);
+      .range([ y(y.ticks()[0]) , y(y.ticks()[1]) ]);
 
     var histx = d3.scale.linear()
       .domain([0,11]) // needs to be updated to be dynamic
@@ -230,10 +230,10 @@
 
     barX
       .transition()
-      .attr("y", function (d) { return y(histy(d.y)); })
-      .attr("height", function (d) { return height - margin.top - y(histy(d.y)) ; })
+      .attr("y", function (d) { return histy(d.y); })
+      .attr("height", function (d) { return height - margin.top - histy(d.y) ; })
 
-    // X-HIST
+    // Y-HIST
 
     var dataHistY = d3.layout.histogram()
       .bins(y.ticks())
@@ -244,9 +244,7 @@
 
     var histx2 = d3.scale.linear()
       .domain([0, d3.max(dataHistY, function (d){ return d.y; } ) ])
-      .range([ x.ticks()[0] , x.ticks()[1]]);
-
-console.log(x.ticks()[0])
+      .range([ x(x.ticks()[0]) , x(x.ticks()[1])]);
 
     var histy2 = d3.scale.linear()
       .domain([0,4.5]) // needs to be updated to be dynamic
@@ -266,7 +264,7 @@ console.log(x.ticks()[0])
     barY
       .transition()
       .attr("x", margin.left)
-      .attr("width", function (d) {return x(histx2(d.y))-margin.left });
+      .attr("width", function (d) {return histx2(d.y)-margin.left });
 
 
     // // REGRESSION LINE
