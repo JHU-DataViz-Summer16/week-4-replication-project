@@ -17,7 +17,7 @@
     }
 
     svg {
-      font:10px sans-serif;
+      font:16px sans-serif;
       display: block;
       margin: 0 auto;
     }
@@ -41,7 +41,7 @@
     }
 
     .label {
-      font-weight: 700;
+      font-weight: 900;
     }
 
     .point {
@@ -64,7 +64,7 @@
       stroke-width: 2;
     }
      .category-label {
-       margin-right: 10px;
+       margin-right: 24px;
        color: #ffffff;
      }
      text{
@@ -87,7 +87,7 @@
 <div class="header section">
   <div class="container">
     <h1>Week 4: Federal Procurement Data System</h1>
-    <p>Let's build a complex interactive graphic.</p>
+    <p>Large dollar contracts do not constitute the largest percentage of total contract revenue</p>
   </div>
 </div>
 <div class="controls section">
@@ -118,8 +118,8 @@
 
   var svg, x, y;
 
-  var margin = {top:15, right:15, bottom:120, left:100}
-    padding = {top: 40, right: 100, bottom: 30, left:150};
+  var margin = {top:15, right:20, bottom:120, left:130}
+    padding = {top: 40, right: 75, bottom: 30, left:125};
 
 
   var width= 680 - margin.left - margin.right;
@@ -145,6 +145,7 @@ console.log()
       .append('svg')
       .attr('width', width + margin.left + margin.right)
       .attr('height',height + margin.top + margin.bottom)
+      .style('background-color', 'tan')
       .append('g')
       .attr('transform','translate(' + margin.left + ','+ margin.top + ')');
 
@@ -176,17 +177,17 @@ console.log()
     .call(xAxis);
   
   gx.selectAll("g").filter(function(d) { return d;})
-    .classed("minor", true);
- 
+    .classed("minor", true); 
+  
   gx.selectAll("text")
     .attr('x', 0)
-    .attr('y', 47)
+    .attr('y', 47);
   
-  gx.append("text")
-    .attr('x', 70)
+ gx.append("text")
+    .attr('x', 200)
     .attr('y', 30)
     .style("text-anchor", "bottom")
-    .text("Contract Spend (in % Contribution)");
+    .text("Contract Spend (in % Contribution)"); 
 
   var yAxis = d3.svg.axis()
     .scale(y)
@@ -199,15 +200,16 @@ console.log()
       .call(yAxis);
 
   gy.selectAll("g").filter(function(d) { return d;})
-            .classed("minor", true);
+      .classed("minor", true);
  
   gy.selectAll("text") 
         .attr("x", -10)
         .attr("y", 1);
  
   gy.append("text")
-    .attr("y", -7)
-    .attr("x", -50)
+    .attr("y", -100)
+    .attr("x", -250)
+    .attr("transform", "rotate(270)")
     .style("text-anchor", "middle")
     .text("Contract Revenue");
 
