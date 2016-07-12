@@ -105,8 +105,10 @@
 </div>
     
     <script type='text/javascript' src='https://npmcdn.com/d3@3.5.17/d3.min.js'></script>
-<script type='text/javascript' src='https://npmcdn.com/science@1.9.3/science.v1.min.js'></script>
-<script type='text/javascript' src='https://npmcdn.com/simple-statistics@2.0.0/dist/simple-statistics.min.js'></script>
+    <script type='text/javascript' src='https://npmcdn.com/science@1.9.3/science.v1.min.js'></script>
+    <script type='text/javascript' src='https://npmcdn.com/simple-statistics@2.0.0/dist/simple-statistics.min.js'></script>
+    <script type="text/javascript" src="https://npmcdn.com/d3-tip@0.6.7/index.js"></script>
+    
 <script>
   var data = [];
 
@@ -114,24 +116,45 @@
     yearRange: 'all'
   };
     
-  var svg, x, y;
+//  var svg, x, y;
   var margin = { top: 15, right: 55, bottom: 100, left: 70  };
   var width = 800 - margin.right - margin.left;
   var height = 600 - margin.top - margin.bottom;
-    var binCount = 10;
+  var binCount = 10;
     
   // FETCH DATA
   d3.json('data-exch.json', function (error, json) {
     if (error) { throw error; }
     data = json;
-    setup();
-    update();
+      
+    
+//    setup();
+//    update();
+      
+      var charts = [
+          new Chart('#chart', 'trade', 'Trade Balance', 'rate', 'ExchangeR')
+          ];
+      
+    // EVENT HANDLERS
+    d3.select('#year-range').on('change', function () {
+      options.yearRange = d3.event.target.value;
+        charts.forEach(function (chart) { chart.update(); });
+//      update();
+    });      
+      
   });
 
     
-  function setup() {
+  function Chart(selector, xvar, xtitle, yvar, ytitle) {
+      var chart = this;
+      
+//      chart.variable = variable;
+      chart.xvar = xvar;
+      chart.yvar = yvar;
+
     // SVG
-    svg = d3.select('#chart')
+//    svg = d3.select('#chart')
+      chart.svg = d3.select(selector)
       .append('svg')
       .attr('width', width + margin.right + margin.left)
       .attr('height', height + margin.top + margin.bottom)
@@ -139,29 +162,34 @@
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
       
     // SCALES
-      var xmin = d3.min(data, function (d) { return d.trade; }) - 500;
+//      var xmin = d3.min(data, function (d) { return d.trade; }) - 500;
+      var xmin = d3.min(data, function (d) { return d[xvar]; }) - 500;      
       
-      x = d3.scale.linear()
+//      x = d3.scale.linear()
+      
+      chart.x = d3.scale.linear()
         .domain([xmin, -xmin])
         .range([0, width])
         .nice();
-
-    y = d3.scale.linear()
-      .domain([0, d3.max(data, function (d) { return d.rate; })])    
+      
+//    y = d3.scale.linear()      
+      chart.y = d3.scale.linear()
+      .domain([0, d3.max(data, function (d) { return d[yvar]; })])    
       .range([height, 0])    
       .nice();
       
     // AXES
       var xAxis = d3.svg.axis()
-      .scale(x)
+      .scale(chart.x)
       .tickSize(-height);
       
       var yAxis = d3.svg.axis()
-      .scale(y)
+      .scale(chart.y)
       .tickSize(-width)
       .orient('left');   
       
-      svg.append('g')
+//      svg.append('g')
+      chart.svg.append('g')      
           .attr('class', 'x axis')
           .call(xAxis)
           .attr('transform', 'translate(0,' + (height) + ')')
@@ -169,9 +197,11 @@
           .attr('x', width/2)
           .attr('y', 70)
           .style('text-anchor', 'middle')
-          .text('Trade Balance Between US and UK');      
+//          .text('Trade Balance Between US and UK');      
+          .text(xtitle);            
       
-      svg.append('g')
+//      svg.append('g')
+      chart.svg.append('g')
           .attr('class', 'y axis')
           .call(yAxis)
         .append('text')
@@ -183,74 +213,50 @@
       
       // GRID LINES
       
-      var ygrid = svg.append('g')
+/*      var ygrid = svg.append('g')
       .attr('class', 'y axis')
       .call(yAxis);
       
       ygrid.selectAll('g').filter(function(d) { return d; })
-        .classed('minor', true);
+        .classed('minor', true);*/
 
       // HISTOGRAM
       
       // x hist
       
-    var xmap = data.map(function(d) { return d.trade; })
-    var xhist = d3.layout.histogram().bins(x.ticks())(xmap);   
+//    var xmap = data.map(function(d) { return d.trade; })
+//    var xhist = d3.layout.histogram().bins(x.ticks())(xmap);   
       
-//      var xhist = d3.layout.histogram()
-//      .value( function(d) { return d.trade; } )
-//      .bins(x.ticks(binCount));
-//      (txData);
+
       
-      console.log('hist', xhist);
+//      console.log('hist', xhist);
       
-      barWidth = x(x.ticks()[1])/2;
-      console.log('bar', barWidth, x.ticks());
+
+//      console.log('bar', barWidth, x.ticks());
       
-    var xbars = svg.selectAll('.bar')
-        .data(xhist);
-      
-      xbars.enter()
-        .append('rect')
-        .attr('class', 'bar')
-        .attr('transform', function(d, i) { return 'translate(' +  
-              ( x(x.ticks()[i+1]) - (x(x.ticks()[1]))/2 - (barWidth/2) ) + ')'; })
-          
-        .attr('x', 0)
-        .attr('y', function(d) { return height-(d.y); })
-        .attr('width', barWidth)
-        .attr('height', function(d) { return d.y; });       
+     
       
       // y hist
       
-    var ymap = data.map(function(d) { return d.rate; })
-    var yhist = d3.layout.histogram().bins(y.ticks())(ymap);      
+//    var ymap = data.map(function(d) { return d.rate; })
+//    var yhist = d3.layout.histogram().bins(y.ticks())(ymap);      
       
-      console.log('rate', yhist.reverse());
+//      console.log('rate', yhist.reverse());
       
-    var ybars = svg.selectAll('.ybar')
-        .data(yhist.reverse())
-        .enter()
-        .append('g')
-        .attr('class', 'ybar')
-    .attr("transform", function(d) { return 'translate(0,' + y(d.x) + ')'; });      
-//    .attr("transform", function(d, i) { return 'translate(0,' + (y(d.x)) + ')'; });            
       
-    ybars.append('rect')
-        .attr('x', 0)
-        .attr('y', function(d) { return y(d.x); })
-        .attr('width', function(d) {return d.y; })
-        .attr('height', 30);        
       
-    // EVENT HANDLERS
-    d3.select('#year-range').on('change', function () {
-      options.yearRange = d3.event.target.value;
-      update();
-    });
+      chart.update();
+      
   }
+      
+      
+
     
-  function update() {
+//  function update() {
+    Chart.prototype.update = function () {
+    var chart = this;
     txData = data.slice();
+        
     if (options.yearRange !== 'all') {
       var yearRange = options.yearRange.split('-');
       txData = txData.filter(function (d) {
@@ -258,8 +264,58 @@
       });
     }
       
+/*      var xhist = d3.layout.histogram()
+      .value( function(d) { return chart.variable; } )
+      .bins(chart.x.ticks(binCount));
+      (txData); */   
+        
+//        console.log('xhist', xhist);
+    
+//    var barWidth = x(x.ticks()[1])/2;  
+        
+//    var barWidth = chart.x(xhist[1].x) - chart.x(xhist[0].x) + 1;            
+        var barWidth = 100;
+    
+
+/*    var xbars = chart.svg.selectAll('.bar')
+        .data(xhist);*/
+    
+    // ENTER      
+/*      xbars.enter()
+        .append('rect')
+        .attr('class', 'bar')
+//        .attr('transform', function(d, i) { return 'translate(' +  
+//              ( x(x.ticks()[i+1]) - (x(x.ticks()[1]))/2 - (barWidth/2) ) + ')'; })
+          
+//        .attr('x', 0)
+        .attr('x', function (d) { return chart.x(d.x); } )
+//        .attr('y', function(d) { return height-(d.y); })
+        .attr('width', barWidth)
+          .attr('y', height)
+//        .attr('height', function(d) { return d.y; });      
+        .attr('height', 0);
+    
+    var ybars = chart.svg.selectAll('.ybar')
+        .data(yhist.reverse());
+        
+        ybars.enter()
+        .append('rect')
+        .attr('class', 'ybar')
+    .attr("transform", function(d) { return 'translate(0,' + y(d.x) + ')'; })
+        .attr('x', 0)
+        .attr('y', function(d) { return y(d.x); })
+        .attr('width', function(d) {return d.y; })
+        .attr('height', 30); */
+        
+//    .attr("transform", function(d, i) { return 'translate(0,' + (y(d.x)) + ')'; });            
+      
+//    ybars.append('rect')
+         
+        
+        
+    
     // SCATTERPLOT
-    var points = svg.selectAll('.point')
+    var points = chart.svg.selectAll('.point')
       .data(txData);
       
     points.enter().append('circle')
@@ -267,8 +323,8 @@
       .attr('r', 5);
       
     points
-      .attr('cx', function (d) { return x(d.trade); })
-      .attr('cy', function (d) { return y(d.rate); });
+      .attr('cx', function (d) { return chart.x(d.trade); })
+      .attr('cy', function (d) { return chart.y(d.rate); });
       
     points.exit().remove();
 
