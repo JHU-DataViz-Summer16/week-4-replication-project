@@ -246,20 +246,26 @@
     }
 
     // SCATTERPLOT
-
+  
 
     var points = svg.selectAll('.point')
                     .data(txData);
 
+                    points
+                    .attr('r', 0);
+
                     points.enter().append('circle')
                     .attr('class', 'point')
-                    .attr('r', 5);
+                    .attr('r', 0);
 
                     points
                     .attr('cx', function(d) { return x(d.democratContribution); })
-                    .attr('cy', function(d) { return y(d.republicanContribution)});
+                    .attr('cy', function(d) { return y(d.republicanContribution)})
+                    .transition().duration(1000).attr('r', 3);
 
-                    points.exit().remove();
+                    points.exit()
+                    .transition().duration(1000).attr('r',0)
+                    .remove();
 
     // HISTOGRAMS
 
@@ -276,16 +282,27 @@
                     .domain([0, d3.max(xHistogram, function (d) { return d.y; })])
                     .range([0, height/5])
                     .nice();
+    
+    
 
     var xBars = svg.selectAll(".xbar")
                   .data(xHistogram)
-                  .enter().append("g")
-                  .attr("class", "xbar");
-                  
-    xBars.attr("transform", function(d, i) { return "translate(" + ( ((x(x.ticks()[i+1]) - (x(x.ticks()[i])))/2) + x(x.ticks()[i]) - (barWidth/2) )  + ",0)"; })
-       .append("rect")
+                  ;
+    
+    xBars.enter().append("rect")
+                 .attr("class", "xbar")
+                 .attr("transform", function(d, i) { 
+                  return "translate(" 
+                       + ( ((x(x.ticks()[i+1]) - (x(x.ticks()[i])))/2) + x(x.ticks()[i]) - (barWidth/2) )  
+                       + ",0)"; 
+                     })
+                 .attr("y", height)
+                 .attr("width", barWidth)
+                 .attr("height", 0);
+
+    xBars
+       .transition().duration(1000)
        .attr("y", function (d) { return height -  histScale(d.y)})
-       .attr("width", barWidth)
        .attr("height", function (d) { return histScale(d.y)});
 
    // y axis histogram
@@ -296,14 +313,17 @@
                              (repContr);                        
 
     var yBars = svg.selectAll(".ybar")
-                  .data(yHistogram)
-                  .enter().append("g")
-                  .attr("class", "ybar");
+                  .data(yHistogram);
 
-   yBars.attr("transform", function(d, i) { return "rotate (-90) translate(-" + ( ((y(y.ticks()[i+1]) - (y(y.ticks()[i])))/2) + y(y.ticks()[i]) + (barWidth/2) )  + ",0)"; })
-       .append("rect")
-       //.attr("y", function (d) { return height -  histScale(d.y)})
-       .attr("width", barWidth)
+   yBars.enter().append("rect")
+        .attr("class", "ybar")
+        .attr("transform", function(d, i) { return "rotate (-90) translate(-" + ( ((y(y.ticks()[i+1]) - (y(y.ticks()[i])))/2) + y(y.ticks()[i]) + (barWidth/2) )  + ",0)"; })
+        .attr("width", barWidth)
+        .attr("height", 0);
+
+   
+        //.attr("y", function (d) { return height -  histScale(d.y)})
+  yBars.transition().duration(1000)
        .attr("height", function (d) { return histScale(d.y)});
   
 
