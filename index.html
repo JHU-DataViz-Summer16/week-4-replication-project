@@ -45,7 +45,6 @@
       stroke: rgb(175, 80, 75);
       stroke-width: 2;
     }
-
     /*Style for the grid example from http://www.d3noob.org/2013/01/adding-grid-lines-to-d3js-graph.html*/ 
     .grid .tick {
       stroke: lightgrey;
@@ -54,17 +53,14 @@
     .grid path {
       stroke-width: 0;
     }
-
     /* style for the histogram. Source http://bl.ocks.org/mbostock/3048450*/ 
     .bar rect {
       fill: steelblue;
     }
-
     .bar text {
     fill: #fff;
     font: 10px sans-serif;
     }
-
   </style>
 </head>
 <body>
@@ -105,6 +101,7 @@
   var height = 400 - margin.top - margin.bottom;
   var xpadding = 0;
   var ypadding = 0;
+  var binCount = 10;
   
   // Creating GRID function
   function make_x_axis() {        
@@ -113,15 +110,12 @@
          .orient("bottom")
          .ticks(5)
   }
-
   function make_y_axis() {        
     return d3.svg.axis()
         .scale(y)
         .orient("left")
         .ticks(5)
   }
-
-
   // FETCH DATA
   d3.json('data.json', function (error, json) {
     if (error) { throw error; }
@@ -129,6 +123,13 @@
     setup();
     update();
   });
+  
+  // EVENT HANDLERS
+    d3.select('#year-range').on('change', function () {
+      options.yearRange = d3.event.target.value;
+      update();
+    });
+
   function setup() {
     // SVG
     svg = d3.select('#chart')
@@ -137,6 +138,7 @@
       .attr('height', height + margin.top + margin.bottom)
       .append('g')
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+    
     // SCALES
     x = d3.scale.linear()
       .domain([0, d3.max(data, function (d) { return d.unemployment; })])
@@ -158,35 +160,8 @@
                 .scale(y)
                 .orient("left")
                 .ticks(5);
-    // EVENT HANDLERS
-    d3.select('#year-range').on('change', function () {
-      options.yearRange = d3.event.target.value;
-      update();
-    });
-  }
-  function update() {
-    // TRANSFORM
-    txData = data.slice();
-    if (options.yearRange !== 'all') {
-      var yearRange = options.yearRange.split('-');
-      txData = txData.filter(function (d) {
-        return d.year >= yearRange[0] && d.year <= yearRange[1];
-      });
-    }
-    // SCATTERPLOT
-    var points = svg.selectAll('.point')
-      .data(data);
-    points.enter().append('circle')
-      .attr('class', 'point')
-      .attr('r', 5);
-    points
-      .attr('cx', function (d) { return x(d.unemployment); })
-      .attr('cy', function (d) { return y(d.employment); });
-    points.exit().remove();
     
-    
-
-    // Creating (printing the Axxis)
+   // Creating (printing the Axxis)
     //Create X axis
       svg.append("g")
         .attr("class", "axis")
@@ -214,7 +189,6 @@
           .attr("fill", "blue");
            
       
-
     //CALLING THE GRID
     svg.append("g")         
         .attr("class", "grid")
@@ -223,97 +197,75 @@
             .tickSize(-height, 0, 0)
             .tickFormat("")
         )
-
     svg.append("g")         
         .attr("class", "grid")
         .call(make_y_axis()
             .tickSize(-width, 0, 0)
             .tickFormat("")
         )
+  }
+  
+  function update() {
+
+    // TRANSFORM: not using original data 
+    txData = data.slice();
+    if (options.yearRange !== 'all') {
+      var yearRange = options.yearRange.split('-');
+      txData = txData.filter(function (d) {
+        return d.year >= yearRange[0] && d.year <= yearRange[1];
+      });
+    }
     
+    // SCATTERPLOT
+    var points = svg.selectAll('.point')
+      .data(txData);
+    points.enter().append('circle')
+      .attr('class', 'point')
+      .attr('r', 5);
+    points
+      .attr('cx', function (d) { return x(d.unemployment); })
+      .attr('cy', function (d) { return y(d.employment); });
+    points.exit().remove();
+    
+     
     // HISTOGRAMS
+    var hist = d3.layout.histogram()
+      .value(function (d) {return d.employment; })
+      .bins (x.ticks (binCount))
+      (txData);
 
-    var formatCount = d3.format(",.0f");
+      // if I put only y - error: y is not a function and scatterplot does not work 
+      // if I put yh then line  258 = attribute height: Expected length, "NaN".
 
-    //var margin = {top: 10, right: 30, bottom: 30, left: 30},
-        //width = 960 - margin.left - margin.right,
-        //height = 500 - margin.top - margin.bottom;
-
-    //Alex Answer: Yes, you do need to recreate the scale for the height of the rects in the histogram. Now, for each histogram, you are going to want a linear scale. This scale will have range and a domain, like other scales. 
-    //The domain should refer to your input data: What are the lowest and highest values that are important to the height of a histogram?
-    //The range should still be for the range of the output space, starting at 0, and going to the maximum height you would like the bars to going.
-    //Note that in the image Chris attached to the assignment, there is only one axis for each variable. So you don't have to recreate the axes.
+    var yh = d3.scale.linear()
+      .domain([0, d3.max(hist, function (d) {return d.length; })])
+      .range ([0, height]); 
     
+    var barWidth = x(hist[1].x) - x(hist[0].x) + 1;
+
+    var bars = svg.selectAll('.bar')
+      .data(hist); 
+
     
-    xh = d3.scale.linear()
-        .rangeRound([0, width]);
+    //ENTER 
+    bars.enter().append('rect')
+      .attr('class', 'bar')
+      .attr('x', function (d) { return x(d.x); })
+      .attr('width' , barWidth); 
 
-    /*
-    var bins = d3.layout.histogram()
-        .domain(xh.domain())
-        .thresholds(xh.ticks(4))
-        (data);
-    */
-
-    // Number of beans for X = 4
-    // x = min value of the data
-    // dx = distance between each bar 
-    // y = max value of the data 
-
-    //adding values ramdomly a bar is created. 
-    var bins = d3.layout.histogram()
-        .bins( [0, 0.3, 15] )(data)
-        //.thresholds(xh.ticks(4));
-        
-    yh = d3.scale.linear()
-        .domain([0, d3.max(bins, function(data) { return data.length; })])
-        .range([height, 0]);
-    
-   
-    var bar = svg.selectAll(".bar")
-        .data(bins)
-      .enter().append("g")
-        .attr("class", "bar")
-        .attr("transform", function(bin) {
-        //what is in x, dx, and y?  
-          console.log( "x: " + bin.x );
-          console.log( "dx: " + bin.dx );
-          console.log( "y: " + bin.y );
-
-          return "translate(" + xh(bin.dx) + "," + yh(bin.length) + ")"; 
-        });
-        //.attr("transform", function(bin) { return "translate(5," + yh(bin.length) + ")"; });
-
-    bar.append("rect")
-        .attr("x", 1)
-        //.attr("width", xh(bins[0].x1) - xh(bins[0].x0) - 1)
-        .attr("width", 10)
-        //.attr("height", function(bin) { return height - y(bin.length); });
-        .attr("height", 5);
-
-    bar.append("text")
-        .attr("dy", ".75em")
-        .attr("y", 0)
-        //.attr("x", (xh(bins[0].x1) - xh(bins[0].x0)) / 2)
-        .attr("x", 0)
-        .attr("text-anchor", "middle")
-        .text(function(d) { return formatCount(d.length); });
-
-    svg.append("g")
-        .attr("class", "axis axis--x")
-        .attr("transform", "translate(0," + height + ")")
-        //.call(d3.axis(xh).orient("bottom"));
-        .call(xAxis);
-
-
-
-
-
-
-
+    // ALL 
+    bars
+      .attr('yh', function (d) {return height - y(d.length); })
+      .attr('height', function (d) {return y(d.length); }); 
 
   // REGRESSION LINE
   }
+
+// Conclusion: July 12: Scatteplot and Histogram not working at the same time > 
+// Major problems - reusing the y variable and lenght 
+
+
+
 </script>
 </body>
 </html>
