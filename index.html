@@ -160,18 +160,18 @@
              .scale(x)
              .orient("bottom")
              .ticks(20)
+             .tickSize(height + 15)
              .tickFormat(formatyears);
 
 
     //Define Y axis
     var yAxis = d3.svg.axis()
              .scale(y)
-             .orient("right")
-             .ticks(5)
              .tickSize(width)
-             .tickFormat(formatmoney);
-
-    
+             .tickFormat(formatmoney)
+             .orient("right")
+             .ticks(5);
+   
     //Create X axis
     svg.append("g")
         .attr("class", "axis")
