@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Replication Project</title>
@@ -11,78 +10,58 @@
   <style>
     .section {padding: 1em 0;} 
     .header {text-align: left;} 
-
     h1 {
       color:#5A5050;
       font-family: 'Open Sans Condensed', Helvetica, sans-serif;
       font-size: 300%;
     } 
-
     p {
       color:#5A5050;
       font-family: 'Open Sans Condensed', Helvetica, sans-serif;
       font-size: 90%;
     }
-
     svg {
       display: block;
       margin: 0 auto;
     }
-
     .axis path {
       display: none;
     }
-
     .axis line {
       shape-rendering: crispEdges;
       stroke: #000;
     }
-
     .axis .minor line {
       stroke: #777;
       stroke-dasharray: 2,2;
     }
-
     .axis text {
       font-family: 'Open Sans Condensed', Helvetica, sans-serif;
       font-size: 12px;
       color: #5A5050;
     }
-
     .label {
       font-family: 'Open Sans Condensed', Helvetica, sans-serif;
       font-weight: 700;
       color: #5A5050;
     }
-
     .point {
       stroke: rgb(51, 122, 183);
       stroke-width: 1;
       fill: rgba(51, 122, 183, .5);
       opacity: .3;
     }
-
-    .point.filtered {opacity: .05;}
-
-    .bar {fill: #5A5050;}
-
-    .bar:hover {fill: #135A97;}
-
+    .point.filtered {
+      opacity: .05;
+    }
+    .bar {
+      fill: rgb(51, 122, 183);
+    }
     .line {
       stroke: rgb(175, 80, 75);
       stroke-width: 2;
     }
-
-    .tooltip {
-      padding: .5em 1em;
-      background: rgba(0,0,0,.75);
-      color: white;
-      font-size: 13px;
-      font-weight: 700;
-      line-height: 1;
-    }
   </style>
-
 </head>
 <body>
 <div class="header section">
@@ -109,80 +88,54 @@
     <div id="chart"></div>
   </div>
 </div>
-
 <script type="text/javascript" src="https://npmcdn.com/d3@3.5.17/d3.min.js"></script>
 <script type="text/javascript" src="https://npmcdn.com/science@1.9.3/science.v1.min.js"></script>
 <script type="text/javascript" src="https://npmcdn.com/simple-statistics@2.0.0/dist/simple-statistics.min.js"></script>
-<script type="text/javascript" src="https://npmcdn.com/d3-tip@0.6.7/index.js"></script>
-
 <script>
-  
   var data = [];
   var options = {
     yearRange: 'all'
   };
-
-  //var svg, x, y;
-
+  var svg, x, y;
   var margin = { top: 15, right: 40, bottom: 40, left: 60 };
-
   var width = 800 - margin.right - margin.left;
   var height = 600 - margin.top - margin.bottom;
- 
-
-  // fetch data
+  // FETCH DATA
   d3.json('data.json', function (error, json) {
-    
     if (error) { throw error; }
-
     data = json;
-
-    var chart = [
-      new Chart()
-    ]; 
-
-  // event handlers
-  d3.select('#year-range').on('change', function () {
-    options.yearRange = d3.event.target.value;
-    chart.update(); 
+    setup();
+    update();
   });
-  }); 
-
-  function Chart() {
-    var chart = this;
-
-    //svg
-
-    chart.svg = d3.select('#chart')
+  function setup() {
+    // SVG
+    svg = d3.select('#chart')
       .append('svg')
       .attr('width', width + margin.right + margin.left)
       .attr('height', height + margin.top + margin.bottom)
       .append('g')
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-
-    //scales
-    
-    chart.x = d3.scale.linear()
-      .domain(d3.extent(data, function (a) {return a[chart.costs]; }))
+    // SCALES
+    x = d3.scale.linear()
+      .domain(d3.extent(data, function (a) {return a.costs; }))
       .range([0, width])
       .nice();
-
-    chart.y = d3.scale.linear()
-      .domain(d3.extent(data, function (a) {return a[chart.visits]; }))
+    y = d3.scale.linear()
+      .domain(d3.extent(data, function (a) {return a.visits; }))
       .range([height, 0])
       .nice();
-
-    //axes
-
+    // AXES
     var formatNumber = d3.format(".0f");
-
     var xAxis = d3.svg.axis()
-      .scale(chart.x)
-      .tickFormat(formatCurrency)
-      .tickSize(height)
-      .orient('bottom');
-
-    chart.svg.append("g")
+                  .scale(x)
+                  .tickFormat(formatCurrency)
+                  .tickSize(height)
+                  .orient("bottom"); 
+    svg.append("g")
+       //.attr("class", "x axis")
+       //.attr("transform", "translate(0," + (height) + ")")
+       //.call(xAxis)
+      
        .append("text")
        .attr("x", 190)
        .attr("y", 580)
@@ -190,79 +143,69 @@
        .style("font-family", "Open Sans Condensed, Helvetica, sans-serif")
        .style("font-weight", "bold")
        .text("Standardized, Risk-Adjusted Per Capita Medicare Spending");
-
-    var gx = chart.svg.append("g")
-      .attr("class", "x axis")
-      .call(xAxis);
-
+    var gx = svg.append("g")
+                .attr("class", "x axis")
+                .call(xAxis);
     gx.selectAll("g").filter(function(a) {return a;})
       .classed("minor", true);
-
     var yAxis = d3.svg.axis()
-                  .scale(chart.y)
+                  .scale(y)
                   .tickSize(width)
                   .orient("right");
-
-    chart.svg.append("g")
-      .append("text")
-      .attr("transform","rotate(-90)")
-      .attr("x", -250)
-      .attr("y", -60)
-      .attr("dy", ".71em")
-      .style("text-anchor", "middle")
-      .style("font-family", "Open Sans Condensed, Helvetica, sans-serif")
-      .style("font-weight", "bold")
-      .text("ER Visits per 100K");
-
-    var gy = chart.svg.append("g")
-      .attr("class", "y axis")
-      .call(yAxis);
-
+    svg.append("g")
+       //.attr("transform","rotate(-90)")
+       //.call(yAxis)
+       .append("text")
+       .attr("transform","rotate(-90)")
+       .attr("x", -250)
+       .attr("y", -60)
+       .attr("dy", ".71em")
+       .style("text-anchor", "middle")
+       .style("font-family", "Open Sans Condensed, Helvetica, sans-serif")
+       .style("font-weight", "bold")
+       .text("ER Visits per 100K");
+    var gy = svg.append("g")
+                .attr("class", "y axis")
+                .call(yAxis);
       gy.selectAll("g").filter(function(a) {return a;})
         .classed("minor", true);
-
       gy.selectAll("text")
         .attr("x", -30);
-
+        //.attr("dy", -4);
       function formatCurrency(d) {
         var s = formatNumber(d / 1e3);
         return d === x.domain()[1]
         ? "$" + s + " thousand"
         : s;
       }
-
-  Chart.prototype.update = function () {
-    var chart = this;
-
-    //transform
-
+    // EVENT HANDLERS
+    d3.select('#year-range').on('change', function () {
+      options.yearRange = d3.event.target.value;
+      update();
+    });
+  }
+  function update() {
+    // TRANSFORM
     txData = data.slice();
-
     if (options.yearRange !== 'all') {
       var yearRange = options.yearRange.split('-');
       txData = txData.filter(function (d) {
         return d.year >= yearRange[0] && d.year <= yearRange[1];
       });
     }
-
-    //scatterplot
-
-    var points=chart.svg.selectAll('.point')
-      .data(txData); 
-
+    // SCATTERPLOT
+    var points = svg.selectAll('.point')
+      .data(txData);
     points.enter().append('circle')
-      .attr('class','point')
-      .attr('r', 2); 
-      
+      .attr('class', 'point')
+      .attr('r', 2);
     points
-      .attr('cx', function(d) { return chart.x(d[chart.costs]); })
-      .attr('cy', function(d) { return chart.y(d[chart.visits]); });
-
-    points.exit().remove(); 
-
-    //histograms
-  };
-
+      .attr('cx', function (a) { return x(a.costs); })
+      .attr('cy', function (a) { return y(a.visits); });
+    points.exit().remove();
+    // HISTOGRAMS
+    // REGRESSION LINE
+  }
 </script>
 </body>
 </html>
