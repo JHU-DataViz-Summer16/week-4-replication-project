@@ -137,13 +137,16 @@
 
     data = json;
 
-    var chart = new Chart(); 
+    var chart = [
+      new Chart()
+    ]; 
 
   // event handlers
   d3.select('#year-range').on('change', function () {
     options.yearRange = d3.event.target.value;
     chart.update(); 
   });
+  }); 
 
   function Chart() {
     var chart = this;
@@ -160,12 +163,12 @@
     //scales
     
     chart.x = d3.scale.linear()
-      .domain(d3.extent(data, function (a) {return a.costs; }))
+      .domain(d3.extent(data, function (a) {return a[chart.costs]; }))
       .range([0, width])
       .nice();
 
     chart.y = d3.scale.linear()
-      .domain(d3.extent(data, function (a) {return a.visits; }))
+      .domain(d3.extent(data, function (a) {return a[chart.visits]; }))
       .range([height, 0])
       .nice();
 
@@ -252,41 +255,14 @@
       .attr('r', 2); 
       
     points
-      .attr('cx', function(d) { return chart.x(d.costs); })
-      .attr('cy', function(d) { return chart.y(d.visits); });
+      .attr('cx', function(d) { return chart.x(d[chart.costs]); })
+      .attr('cy', function(d) { return chart.y(d[chart.visits]); });
 
     points.exit().remove(); 
 
     //histograms
-
-    var hist = d3.layout.histogram()
-      .value(function (d) { return d.costs; })
-      .bins(chart.x.ticks(10))
-      (txData);
-
-    var histY = d3.scale.linear()
-      .domain([0,d3.max(hist, function(d) {return d.length;})])
-      .range([0, height]);
-
-    var bars = chart.svg.selectAll('.bar')
-      .data(hist);
-
-    var barWidth = chart.x(hist[0].dx); 
-
-    bars.enter().append('rect')
-      .attr('class', 'bar')
-      .attr('width', barWidth)
-      .attr('x', function (d) {return chart.x(d.x)+barWidth;})
-      .attr('height', 0)
-      .attr('y', height);
-
-    bars
-      .transition().duration(150).delay(function(d,i) {return i*50;})
-      .attr('height', function (d) {return histY(d.length); })
-      .attr('y', function (d) {return height - histY(d.length); });
-
-
   };
+
 </script>
 </body>
 </html>
