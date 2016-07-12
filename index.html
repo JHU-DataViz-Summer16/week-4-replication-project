@@ -166,8 +166,9 @@
     //Define Y axis
     var yAxis = d3.svg.axis()
              .scale(y)
-             .orient("left")
+             .orient("right")
              .ticks(5)
+             .tickSize(width)
              .tickFormat(formatmoney);
 
     
