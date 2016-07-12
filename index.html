@@ -212,7 +212,7 @@ console.log()
 
     // AXES
 
-  formatAxis = d3.format(".2s");
+  formatAxis = d3.format(".00%");
   
   var xAxis = d3.svg.axis()
     .scale(x)
@@ -241,6 +241,8 @@ console.log()
     .attr('y', 30)
     .style("text-anchor", "bottom")
     .text("Contract Spend (in % Contribution)"); 
+
+  var formatPercent = d3.format(".0%");
 
   var yAxis = d3.svg.axis()
     .scale(y)
