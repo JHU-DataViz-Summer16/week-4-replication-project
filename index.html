@@ -55,7 +55,7 @@
       opacity: .05;
     }
 
-    .bar {
+    .xbar,.ybar {
       fill: rgb(51, 122, 183);
     }
 
@@ -93,11 +93,60 @@
 <div class="controls section">
   <div class="container">
     <div class="btn-toolbar">
-      <label for="Contract_Date-range">Contract Date: </label>
-      <select id="Contract_Date-range">
-        <option value="all">All (2011&ndash;2012)</option>
-        <option value="2011">2011</option>
-        <option value="2012">2012</option>
+      <label for="state-filter">State </label>
+      <select id="state-filter">
+         <option value="all">All</option>
+         <option value="AL">Alabama</option>
+         <option value="AK">Alaska</option>
+         <option value="AZ">Arizona</option>
+         <option value="AR">Arkansas</option>
+         <option value="CA">California</option>
+         <option value="CO">Colorado</option>
+         <option value="CT">Connecticut</option>
+         <option value="DE">Delaware</option>
+         <option value="FL">Florida</option>
+         <option value="GA">Georgia</option>
+         <option value="HI">Hawaii</option>
+         <option value="ID">Idaho</option>
+         <option value="IL">Illinois</option>
+         <option value="IN">Indiana</option>
+         <option value="IA">Iowa</option>
+         <option value="KS">Kansas</option>
+         <option value="KY">Kentucky</option>
+         <option value="LA">Louisiana</option>
+         <option value="ME">Maine</option>
+         <option value="MD">Maryland</option>
+         <option value="MA">Massachusetts</option>
+         <option value="MI">Michigan</option>
+         <option value="MN">Minnesota</option>
+         <option value="MS">Mississippi</option>
+         <option value="MO">Missouri</option>
+         <option value="MT">Montana</option>
+         <option value="NE">Nebraska</option>
+         <option value="NV">Nevada</option>
+         <option value="NH">New Hampshire</option>
+         <option value="NJ">New Jersey</option>
+         <option value="NM">New Mexico</option>
+         <option value="NY">New York</option>
+         <option value="NC">North Carolina</option>
+         <option value="ND">North Dakota</option>
+         <option value="OH">Ohio</option>
+         <option value="OK">Oklahoma</option>
+         <option value="OR">Oregon</option>
+         <option value="PA">Pennsylvania</option>
+         <option value="RI">Rhode Island</option>
+         <option value="SC">South Carolina</option>
+         <option value="SD">South Dakota</option>
+         <option value="TN">Tennessee</option>
+         <option value="TX">Texas</option>
+         <option value="UT">Utah</option>
+         <option value="VT">Vermont</option>
+         <option value="VA">Virginia</option>
+         <option value="WA">Washington</option>
+         <option value="WV">West Virginia</option>
+         <option value="WI">Wisconsin</option>
+         <option value="WY">Wyoming</option>
+         <option value="DC">Washington DC</option>
       </select>
     </div>
   </div>
@@ -113,7 +162,7 @@
 <script>
   var data = [];
   var options = {
-    Contract_DateRange: 'all'
+    State: 'all'
   };
 
   var svg, x, y;
@@ -122,7 +171,7 @@
     padding = {top: 40, right: 75, bottom: 30, left:125};
 
 
-  var width= 680 - margin.left - margin.right;
+  var width= 800 - margin.left - margin.right;
   var height= 640 - margin.top - margin.bottom;
 
   // FETCH DATA
@@ -162,11 +211,15 @@ console.log()
       .nice();  
 
     // AXES
+
+  formatAxis = d3.format(".2s");
+  
   var xAxis = d3.svg.axis()
     .scale(x)
+    .tickSize(-height)
     .orient("bottom")
-    .ticks(10)
-    .tickSize(10);
+    .tickFormat(formatAxis);
+    
 
   var ticks =x.ticks(10),
     tickFormat = x.tickFormat(5, '+%'); 
@@ -191,6 +244,7 @@ console.log()
 
   var yAxis = d3.svg.axis()
     .scale(y)
+    .tickSize(-width)
     .orient('left')
     .ticks (10); 
 
@@ -215,8 +269,8 @@ console.log()
 
     // EVENT HANDLERS
 
-  d3.select('#Contract_Daterange').on('change', function () {
-    options.Contract_DateRange = d3.event.target.value;
+  d3.select('#state-filter').on('change', function () {
+    options.State = d3.event.target.value;
     update();
   });
   }
@@ -227,10 +281,9 @@ console.log()
     
     console.log(data);
     
-    if (options.Contract_DateRange !== 'all') {
-      // var Contract_DateRange = options.Contract_DateRange.split('-');
+    if (options.State !== 'all') {
       txData = txData.filter(function (d) {
-        return d.Contract_Date >= Contract_DateRange[0] && d.Contract_Date <= Contract_DateRange[1]; 
+        return d.State=== options.State; 
       });
     }
     // SCATTERPLOT
