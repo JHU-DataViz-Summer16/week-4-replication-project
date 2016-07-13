@@ -112,18 +112,17 @@
         var chart == this;
 
         chart.svg = d3.select('#chart1')
-      }
       .append('svg')
       .attr('width', width + margin.right + margin.left)
       .attr('height', height + margin.top + margin.bottom)
       .append('g')
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
     // SCALES
-    x = d3.scale.linear()
+    chart.x = d3.scale.linear()
       .domain(d3.extent(data, function (a) {return a.year; }))
       .range([0, width])
       .nice();
-    y = d3.scale.linear()
+    chart.y = d3.scale.linear()
       .domain(d3.extent(data, function (a) {return a.value; }))
       .range([height, 0])
       .nice();
@@ -135,14 +134,14 @@
     var formatmoney = d3.format("$1,000,000,000")
     //Define X axis
    
-    var xAxis = d3.svg.axis()
+    var chart.xAxis = d3.svg.axis()
              .scale(x)
              .orient("bottom")
              .ticks(20)
              .tickSize(height + 15)
              .tickFormat(formatyears);
     //Define Y axis
-    var yAxis = d3.svg.axis()
+    var chart.yAxis = d3.svg.axis()
              .scale(y)
              .tickSize(width)
              .tickFormat(formatmoney)
