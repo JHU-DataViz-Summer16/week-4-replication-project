@@ -144,7 +144,6 @@
     state: 'all'
   };
 
-  var svg, x , y, histScale;
   var margin = { top: 15, right: 15, bottom: 40, left: 60 }
   var width = 840 - margin.left - margin.right;
   var height = 600 - margin.top - margin.bottom;
@@ -155,15 +154,21 @@
     if (error) { throw error; }
 
     data = json;
+    
+    var chart = new Chart();
 
-    setup();
-    update();
+    d3.select('#state-filter').on('change', function () {
+      options.state = d3.event.target.value;
+      chart.update();
+    });
   });
 
-  function setup() {
+  function Chart() {
+    var chart = this;
+
     // SVG
 
-    svg = d3.select('#chart')
+    chart.svg = d3.select('#chart')
       .append('svg')
       .attr("width", width + margin.right + margin.left)
       .attr("height", height + margin.top + margin.bottom)
@@ -173,13 +178,13 @@
 
     // SCALES
 
-    x = d3.scale.log()
+    chart.x = d3.scale.log()
           .base(1.5)
           .domain(d3.extent(data, function (d) { return d.democratContribution; }))
           .range([0, width])
           .nice();
 
-    y = d3.scale.log()
+    chart.y = d3.scale.log()
           .base(1.5)
           .domain(d3.extent(data, function (d) { return d.republicanContribution; }))
           .range([height, 0])
@@ -191,18 +196,18 @@
     formatAxis = d3.format(".2s");
 
     var xAxis = d3.svg.axis()
-                  .scale(x)
+                  .scale(chart.x)
                   .tickSize(-height)
                   .orient("bottom")
                   .tickFormat(formatAxis);
 
     var yAxis = d3.svg.axis()
-                  .scale(y)
+                  .scale(chart.y)
                   .tickSize(-width)
                   .orient("left")
                   .tickFormat(formatAxis);
 
-    svg.append("g")
+    chart.svg.append("g")
        .attr("class", "axis") 
        .attr("transform", "translate(0," + (height) + ")")
        .call(xAxis)
@@ -213,7 +218,7 @@
        .style("text-anchor", "middle")
        .text("Total Contributions to Democrats");
 
-    svg.append("g")
+    chart.svg.append("g")
        .attr("class", "axis") 
        //.attr("transform", "translate(0,0)")
        .call(yAxis)
@@ -226,15 +231,14 @@
        .style("text-anchor", "middle")
        .text("Total Contributions to Republicans");;
 
-    // EVENT HANDLERS
+       chart.update();
 
-    d3.select('#state-filter').on('change', function () {
-      options.state = d3.event.target.value;
-      update();
-    });
   }
 
-  function update() {
+  Chart.prototype.update = function() {
+
+          var chart = this;
+
     // TRANSFORM
     txData = data.slice();
 
@@ -248,10 +252,13 @@
     // SCATTERPLOT
   
 
-    var points = svg.selectAll('.point')
+    var points = chart.svg.selectAll('.point')
                     .data(txData);
 
                     points
+                    // This is what I would think would make them fade out but
+                    // it just breaks the code and nothing fades in:
+                    //.transition().duration(1000)
                     .attr('r', 0);
 
                     points.enter().append('circle')
@@ -259,23 +266,23 @@
                     .attr('r', 0);
 
                     points
-                    .attr('cx', function(d) { return x(d.democratContribution); })
-                    .attr('cy', function(d) { return y(d.republicanContribution)})
-                    .transition().duration(1000).attr('r', 3);
+                    .attr('cx', function(d) { return chart.x(d.democratContribution); })
+                    .attr('cy', function(d) { return chart.y(d.republicanContribution)})
+                    .transition().duration(2000).attr('r', 5);
 
                     points.exit()
-                    .transition().duration(1000).attr('r',0)
+                    //.transition().duration(1000).attr('r',0)
                     .remove();
 
     // HISTOGRAMS
 
-    var barWidth = ( x(x.ticks()[1]) - x(x.ticks()[0]) )/5;
+    var barWidth = ( chart.x(chart.x.ticks()[1]) - chart.x(chart.x.ticks()[0]) )/5;
 
     // x axis histogram
     var demContr = txData.map(function (i) {return i.democratContribution});
 
     var xHistogram = d3.layout.histogram()
-                             .bins(x.ticks())
+                             .bins(chart.x.ticks())
                              (demContr); 
 
     histScale = d3.scale.linear()
@@ -285,7 +292,7 @@
     
     
 
-    var xBars = svg.selectAll(".xbar")
+    var xBars = chart.svg.selectAll(".xbar")
                   .data(xHistogram)
                   ;
     
@@ -293,7 +300,7 @@
                  .attr("class", "xbar")
                  .attr("transform", function(d, i) { 
                   return "translate(" 
-                       + ( ((x(x.ticks()[i+1]) - (x(x.ticks()[i])))/2) + x(x.ticks()[i]) - (barWidth/2) )  
+                       + ( ((chart.x(chart.x.ticks()[i+1]) - (chart.x(chart.x.ticks()[i])))/2) + chart.x(chart.x.ticks()[i]) - (barWidth/2) )  
                        + ",0)"; 
                      })
                  .attr("y", height)
@@ -301,7 +308,7 @@
                  .attr("height", 0);
 
     xBars
-       .transition().duration(1000)
+       .transition().duration(2000)
        .attr("y", function (d) { return height -  histScale(d.y)})
        .attr("height", function (d) { return histScale(d.y)});
 
@@ -309,21 +316,21 @@
     var repContr = txData.map(function (i) {return i.republicanContribution});
 
     var yHistogram = d3.layout.histogram()
-                             .bins(y.ticks())
+                             .bins(chart.y.ticks())
                              (repContr);                        
 
-    var yBars = svg.selectAll(".ybar")
+    var yBars = chart.svg.selectAll(".ybar")
                   .data(yHistogram);
 
    yBars.enter().append("rect")
         .attr("class", "ybar")
-        .attr("transform", function(d, i) { return "rotate (-90) translate(-" + ( ((y(y.ticks()[i+1]) - (y(y.ticks()[i])))/2) + y(y.ticks()[i]) + (barWidth/2) )  + ",0)"; })
+        .attr("transform", function(d, i) { return "rotate (-90) translate(-" + ( ((chart.y(chart.y.ticks()[i+1]) - (chart.y(chart.y.ticks()[i])))/2) + chart.y(chart.y.ticks()[i]) + (barWidth/2) )  + ",0)"; })
         .attr("width", barWidth)
         .attr("height", 0);
 
    
         //.attr("y", function (d) { return height -  histScale(d.y)})
-  yBars.transition().duration(1000)
+  yBars.transition().duration(2000)
        .attr("height", function (d) { return histScale(d.y)});
   
 
