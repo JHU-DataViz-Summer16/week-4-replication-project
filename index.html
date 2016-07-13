@@ -252,7 +252,7 @@
       .domain([0, d3.max(histogramX, function (d){ return d.length; } ) ])
       .range([0, height]);
     
-    var barWidthX = x(hist[1].x) - x(hist[0].x) + 1;;
+    var barWidthX = x(histogramX[1].x) - x(histogramX[0].x) + 1;;
 
     var barX = svg.selectAll(".barX")
       .data(histogramX);
