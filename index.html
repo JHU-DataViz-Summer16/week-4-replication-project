@@ -124,9 +124,7 @@
   });
 
   function setup() {
-    // SVG
-
-    svg = d3.select('#chart')
+     svg = d3.select('#chart1')
       .append('svg')
       .attr('width', width + margin.right + margin.left)
       .attr('height', height + margin.top + margin.bottom)
@@ -136,9 +134,13 @@
     // SCALES
 
     x = d3.scale.linear()
-      .domain(d3.extent(data, function (a) {return a.year; }))
-      .range([0, width])
+      .domain([0, d3.max(data, function (d) { return d.year; })])
+      .rangeRound([0, width])
       .nice();
+
+
+
+      
 
     y = d3.scale.linear()
       .domain(d3.extent(data, function (a) {return a.value; }))
@@ -155,7 +157,11 @@
     var formatmoney = d3.format("$1,000,000,000")
 
     //Define X axis
+
+  function setup() {
    
+    
+
     var xAxis = d3.svg.axis()
              .scale(x)
              .orient("bottom")
@@ -192,8 +198,6 @@
       .attr("x", -10)
       .attr("y", -10);
 
-
-    //attempt at grid lines
     var gy = svg.append("g")
       .attr("class", "y axis")
       .call(yAxis);
@@ -201,10 +205,7 @@
     gy.selectAll("g").filter(function(d) { return d; })
       .classed("minor", true);
 
-    gy.selectAll("text")
-    .attr("x", 4)
-    .attr("dy", -4);
-
+    
     var gx = svg.append("g")
       .attr("class", "x axis")
       .call(xAxis);
