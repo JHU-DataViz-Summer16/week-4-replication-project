@@ -108,9 +108,11 @@
     data = json;
     var chart = new Chart();
   });
-  function setup() {
-    // SVG
-    svg = d3.select('#chart')
+      function Chart() {
+        var chart == this;
+
+        chart.svg = d3.select('#chart1')
+      }
       .append('svg')
       .attr('width', width + margin.right + margin.left)
       .attr('height', height + margin.top + margin.bottom)
