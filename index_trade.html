@@ -132,7 +132,7 @@
 //    update();
       
       var charts = [
-          new Chart('#chart', 'trade', 'Trade Balance', 'rate', 'ExchangeR')
+          new Chart('trade', 'Trade Balance', 'rate', 'Exchange Rate')
           ];
       
     // EVENT HANDLERS
@@ -145,7 +145,7 @@
   });
 
     
-  function Chart(selector, xvar, xtitle, yvar, ytitle) {
+  function Chart(xvar, xtitle, yvar, ytitle) {
       var chart = this;
       
 //      chart.variable = variable;
@@ -153,8 +153,7 @@
       chart.yvar = yvar;
 
     // SVG
-//    svg = d3.select('#chart')
-      chart.svg = d3.select(selector)
+      chart.svg = d3.select('#chart')
       .append('svg')
       .attr('width', width + margin.right + margin.left)
       .attr('height', height + margin.top + margin.bottom)
@@ -197,7 +196,6 @@
           .attr('x', width/2)
           .attr('y', 70)
           .style('text-anchor', 'middle')
-//          .text('Trade Balance Between US and UK');      
           .text(xtitle);            
       
 //      svg.append('g')
@@ -209,7 +207,7 @@
           .attr('y', -60)
           .attr('x', -height/2)      
           .style('text-anchor', 'middle')      
-          .text('Exchange Rate, GBP/USD');           
+          .text(ytitle);           
       
       // GRID LINES
       
@@ -256,6 +254,7 @@
     Chart.prototype.update = function () {
     var chart = this;
     txData = data.slice();
+//        console.log('tx', txData);
         
     if (options.yearRange !== 'all') {
       var yearRange = options.yearRange.split('-');
@@ -264,41 +263,64 @@
       });
     }
       
-/*      var xhist = d3.layout.histogram()
-      .value( function(d) { return chart.variable; } )
-      .bins(chart.x.ticks(binCount));
-      (txData); */   
+      var xhist = d3.layout.histogram()
+      .value(function(d) { return d[chart.xvar]; } )
+      .bins(chart.x.ticks(binCount))
+      (txData);   
         
-//        console.log('xhist', xhist);
+      var yhist = d3.layout.histogram()
+      .value(function(d) { return d[chart.yvar]; } )
+      .bins(chart.x.ticks(binCount))
+      (txData);          
+        
+        
+        
+//    var xmap = data.map(function(d) { return chart.xvar; })
+//    var xmap = data.map(function(d) { return d.trade; })        
+//    var xhist = d3.layout.histogram().bins(chart.x.ticks())(xmap);          
+        
+        console.log('xhist', xhist);
     
 //    var barWidth = x(x.ticks()[1])/2;  
         
-//    var barWidth = chart.x(xhist[1].x) - chart.x(xhist[0].x) + 1;            
-        var barWidth = 100;
-    
+    var barWidth = chart.x(xhist[2].x) - chart.x(xhist[1].x) -20;     
+//    var barWidth = chart.x(xhist[2].x) - chart.x(xhist[1].x);             
+    var colWidth = chart.x(xhist[2].x) - chart.x(xhist[1].x);             
+        console.log('barw', barWidth, colWidth, chart.x(500), xhist[0].dx, chart.x(xhist[0].dx));
+        console.log('barw2', chart.x(xhist[2].x), chart.x(xhist[1].x));
+        
+        console.log('xtik', chart.x.ticks()[1], chart.x.ticks()[0]);
+        console.log('xkee', chart.x(chart.x.ticks()[1]-chart.x.ticks()[0]));
+        console.log('chart x bw', chart.x(barWidth));
 
-/*    var xbars = chart.svg.selectAll('.bar')
-        .data(xhist);*/
+        
+    var xbars = chart.svg.selectAll('.bar')
+        .data(xhist);
     
     // ENTER      
-/*      xbars.enter()
+      xbars.enter()
         .append('rect')
         .attr('class', 'bar')
-//        .attr('transform', function(d, i) { return 'translate(' +  
-//              ( x(x.ticks()[i+1]) - (x(x.ticks()[1]))/2 - (barWidth/2) ) + ')'; })
+///        .attr('transform', function(d, i) { return 'translate(' +  
+//              (( chart.x(d.dx) - barWidth)/2) + ')'; })
+//              (( chart.x(d.x)) + 5) + ')'; })          
+///              (( chart.x(d.x)) + (chart.x(d.dx) - barWidth)/2) + ')'; })                
           
-//        .attr('x', 0)
-        .attr('x', function (d) { return chart.x(d.x); } )
-//        .attr('y', function(d) { return height-(d.y); })
+//        .attr('x', 0)                                     // orig
+//      .attr('transform', 'translate(5,0)')
+//        .attr('x', function (d) { return chart.x(d.x); } )  // CM
+//        .attr('x', function (d) { return chart.x(d.x) + (chart.x(d.dx) - chart.x(barWidth))/2  ; } )      
+        .attr('x', function (d) { return chart.x(d.x) +  (chart.x(d.dx) - barWidth)/2 -168.75 ; } )            
+        .attr('y', function(d) { return height-(d.y); })  // orig
         .attr('width', barWidth)
-          .attr('y', height)
-//        .attr('height', function(d) { return d.y; });      
-        .attr('height', 0);
+//          .attr('y', height)
+        .attr('height', function(d) { return d.y; });      // orig
+//        .attr('height', 0);
     
     var ybars = chart.svg.selectAll('.ybar')
         .data(yhist.reverse());
         
-        ybars.enter()
+/*        ybars.enter()
         .append('rect')
         .attr('class', 'ybar')
     .attr("transform", function(d) { return 'translate(0,' + y(d.x) + ')'; })
@@ -311,7 +333,7 @@
       
 //    ybars.append('rect')
          
-        
+    xbars.exit().remove();    
         
     
     // SCATTERPLOT
