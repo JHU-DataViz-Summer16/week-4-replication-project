@@ -246,7 +246,7 @@
 
     // HISTOGRAMS
     var hist = d3.layout.histogram()
-       .value(function (d) { return d.unemployment; })
+       .value(function (d) { return d.year; })
        .bins(x.ticks(binCount)
        (txData));
 
