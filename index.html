@@ -246,7 +246,9 @@
 
     // HISTOGRAMS
     var hist = d3.layout.histogram()
-      (txData);
+       .value(function (d) { return d.unemployment; })
+       .bins(x.ticks(binCount)
+       (txData);
 
     var y = d3.scale.linear()
         .domain([0, d3.max(hist, function (d) { return d.length; })])
