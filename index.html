@@ -250,7 +250,7 @@
        .bins(x.ticks(binCount)
        (txData));
 
-    var y = d3.scale.linear()
+    var hy = d3.scale.linear()
         .domain([0, d3.max(hist, function (d) { return d.length; })])
         .range([0, height]);
 
@@ -265,8 +265,8 @@
       .attr('width', barWidth);
     
     bars
-      .attr('y', function (d) { return height - y(d.length); })
-      .attr('height', function (d) { return y(d.length); });
+      .attr('hy', function (d) { return height - hy(d.length); })
+      .attr('height', function (d) { return hy(d.length); });
 
 
     // REGRESSION LINE
