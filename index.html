@@ -267,7 +267,7 @@
       .attr('width', barWidth);
     
     bars
-      .attr('hy', function (d) { return height - hy(d.length); })
+      .attr('y', function (d) { return height - hy(d.length); })
       .attr('height', function (d) { return hy(d.length); });
 
 
