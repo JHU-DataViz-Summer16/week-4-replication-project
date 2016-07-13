@@ -272,8 +272,20 @@
       .attr('x', function (d) { return x(d.x); })
       .attr('width', barWidth);
     
-    bars
+    bars 
       .attr('y', function (d) { return height - hy(d.length); })
+      .attr('height', function (d) { return hy(d.length); });
+
+    var barsy = svg.selectAll('bar')
+        .data(hist);
+
+    bars.enter().append('rect')
+      .attr('class', 'bar')
+      .attr('y', function (d) { return y(d.y); })
+      .attr('width', barWidth);
+    
+    bars 
+      .attr('x', function (d) { return height - hy(d.length); })
       .attr('height', function (d) { return hy(d.length); });
 
 
