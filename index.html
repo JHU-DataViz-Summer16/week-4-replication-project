@@ -62,7 +62,9 @@
     font: 10px sans-serif;
     }
   </style>
+
 </head>
+
 <body>
 <div class="header section">
   <div class="container">
@@ -101,7 +103,7 @@
   var height = 400 - margin.top - margin.bottom;
   var xpadding = 0;
   var ypadding = 0;
-  var binCount = 10;
+  var binCount = 4;
   
   // Creating GRID function
   function make_x_axis() {        
@@ -216,6 +218,7 @@
       });
     }
     
+  
     // SCATTERPLOT
     var points = svg.selectAll('.point')
       .data(txData);
@@ -227,44 +230,48 @@
       .attr('cy', function (d) { return y(d.employment); });
     points.exit().remove();
     
-     
+    
     // HISTOGRAMS
     var hist = d3.layout.histogram()
-      .value(function (d) {return d.employment; })
+      .value(function (d) {return d.unemployment; })
       .bins (x.ticks (binCount))
       (txData);
 
       // if I put only y - error: y is not a function and scatterplot does not work 
       // if I put yh then line  258 = attribute height: Expected length, "NaN".
 
-    var yh = d3.scale.linear()
-      .domain([0, d3.max(hist, function (d) {return d.length; })])
+    
+    y = d3.scale.linear()
+      .domain([0, d3.max(hist, function (bin) { return bin.length; })])
       .range ([0, height]); 
     
-    var barWidth = x(hist[1].x) - x(hist[0].x) + 1;
+
+    var barWidth = x(hist[1].x) - x(hist[0].x) + 1 - 50;
 
     var bars = svg.selectAll('.bar')
       .data(hist); 
 
-    
     //ENTER 
     bars.enter().append('rect')
       .attr('class', 'bar')
-      .attr('x', function (d) { return x(d.x); })
+      .attr('x', function (d) { return x(d.x) + 30;  })
       .attr('width' , barWidth); 
+
+    // (x.range()[1] - x.range()[0]) / data.length + 1); trying to make barWidht explict -- does not work 
 
     // ALL 
     bars
-      .attr('yh', function (d) {return height - y(d.length); })
-      .attr('height', function (d) {return y(d.length); }); 
-
+      .attr('y', function (bin) {return height - y( bin.length ) * 0.1; })
+      .attr('height', function (bin) { return y(bin.length) * 0.1; })
   // REGRESSION LINE
+  
   }
 
-// Conclusion: July 12: Scatteplot and Histogram not working at the same time > 
-// Major problems - reusing the y variable and lenght 
 
 
+
+
+ 
 
 </script>
 </body>
