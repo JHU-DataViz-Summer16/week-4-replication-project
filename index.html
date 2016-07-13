@@ -176,7 +176,6 @@
     var gx = svg.append("g")
           .attr("class", "axis")
           .attr("transform", "translate(0," + height + ")")
-          .call(xAxis)
           .append("text")
           .attr("x", width)
           .attr("y", height - 6)
@@ -184,14 +183,14 @@
           .text("Year");
 
     //Create y axis
-   var gy = svg.append("g")
-        .attr("class", "axis")
-      .append("text")
+  var gy = svg.append("g")
       .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", ".71em")
+      .attr("class", "axis")
+      .append("text")
       .style("text-anchor", "end")
       .text("Inventive Value") 
+      .attr("x", 20)
+      .attr("y", 100);
 
 
     //attempt at grid lines
@@ -213,6 +212,10 @@
     gx.select('g').filter(function(d) { return d; })
         .classed("minor", true);
 
+    gy.selectAll("text")
+    .attr("x", 4)
+    .attr("dy", -4);
+    
       // EVENT HANDLERS
 
     d3.select('#location').on('change', function () {
