@@ -149,7 +149,7 @@
              .ticks(5);
    
     //Create X axis
-    var gx = svg.append("g")
+    var chart.gx = svg.append("g")
           .attr("class", "axis")
           .attr("transform", "translate(0," + height + ")")
           .append("text")
@@ -158,7 +158,7 @@
           .style("text-anchor", "end")
           .text("Year");
     //Create y axis
-  var gy = svg.append("g")
+  var chart.gy = svg.append("g")
       .attr("transform", "rotate(-90)")
       .attr("class", "axis")
       .append("text")
@@ -166,19 +166,19 @@
       .text("Incentive Value") 
       .attr("x", -10)
       .attr("y", -10);
-    var gy = svg.append("g")
+    var chart.gy = svg.append("g")
       .attr("class", "y axis")
       .call(yAxis);
-    gy.selectAll("g").filter(function(d) { return d; })
+    chart.gy.selectAll("g").filter(function(d) { return d; })
       .classed("minor", true);
     
-    var gx = svg.append("g")
+    var chart.gx = svg.append("g")
       .attr("class", "x axis")
       .call(xAxis);
       
-    gx.select('g').filter(function(d) { return d; })
+    chart.gx.select('g').filter(function(d) { return d; })
         .classed("minor", true);
-    gy.selectAll("text")
+    chart.gy.selectAll("text")
     .attr("x", 4)
     .attr("dy", -4);
       // EVENT HANDLERS
