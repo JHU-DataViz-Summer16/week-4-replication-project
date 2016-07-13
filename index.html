@@ -114,7 +114,7 @@
   var height = 500 - margin.top - margin.bottom;
 
   var binCount = 54
-
+  var binCounty = 15
   // FETCH DATA
 
   d3.json('data.json', function (error, json) {
@@ -252,6 +252,11 @@
        .value(function (d) { return d.year; })
        .bins(x.ticks(binCount))
        (txData);
+
+    var histy = d3.layout.histogram()
+        .value(function (d) { return d.value; })
+        .bins(y.ticks(binCounty))
+
 
     var hy = d3.scale.linear()
         .domain([0, d3.max(hist, function (d) { return d.length; })])
