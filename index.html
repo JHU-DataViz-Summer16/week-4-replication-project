@@ -187,7 +187,9 @@
       update();
     });
   }
-  function update() {
+    Chart.prototype.update = function() {
+      var chart = this;
+    }
     // TRANSFORM
     txData = data.slice();
     if (options.location !== 'all') {
@@ -208,7 +210,7 @@
     // HISTOGRAMS
     var hist = d3.layout.histogram()
        .value(function (d) { return d.year; })
-       .bins(x.ticks(binCount))
+       .bins(x.chart.ticks(binCount))
        (txData);
     var histy = d3.layout.histogram()
         .value(function (d) { return d.value; })
@@ -216,8 +218,8 @@
     var hy = d3.scale.linear()
         .domain([0, d3.max(hist, function (d) { return d.length; })])
         .range([0, height]);
-    var barWidth = x(hist[1].x) - x(hist[0].x) + 1;
-    var bars = svg.selectAll('bar')
+    var barWidth = chart.x(hist[1].x) - chart.x(hist[0].x) + 1;
+    var bars = chart.svg.selectAll('bar')
         .data(hist);
     bars.enter().append('rect')
       .attr('class', 'bar')
