@@ -173,19 +173,18 @@
              .ticks(5);
    
     //Create X axis
-    svg.append("g")
-        .attr("class", "axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xAxis)
-      .append("text")
-      .attr("x", width)
-      .attr("y", height - 6)
-      .style("text-anchor", "end")
-      .text("Year");
-    //still missing label but no error
+    var gx = svg.append("g")
+          .attr("class", "axis")
+          .attr("transform", "translate(0," + height + ")")
+          .call(xAxis)
+          .append("text")
+          .attr("x", width)
+          .attr("y", height - 6)
+          .style("text-anchor", "end")
+          .text("Year");
 
     //Create y axis
-    svg.append("g")
+   var gy = svg.append("g")
         .attr("class", "axis")
         .call(yAxis)
       .append("text")
@@ -203,6 +202,10 @@
 
     gy.selectAll("g").filter(function(d) { return d; })
       .classed("minor", true);
+
+    gy.selectAll("text")
+    .attr("x", 4)
+    .attr("dy", -4);
 
     var gx = svg.append("g")
       .attr("class", "x axis")
