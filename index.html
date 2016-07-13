@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -9,24 +9,20 @@
     .section {
       padding: 1em 0;
     }
-
     .header {
       background: linear-gradient(to bottom, #337ab7 0%, #135a97 100%);
       color: white;
       padding: 1em 0 2em;
     }
-
     svg {
       display: block;
       margin: 0 auto;
     }
-
     .axis path, .axis line {
       fill: none;
       stroke: #ccc;
       shape-rendering: crispEdges;
     }
-
     .axis .minor line {
     stroke: #777;
     stroke-dasharray: 2,2;
@@ -35,27 +31,22 @@
     .axis text {
       font-size: 11px;
     }
-
     .label {
       font-weight: 700;
     }
-
     .point {
       stroke: rgb(51, 122, 183);
       stroke-width: 1;
       fill: rgba(51, 122, 183, .5);
       opacity: .5;
     }
-
     .point.filtered {
       opacity: .05;
     }
-
     .bar {
       fill: rgb(51, 122, 183);
       opacity: .3;
     }
-
     .line {
       stroke: rgb(175, 80, 75);
       stroke-width: 2;
@@ -105,58 +96,41 @@
   var options = {
     location: 'all'
   };
-
   var svg, x, y;
-
   var margin = { top: 15, right: 15, bottom: 30, left: 90 };
-
   var width = 900 - margin.right - margin.left;
   var height = 500 - margin.top - margin.bottom;
-
   var binCount = 54
   var binCounty = 15
   // FETCH DATA
-
   d3.json('data.json', function (error, json) {
     if (error) { throw error; }
-
     data = json;
-
-    setup();
-    update();
+    var chart = new Chart();
   });
-
   function setup() {
     // SVG
-
     svg = d3.select('#chart')
       .append('svg')
       .attr('width', width + margin.right + margin.left)
       .attr('height', height + margin.top + margin.bottom)
       .append('g')
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-
     // SCALES
-
     x = d3.scale.linear()
       .domain(d3.extent(data, function (a) {return a.year; }))
       .range([0, width])
       .nice();
-
     y = d3.scale.linear()
       .domain(d3.extent(data, function (a) {return a.value; }))
       .range([height, 0])
       .nice();
-
     
     // AXES
-
     // format x axis
     var formatyears = d3.format("1000")
-
     // format y axis
     var formatmoney = d3.format("$1,000,000,000")
-
     //Define X axis
    
     var xAxis = d3.svg.axis()
@@ -165,8 +139,6 @@
              .ticks(20)
              .tickSize(height + 15)
              .tickFormat(formatyears);
-
-
     //Define Y axis
     var yAxis = d3.svg.axis()
              .scale(y)
@@ -184,7 +156,6 @@
           .attr("y", 0)
           .style("text-anchor", "end")
           .text("Year");
-
     //Create y axis
   var gy = svg.append("g")
       .attr("transform", "rotate(-90)")
@@ -194,14 +165,11 @@
       .text("Incentive Value") 
       .attr("x", -10)
       .attr("y", -10);
-
     var gy = svg.append("g")
       .attr("class", "y axis")
       .call(yAxis);
-
     gy.selectAll("g").filter(function(d) { return d; })
       .classed("minor", true);
-
     
     var gx = svg.append("g")
       .attr("class", "x axis")
@@ -209,64 +177,47 @@
       
     gx.select('g').filter(function(d) { return d; })
         .classed("minor", true);
-
     gy.selectAll("text")
     .attr("x", 4)
     .attr("dy", -4);
-
       // EVENT HANDLERS
-
     d3.select('#location').on('change', function () {
       options.location = d3.event.target.value;
       update();
     });
   }
-
   function update() {
     // TRANSFORM
     txData = data.slice();
-
     if (options.location !== 'all') {
        txData = txData.filter(function (d) {
         return d.location === options.location;
       });
     }
-
     // SCATTERPLOT
-
     var points = svg.selectAll('.point')
       .data(txData);
-
     points.enter().append('circle')
       .attr('class', 'point')
       .attr('r', 5);
-
     points
       .attr('cx', function (d) { return x(d.year); })
       .attr('cy', function (d) { return y(d.value); });
-
     points.exit().remove();
-
     // HISTOGRAMS
     var hist = d3.layout.histogram()
        .value(function (d) { return d.year; })
        .bins(x.ticks(binCount))
        (txData);
-
     var histy = d3.layout.histogram()
         .value(function (d) { return d.value; })
         .bins(y.ticks(binCounty))
-
-
     var hy = d3.scale.linear()
         .domain([0, d3.max(hist, function (d) { return d.length; })])
         .range([0, height]);
-
     var barWidth = x(hist[1].x) - x(hist[0].x) + 1;
-
     var bars = svg.selectAll('bar')
         .data(hist);
-
     bars.enter().append('rect')
       .attr('class', 'bar')
       .attr('x', function (d) { return x(d.x); })
@@ -275,10 +226,8 @@
     bars 
       .attr('y', function (d) { return height - hy(d.length)/4; })
       .attr('height', function (d) { return hy(d.length)/4; });
-
     var barsy = svg.selectAll('bar')
         .data(hist);
-
     bars.enter().append('rect')
       .attr('class', 'bar')
       .attr('y', function (d) { return y(d.y); })
@@ -287,8 +236,6 @@
     bars 
       .attr('y', function (d) { return height - hy(d.length); })
       .attr('height', function (d) { return hy(d.length); });
-
-
     // REGRESSION LINE
   }
 </script>
