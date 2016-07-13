@@ -124,7 +124,9 @@
   });
 
   function setup() {
-     svg = d3.select('#chart1')
+    // SVG
+
+    svg = d3.select('#chart')
       .append('svg')
       .attr('width', width + margin.right + margin.left)
       .attr('height', height + margin.top + margin.bottom)
@@ -134,13 +136,9 @@
     // SCALES
 
     x = d3.scale.linear()
-      .domain([0, d3.max(data, function (d) { return d.year; })])
-      .rangeRound([0, width])
+      .domain(d3.extent(data, function (a) {return a.year; }))
+      .range([0, width])
       .nice();
-
-
-
-      
 
     y = d3.scale.linear()
       .domain(d3.extent(data, function (a) {return a.value; }))
@@ -157,11 +155,7 @@
     var formatmoney = d3.format("$1,000,000,000")
 
     //Define X axis
-
-  function setup() {
    
-    
-
     var xAxis = d3.svg.axis()
              .scale(x)
              .orient("bottom")
