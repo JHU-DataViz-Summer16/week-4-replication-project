@@ -255,6 +255,11 @@
     var bars = svg.selectAll('bar')
         .data(hist);
 
+    bars.enter().append('rect')
+      .attr('class', 'bar');
+
+    bars;
+
     // REGRESSION LINE
   }
 </script>
