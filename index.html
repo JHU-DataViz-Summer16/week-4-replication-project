@@ -248,19 +248,26 @@
     var hist = d3.layout.histogram()
        .value(function (d) { return d.unemployment; })
        .bins(x.ticks(binCount)
-       (txData);
+       (txData));
 
     var y = d3.scale.linear()
         .domain([0, d3.max(hist, function (d) { return d.length; })])
         .range([0, height]);
 
+    var barWidth = x(hist[1].x) - x(hist[0].x) + 1;
+
     var bars = svg.selectAll('bar')
         .data(hist);
 
     bars.enter().append('rect')
-      .attr('class', 'bar');
+      .attr('class', 'bar')
+      .attr('x', function (d) { return x(d.x); })
+      .attr('width', barWidth);
+    
+    bars
+      .attr('y', function (d) { return height - y(d.length); })
+      .attr('height', function (d) { return y(d.length); });
 
-    bars;
 
     // REGRESSION LINE
   }
