@@ -245,6 +245,15 @@
     points.exit().remove();
 
     // HISTOGRAMS
+    var hist = d3.layout.histogram()
+      (txData);
+
+    var y = d3.scale.linear()
+        .domain([0, d3.max(hist, function (d) { return d.length; })])
+        .range([0, height]);
+
+    var bars = svg.selectAll('bar')
+        .data(hist);
 
     // REGRESSION LINE
   }
