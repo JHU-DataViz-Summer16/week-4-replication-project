@@ -125,7 +125,7 @@
     data = json;
       
     var charts = [
-          new Chart('trade', 'Trade Balance', 'rate', 'Exchange Rate')
+          new Chart('trade', 'Trade Balance between the US and UK', 'rate', 'Exchange Rate, £1 = $1.6')
           ];
       
     // EVENT HANDLERS
@@ -263,24 +263,20 @@
         
         // Y, WHY???
         
-    var ycolHeight = chart.y(yhist[5].y);  
-        console.log('ycol', yhist[5].y, yhist[1].dx, chart.y(yhist[1].x-yhist[0].x), chart.y(2), ycolHeight);
+    var ycolHeight = chart.y(yhist[10].x);              // this is the width of one bin
+//        console.log('ycol', yhist[10].x, yhist[9].x, yhist[9].x, chart.y(2), ycolHeight);
         
-        var ybarHeight = ycolHeight - 20;
-        console.log('ybar wid', ybarHeight);
+    var ybarHeight = ycolHeight - 13;
     var yspace = (ycolHeight-ybarHeight) / 2;                
         
     var ybars = chart.svg.selectAll('.ybar')
         .data(yhist.reverse());
         
-    console.log('ybar', ybars);
-        console.log('yhist', yhist);        
-        
         ybars.enter()
         .append('rect')
         .attr('class', 'ybar')
-      .attr('transform', 'translate(0,'+space+')')        
-        .attr('x', 0)
+      .attr('transform', 'translate(0,'+yspace+')')        
+        .attr('x', 1)
         .attr('y', 0)                
         .attr('width', 0)
         .attr('height', ybarHeight)
@@ -289,8 +285,8 @@
 
     ybars
       .transition().duration(150).delay(function (d, i) { return i ; })
-        .attr('y', function(d) { return chart.y(d.x) - chart.y(2); })   
-        .attr('width', function(d) {return d.y*.4; }) ;    
+        .attr('y', function(d) { return chart.y(d.x) - chart.y(2); })           // moving this over by one bin
+        .attr('width', function(d) {return d.y*.5; }) ;                         // scaling down so bars don't obstruct circles
         
     // SCATTERPLOT
     var points = chart.svg.selectAll('.point')
