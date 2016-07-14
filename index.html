@@ -149,7 +149,7 @@
              .ticks(5);
    
     //Create X axis
-    var gx = svg.append("g")
+     gx = this.svg.append("g")
           .attr("class", "axis")
           .attr("transform", "translate(0," + height + ")")
           .append("text")
@@ -158,7 +158,7 @@
           .style("text-anchor", "end")
           .text("Year");
     //Create y axis
-  var gy = svg.append("g")
+      gy = this.svg.append("g")
       .attr("transform", "rotate(-90)")
       .attr("class", "axis")
       .append("text")
