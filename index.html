@@ -74,7 +74,7 @@
       }
     
     .barY {
-      opacity: .05;
+      opacity: .2;
       fill: #5A5050;
     }
 
@@ -248,6 +248,10 @@
       .value(function (d) {return d.costs; } )
       (txData);
 
+    //var histogramY = d3.layout.histogram()
+      //.bins(y.ticks())
+      //.value (function (d) { return d.value; }); 
+
     var histy1 = d3.scale.linear()
       .domain([0, d3.max(histogramX, function (d){ return d.length; } ) ])
       .range([0, height]);
@@ -262,12 +266,39 @@
       .attr("x", function (d) { return x(d.x) ; })
       //.attr("y", height)
       //.attr("height", 0)
-      .attr("width", barWidthX);
+      .attr("width", barWidthX/2);
 
     barX
       //.transition()
-      .attr('height', function (d) {return histy1(d.length); })
+      .attr('height', function (d) {return (histy1(d.length); })
       .attr('y', function (d) {return height - histy1(d.length); });
+
+    //y-axis 
+    //var histogramY = d3.layout.histogram()
+      //.bins(y.ticks())
+      //.value(function (d) {return d.visits; } )
+      //(txData);
+
+    //var histx = d3.scale.linear()
+      //.domain([0, d3.max(histogramY, function (d){ return d.y; } ) ])
+      //.range([ x.ticks()[0] , x.ticks()[1]]);
+    
+    //var barWidthY = histx(histogramY[0].dx);
+
+    //var barY = svg.selectAll(".barY")
+      //.data(histogramY);
+
+    //barY.enter().append("rect")
+      //.attr("class", "barY")
+      //.attr("x", margin.left)
+      //.attr("y", height)
+      //.attr("height", 0)
+      //.attr("width", function (d) {return x(histx(d.y))-margin.left });
+
+    //barY
+      //.transition()
+      //.attr("height", function (d) { return barWidthY});
+      //.attr("y", function (d) { return y(d.x) - (barWidthY); })
 
     // REGRESSION LINE
   }
