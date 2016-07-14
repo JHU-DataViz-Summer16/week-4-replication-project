@@ -98,6 +98,7 @@
 <script type="text/javascript" src="https://npmcdn.com/d3@3.5.17/d3.min.js"></script>
 <script type="text/javascript" src="https://npmcdn.com/science@1.9.3/science.v1.min.js"></script>
 <script type="text/javascript" src="https://npmcdn.com/simple-statistics@2.0.0/dist/simple-statistics.min.js"></script>
+<script type="text/javascript" src="https://npmcdn.com/d3-tip@0.6.7/index.js"></script>
 <script>
   var data = [];
   var options = {
@@ -240,8 +241,6 @@
       .value(function (d) {return d.distPart} )
       (txData);
 
-    console.log(dataHistY)
-
     var histx2 = d3.scale.linear()
       .domain([0, d3.max(dataHistY, function (d){ return d.y; } ) ])
       .range([ x(x.ticks()[0]) , x(x.ticks()[1])]);
@@ -267,7 +266,25 @@
       .attr("width", function (d) {return histx2(d.y)-margin.left });
 
 
-    // // REGRESSION LINE
+    // // LINE
+    var meanData = txData.map(function (d){return d.cfScore});
+
+    var meanVal = ss.mean(meanData);
+
+    var line = svg.selectAll(".line")
+      .data(meanData);
+
+    line.enter().append("g")
+      .append("line")
+      .classed("line",true);
+      
+    line.classed("line",true)
+      .attr("x1",x(meanVal))
+      .attr("x2",x(meanVal))
+      .attr("y1",height-margin.top)
+      .attr("y2",-margin.top);
+
+    line.exit().remove();
   }
 
 </script>
