@@ -50,9 +50,6 @@
     .point.filtered {
       opacity: .05;
     }
-/*    .bar {
-      fill: rgb(51, 122, 183);
-    }*/
     .line {
       stroke: rgb(175, 80, 75);
       stroke-width: 2;
@@ -63,14 +60,12 @@
       stroke-dasharray: 2,2;
     }      
       
-/*    .bar rect {*/
     .bar {  
       fill: steelblue;
     }     
        
     .ybar {
       fill: #cc0000;
-/*        fill: red;*/
     }     
              
       
@@ -129,11 +124,7 @@
     if (error) { throw error; }
     data = json;
       
-    
-//    setup();
-//    update();
-      
-      var charts = [
+    var charts = [
           new Chart('trade', 'Trade Balance', 'rate', 'Exchange Rate')
           ];
       
@@ -141,7 +132,6 @@
     d3.select('#year-range').on('change', function () {
       options.yearRange = d3.event.target.value;
         charts.forEach(function (chart) { chart.update(); });
-//      update();
     });      
       
   });
@@ -150,7 +140,6 @@
   function Chart(xvar, xtitle, yvar, ytitle) {
       var chart = this;
       
-//      chart.variable = variable;
       chart.xvar = xvar;
       chart.yvar = yvar;
 
@@ -163,17 +152,13 @@
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
       
     // SCALES
-//      var xmin = d3.min(data, function (d) { return d.trade; }) - 500;
       var xmin = d3.min(data, function (d) { return d[xvar]; }) - 500;      
-      
-//      x = d3.scale.linear()
       
       chart.x = d3.scale.linear()
         .domain([xmin, -xmin])
         .range([0, width])
         .nice();
       
-//    y = d3.scale.linear()      
       chart.y = d3.scale.linear()
       .domain([0, d3.max(data, function (d) { return d[yvar]; })])    
       .range([height, 0])    
@@ -189,7 +174,6 @@
       .tickSize(-width)
       .orient('left');   
       
-//      svg.append('g')
       chart.svg.append('g')      
           .attr('class', 'x axis')
           .call(xAxis)
@@ -200,7 +184,6 @@
           .style('text-anchor', 'middle')
           .text(xtitle);            
       
-//      svg.append('g')
       chart.svg.append('g')
           .attr('class', 'y axis')
           .call(yAxis)
@@ -211,29 +194,6 @@
           .style('text-anchor', 'middle')      
           .text(ytitle);           
       
-      // HISTOGRAM
-      
-      // x hist
-      
-//    var xmap = data.map(function(d) { return d.trade; })
-//    var xhist = d3.layout.histogram().bins(x.ticks())(xmap);   
-      
-
-      
-//      console.log('hist', xhist);
-      
-
-//      console.log('bar', barWidth, x.ticks());
-      
-     
-      
-      // y hist
-      
-//    var ymap = data.map(function(d) { return d.rate; })
-//    var yhist = d3.layout.histogram().bins(y.ticks())(ymap);      
-      
-//      console.log('rate', yhist.reverse());
-
       chart.xtool = d3.tip()
       .attr('class', 'tooltip')
       .offset([-6, 0])
@@ -241,7 +201,8 @@
 
       chart.ytool = d3.tip()
       .attr('class', 'tooltip')
-      .offset([10, 40])
+      .offset([0, 10])
+      .direction('e')
       .html(function(d) { return d.length ; });
 
     chart.xtool(chart.svg);      
@@ -252,7 +213,6 @@
   }
       
           
-//  function update() {
     Chart.prototype.update = function () {
     var chart = this;
     txData = data.slice();
@@ -274,34 +234,12 @@
       .bins(chart.y.ticks(binCount))
       (txData);          
         
-        console.log('yhist', yhist[0]);
         
-        
-//    var xmap = data.map(function(d) { return chart.xvar; })
-//    var xmap = data.map(function(d) { return d.trade; })        
-//    var xhist = d3.layout.histogram().bins(chart.x.ticks())(xmap);          
-        
-        console.log('xhist', xhist);
-    
-//    var barWidth = x(x.ticks()[1])/2;  
-        
-//    var barWidth = chart.x(xhist[2].x) - chart.x(xhist[1].x) -20;     
-//    var barWidth = chart.x(xhist[2].x) - chart.x(xhist[1].x);             
     var colWidth = chart.x(xhist[1].x);  
     var barWidth = colWidth - 20;
     var space = (colWidth-barWidth) / 2;        
         
-        
-        console.log('barw', barWidth, colWidth, chart.x(500), xhist[1].x, xhist[1].dx, chart.x(xhist[0].dx));
-        console.log('barw2', chart.x(xhist[2].x), chart.x(xhist[1].x));
-        
-/*        console.log('xtik', chart.x.ticks()[1], chart.x.ticks()[0]);
-        console.log('xkee', chart.x(chart.x.ticks()[1]-chart.x.ticks()[0]));
-        console.log('chart x bw', chart.x(barWidth));*/
-
-
-        console.log('space', space);
-        
+                
     var xbars = chart.svg.selectAll('.bar')
         .data(xhist);
     
@@ -309,20 +247,10 @@
       xbars.enter()
         .append('rect')
         .attr('class', 'bar')
-//        .attr('transform', function(d, i) { return 'translate(' +  
-//              (( chart.x(d.dx) - barWidth)/2) + ')'; })
-//              (( chart.x(d.x)) + 5) + ')'; })          
-///              (( chart.x(d.x)) + (chart.x(d.dx) - barWidth)/2) + ')'; })                
-          
-//        .attr('x', 0)                                     // orig
       .attr('transform', 'translate('+space+',0)')
         .attr('x', function (d) { return chart.x(d.x); } )  // CM
-//        .attr('x', function (d) { return chart.x(d.x) + (chart.x(d.dx) - chart.x(barWidth))/2  ; } )      
-//        .attr('x', function (d) { return chart.x(d.x) +  (chart.x(d.dx) - barWidth)/2 -168.75 ; } )            
-//        .attr('y', function(d) { return height-(d.y); })  // orig, working
         .attr('width', barWidth)
           .attr('y', height)
-//        .attr('height', function(d) { return d.y; })      // orig, working
         .attr('height', 0)
       .on('mouseover', chart.xtool.show)
       .on('mouseout', chart.xtool.hide);     
@@ -351,12 +279,9 @@
         ybars.enter()
         .append('rect')
         .attr('class', 'ybar')
-//    .attr("transform", function(d) { return 'translate(0,' + chart.y(d.x) + ')'; })
       .attr('transform', 'translate(0,'+space+')')        
         .attr('x', 0)
-//        .attr('y', function(d) { return chart.y(d.x); })        // working
         .attr('y', 0)                
-//        .attr('width', function(d) {return d.y*.4; })                  // working
         .attr('width', 0)
         .attr('height', ybarHeight)
       .on('mouseover', chart.ytool.show)
@@ -364,18 +289,8 @@
 
     ybars
       .transition().duration(150).delay(function (d, i) { return i ; })
-//      .attr('y', function (d) { return height - d.y; });
         .attr('y', function(d) { return chart.y(d.x) - chart.y(2); })   
         .attr('width', function(d) {return d.y*.4; }) ;    
-//      .attr('height', function (d) { return d.y; });  
-        
-
-        
-//    .attr("transform", function(d, i) { return 'translate(0,' + (y(d.x)) + ')'; });            
-      
-//    ybars.append('rect')
-         
-   
         
     // SCATTERPLOT
     var points = chart.svg.selectAll('.point')
