@@ -106,12 +106,12 @@
   d3.json('data.json', function (error, json) {
     if (error) { throw error; }
     data = json;
-    setup();
-    update();
+    var chart = new Chart();
   });
-  function setup() {
-    // SVG
-    svg = d3.select('#chart')
+ function Chart() {
+     var chart = this;
+ 
+     chart.svg = d3.select('#chart1')
       .append('svg')
       .attr('width', width + margin.right + margin.left)
       .attr('height', height + margin.top + margin.bottom)
@@ -184,7 +184,7 @@
       // EVENT HANDLERS
     d3.select('#location').on('change', function () {
       options.location = d3.event.target.value;
-      update();
+      chart.update();
     });
   }
   function update() {
