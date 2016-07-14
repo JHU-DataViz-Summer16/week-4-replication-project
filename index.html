@@ -91,6 +91,7 @@
 <script type="text/javascript" src="https://npmcdn.com/d3@3.5.17/d3.min.js"></script>
 <script type="text/javascript" src="https://npmcdn.com/science@1.9.3/science.v1.min.js"></script>
 <script type="text/javascript" src="https://npmcdn.com/simple-statistics@2.0.0/dist/simple-statistics.min.js"></script>
+<script type="text/javascript" src="https://npmcdn.com/d3-tip@0.6.7/index.js"></script>
 <script>
   var data = [];
   var options = {
@@ -184,7 +185,16 @@
       // EVENT HANDLERS
     d3.select('#location').on('change', function () {
       options.location = d3.event.target.value;
-      chart.update();
+
+
+      chart.tooltip = d3.tip()
+         .attr('class', 'tooltip')
+         .offset([-6, 0])
+         .html(function(d) { return d.length });
+ 
+     chart.tooltip(chart.svg);
+ 
+     chart.update();
     });
   }
     Chart.prototype.update = function() {
