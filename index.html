@@ -245,14 +245,14 @@
     //x-axis
     var histogramX = d3.layout.histogram()
       .bins(x.ticks())
-      .value(function (d) {return d.costs} )
+      .value(function (d) {return d.costs; } )
       (txData);
 
     var histy1 = d3.scale.linear()
       .domain([0, d3.max(histogramX, function (d){ return d.length; } ) ])
       .range([0, height]);
     
-    var barWidthX = x(histogramX[1].x) - x(histogramX[0].x) + 1;;
+    var barWidthX = x(histogramX[1].x) - x(histogramX[0].x) + 1;
 
     var barX = svg.selectAll(".barX")
       .data(histogramX);
@@ -260,12 +260,12 @@
     barX.enter().append("rect")
       .attr("class", "barX")
       .attr("x", function (d) { return x(d.x) ; })
-      .attr("y", height)
-      .attr("height", 0)
+      //.attr("y", height)
+      //.attr("height", 0)
       .attr("width", barWidthX);
 
     barX
-      .transition()
+      //.transition()
       .attr('height', function (d) {return histy1(d.length); })
       .attr('y', function (d) {return height - histy1(d.length); });
 
