@@ -11,6 +11,8 @@
   <style>
     .section {padding: 1em 0;} 
     .header {text-align: left;}
+    .point.filtered {opacity: .05;}
+    .bar {fill: rgb(51, 122, 183);}
 
     h1 {
       color:#5A5050;
@@ -58,14 +60,6 @@
       stroke-width: 1;
       fill: rgba(51, 122, 183, .5);
       opacity: .3;
-    }
-
-    .point.filtered {
-      opacity: .05;
-    }
-
-    .bar {
-      fill: rgb(51, 122, 183);
     }
 
     .barX {
@@ -141,21 +135,18 @@
 
     data = json;
 
-    //setup();
-    //update();
-
     var chart = new Chart(); 
 
-        // EVENT HANDLERS
-    d3.select('#year-range').on('change', function () {
-      options.yearRange = d3.event.target.value;
-      chart.update();
+  // EVENT HANDLERS
+  d3.select('#year-range').on('change', function () {
+    options.yearRange = d3.event.target.value;
+    chart.update();
     });
   });
 
-  //function setup() {
   function Chart() { 
     var chart = this; 
+
     // SVG
     chart.svg = d3.select('#chart')
       .append('svg')
@@ -239,28 +230,19 @@
       ? "$" + s + " thousand"
       : s;
 
-      chart.update(); 
-    }
+    chart.update(); 
+  }
 
-    // EVENT HANDLERS (moved up)
-    //d3.select('#year-range').on('change', function () {
-      //options.yearRange = d3.event.target.value;
-      //update();
-    //});
-  //}
-
-    //function update() {
-    Chart.prototype.update = function() { 
-      var chart = this; 
+  Chart.prototype.update = function() { 
+    var chart = this; 
 
     // TRANSFORM
     txData = data.slice();
       if (options.yearRange !== 'all') {
         var yearRange = options.yearRange.split('-');
         txData = txData.filter(function (d) {
-        return d.year >= yearRange[0] && d.year <= yearRange[1];
-      });
-    }
+        return d.year >= yearRange[0] && d.year <= yearRange[1]; 
+      }; 
 
     // SCATTERPLOT
     var points = chart.svg.selectAll('.point')
@@ -305,6 +287,7 @@
 
     // REGRESSION LINE
   }
+  
 </script>
 </body>
 </html>
