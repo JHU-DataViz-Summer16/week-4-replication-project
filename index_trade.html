@@ -50,9 +50,9 @@
     .point.filtered {
       opacity: .05;
     }
-    .bar {
+/*    .bar {
       fill: rgb(51, 122, 183);
-    }
+    }*/
     .line {
       stroke: rgb(175, 80, 75);
       stroke-width: 2;
@@ -63,12 +63,14 @@
       stroke-dasharray: 2,2;
     }      
       
-    .bar rect {
+/*    .bar rect {*/
+    .bar {  
       fill: steelblue;
     }     
        
-    .ybar rect {
-      fill: red;
+    .ybar {
+      fill: #cc0000;
+/*        fill: red;*/
     }     
              
       
@@ -240,8 +242,19 @@
 //    var yhist = d3.layout.histogram().bins(y.ticks())(ymap);      
       
 //      console.log('rate', yhist.reverse());
-      
-      
+
+      chart.xtool = d3.tip()
+      .attr('class', 'tooltip')
+      .offset([-6, 0])
+      .html(function(d) { return d.length ; });
+
+      chart.ytool = d3.tip()
+      .attr('class', 'tooltip')
+      .offset([10, 40])
+      .html(function(d) { return d.length ; });
+
+    chart.xtool(chart.svg);      
+    chart.ytool(chart.svg);      
       
       chart.update();
       
@@ -270,9 +283,10 @@
         
       var yhist = d3.layout.histogram()
       .value(function(d) { return d[chart.yvar]; } )
-      .bins(chart.x.ticks(binCount))
+      .bins(chart.y.ticks(binCount))
       (txData);          
         
+        console.log('yhist', yhist[0]);
         
         
 //    var xmap = data.map(function(d) { return chart.xvar; })
@@ -308,34 +322,60 @@
           
 //        .attr('x', 0)                                     // orig
 //      .attr('transform', 'translate(5,0)')
-//        .attr('x', function (d) { return chart.x(d.x); } )  // CM
+        .attr('x', function (d) { return chart.x(d.x); } )  // CM
 //        .attr('x', function (d) { return chart.x(d.x) + (chart.x(d.dx) - chart.x(barWidth))/2  ; } )      
         .attr('x', function (d) { return chart.x(d.x) +  (chart.x(d.dx) - barWidth)/2 -168.75 ; } )            
-        .attr('y', function(d) { return height-(d.y); })  // orig
+//        .attr('y', function(d) { return height-(d.y); })  // orig, working
         .attr('width', barWidth)
-//          .attr('y', height)
-        .attr('height', function(d) { return d.y; });      // orig
-//        .attr('height', 0);
+          .attr('y', height)
+//        .attr('height', function(d) { return d.y; })      // orig, working
+        .attr('height', 0)
+      .on('mouseover', chart.xtool.show)
+      .on('mouseout', chart.xtool.hide);     
+        
+    xbars
+      .transition().duration(150).delay(function (d, i) { return i*50 ; })
+      .attr('y', function (d) { return height - d.y; })
+      .attr('height', function (d) { return d.y; });        
     
+        
+        // Y, WHY???
+        
+        var ybarWidth = chart.y(yhist[1].y) - chart.y(yhist[0].y);
+        console.log('ybar wid', ybarWidth);
+        
     var ybars = chart.svg.selectAll('.ybar')
         .data(yhist.reverse());
         
-/*        ybars.enter()
+        ybars.enter()
         .append('rect')
         .attr('class', 'ybar')
-    .attr("transform", function(d) { return 'translate(0,' + y(d.x) + ')'; })
+//    .attr("transform", function(d) { return 'translate(0,' + chart.y(d.x) + ')'; })
         .attr('x', 0)
-        .attr('y', function(d) { return y(d.x); })
-        .attr('width', function(d) {return d.y; })
-        .attr('height', 30); */
+//        .attr('y', function(d) { return chart.y(d.x) -30; })        // working
+        .attr('y', 0)                
+//        .attr('width', function(d) {return d.y*.4; })                  // working
+        .attr('width', 0)
+        .attr('height', 30)
+      .on('mouseover', chart.ytool.show)
+      .on('mouseout', chart.ytool.hide);          
+
+    ybars
+      .transition().duration(150).delay(function (d, i) { return i ; })
+//      .attr('y', function (d) { return height - d.y; });
+        .attr('y', function(d) { return chart.y(d.x) -30; })   
+        .attr('width', function(d) {return d.y*.4; }) ;    
+//      .attr('height', function (d) { return d.y; });  
+        
+    console.log('ybar', ybars);
+        console.log('yhist', yhist);
         
 //    .attr("transform", function(d, i) { return 'translate(0,' + (y(d.x)) + ')'; });            
       
 //    ybars.append('rect')
          
-    xbars.exit().remove();    
+   
         
-    
     // SCATTERPLOT
     var points = chart.svg.selectAll('.point')
       .data(txData);
@@ -347,8 +387,8 @@
     points
       .attr('cx', function (d) { return chart.x(d.trade); })
       .attr('cy', function (d) { return chart.y(d.rate); });
-      
-    points.exit().remove();
+
+      points.exit().remove();
 
 
       
