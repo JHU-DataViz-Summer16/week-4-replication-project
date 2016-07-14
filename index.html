@@ -138,14 +138,26 @@
   // FETCH DATA
   d3.json('data.json', function (error, json) {
     if (error) { throw error; }
+
     data = json;
-    setup();
-    update();
+
+    //setup();
+    //update();
+
+    var chart = new Chart(); 
+
+        // EVENT HANDLERS
+    d3.select('#year-range').on('change', function () {
+      options.yearRange = d3.event.target.value;
+      chart.update();
+    });
   });
 
-  function setup() {
+  //function setup() {
+  function Chart() { 
+    var chart = this; 
     // SVG
-    svg = d3.select('#chart')
+    chart.svg = d3.select('#chart')
       .append('svg')
       .attr('width', width + margin.right + margin.left)
       .attr('height', height + margin.top + margin.bottom)
@@ -153,20 +165,21 @@
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
     
     // SCALES
-    x = d3.scale.linear()
+    chart.x = d3.scale.linear()
       .domain(d3.extent(data, function (a) {return a.costs; }))
       .range([0, width])
       .nice();
 
-    y = d3.scale.linear()
+    chart.y = d3.scale.linear()
       .domain(d3.extent(data, function (a) {return a.visits; }))
       .range([height, 0])
       .nice();
     
     // AXES
     var formatNumber = d3.format(".0f");
+
     var xAxis = d3.svg.axis()
-      .scale(x)
+      .scale(chart.x)
       .tickFormat(formatCurrency)
       .tickSize(height)
       .orient("bottom"); 
@@ -188,7 +201,7 @@
       .classed("minor", true);
     
     var yAxis = d3.svg.axis()
-      .scale(y)
+      .scale(chart.y)
       .tickSize(width)
       .orient("right");
     
@@ -225,16 +238,20 @@
       return d === x.domain()[1]
       ? "$" + s + " thousand"
       : s;
+
+      chart.update(); 
     }
 
-    // EVENT HANDLERS
-    d3.select('#year-range').on('change', function () {
-      options.yearRange = d3.event.target.value;
-      update();
-    });
-  }
+    // EVENT HANDLERS (moved up)
+    //d3.select('#year-range').on('change', function () {
+      //options.yearRange = d3.event.target.value;
+      //update();
+    //});
+  //}
 
-    function update() {
+    //function update() {
+    Chart.prototype.update = function() { 
+      var chart = this; 
 
     // TRANSFORM
     txData = data.slice();
@@ -246,7 +263,7 @@
     }
 
     // SCATTERPLOT
-    var points = svg.selectAll('.point')
+    var points = chart.svg.selectAll('.point')
       .data(txData);
 
     points.enter().append('circle')
@@ -256,31 +273,30 @@
       .on("mouseout", chart.tooltip.hide); 
 
     points
-      .attr('cx', function (a) { return x(a.costs); })
-      .attr('cy', function (a) { return y(a.visits); });
+      .attr('cx', function (a) { return chart.x(a.costs); })
+      .attr('cy', function (a) { return chart.y(a.visits); });
     
     points.exit().remove();
     
     // HISTOGRAMS
-
     //x-axis
     var histogramX = d3.layout.histogram()
-      .bins(x.ticks())
-      .value(function (d) {return d.costs; } )
+      .bins(chart.x.ticks())
+      .value(function (d) {return d[chart.costs]; } )
       (txData);
 
     var histy1 = d3.scale.linear()
       .domain([0, d3.max(histogramX, function (d){ return d.length; } ) ])
       .range([0, height]);
     
-    var barWidthX = x(histogramX[1].x) - x(histogramX[0].x) + 1;
+    var barWidthX = chart.x(histogramX[1].x) - chart.x(histogramX[0].x) + 1;
 
-    var barX = svg.selectAll(".barX")
+    var barX = chart.svg.selectAll(".barX")
       .data(histogramX);
 
     barX.enter().append("rect")
       .attr("class", "barX")
-      .attr("x", function (d) { return x(d.x) ; })
+      .attr("x", function (d) { return chart.x(d.x) ; })
       .attr("width", barWidthX/2);
 
     barX
