@@ -166,13 +166,13 @@
       .text("Incentive Value") 
       .attr("x", -10)
       .attr("y", -10);
-    var gy = svg.append("g")
+      gy = this.svg.append("g")
       .attr("class", "y axis")
       .call(yAxis);
     gy.selectAll("g").filter(function(d) { return d; })
       .classed("minor", true);
     
-    var gx = svg.append("g")
+      gx = this.svg.append("g")
       .attr("class", "x axis")
       .call(xAxis);
       
@@ -187,7 +187,8 @@
       chart.update();
     });
   }
-  function update() {
+    Chart.prototype.update = function() {
+      var chart = this;
     // TRANSFORM
     txData = data.slice();
     if (options.location !== 'all') {
@@ -196,7 +197,7 @@
       });
     }
     // SCATTERPLOT
-    var points = svg.selectAll('.point')
+    points = this.svg.selectAll('.point')
       .data(txData);
     points.enter().append('circle')
       .attr('class', 'point')
@@ -206,9 +207,9 @@
       .attr('cy', function (d) { return y(d.value); });
     points.exit().remove();
     // HISTOGRAMS
-    var hist = d3.layout.histogram()
+       hist = this.d3.layout.histogram()
        .value(function (d) { return d.year; })
-       .bins(x.ticks(binCount))
+       .bins(chart.x.ticks(binCount))
        (txData);
     var histy = d3.layout.histogram()
         .value(function (d) { return d.value; })
