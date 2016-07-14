@@ -232,15 +232,12 @@
       .attr('cy', function (d) { return y(d.employment); });
     points.exit().remove();
     
-    /*
+    
     // HISTOGRAMS
     var hist = d3.layout.histogram()
       .value(function (d) {return d.unemployment; })
       .bins (x.ticks (binCount))
       (txData);
-
-      // if I put only y - error: y is not a function and scatterplot does not work 
-      // if I put yh then line  258 = attribute height: Expected length, "NaN".
 
     hy = d3.scale.linear()
       .domain([0, d3.max(hist, function (bin) { return bin.length; })])
@@ -257,17 +254,15 @@
       .attr('x', function (d) { return x( d.x ) + 30;  })
       .attr('width' , barWidth); 
        
-    // (x.range()[1] - x.range()[0]) / data.length + 1); trying to make barWidht explict -- does not work 
-
     // ALL BARS IN HIST 1 
     
     bars
       .attr('y', function (bin) {return height - hy( bin.length ) * 0.1; })
       .attr('height', function (bin) { return hy(bin.length) * 0.1; })
-     */
+     
 
-    // hist2
-    
+    // HISTOGRAM2
+    // hist function in d3 
     // each bin has x, y and dx -- x is the lower bound (first value in the domain of the bin) 
     // dx width (constant) (total domain divided by the bincount)
     // x+dx (upper bound of the bin)
@@ -281,23 +276,21 @@
       .domain([0, d3.max(hist2, function (bin) { return bin.length; })])
       .range ([0, width]);
     
-    console.log( hist2[0].x + "," + ( hist2[0].x + hist2[0].dx ) + " : " + hist2[0].y );
-    console.log( y(hist2[0].y) );
+    //console.log( hist2[0].x + "," + ( hist2[0].x + hist2[0].dx ) + " : " + hist2[0].y );
+    //console.log( y(hist2[0].y) );
 
-    console.log( hist2[1].x + "," + ( hist2[1].x + hist2[1].dx ) + " : " + hist2[1].y );
-    console.log( y(hist2[1].y) );
-
+    //console.log( hist2[1].x + "," + ( hist2[1].x + hist2[1].dx ) + " : " + hist2[1].y );
+    //console.log( y(hist2[1].y) );
+    // the function does work 
 
     var barHeight = y(hist2[0].x) - y(hist2[1].x) - 10;
-    //TODO -- Figure out what does y function and why is not working 
-    // trying hardcoding 
-    //var barHeight = 30; //constant
+    //y - is setting the min and the max of the bin the it passes to each rect so the x, and y coordinates are set. 
+    
 
     var bars2 = svg.selectAll('.bar')
       .data(hist2);
 
-    //do something with an object 
-    // putting space - 
+    //doing something with the object "bar2"
     bars2.enter().append('rect')
       .attr('class', 'bar')
       .attr('y', function (bin) { return y( bin.x );  }) // html position and this is not about the function 
@@ -323,7 +316,7 @@
                   })).line();
 
     svg.append("path")
-                      .datum(regLineData)
+                      .data(regLineData)
                       .attr({
                           "class": "reg",
                           "d": line
@@ -334,159 +327,7 @@
     */
     
 
-    // Call a function:
-    Chart( txData, d3, x );
-
-    // TODO: Ask professor if this is generic enough
-    // TODO: change the Chart syntax to the constructor syntax
-    //var chart = new Chart( txData, d3, x );
-  }
-  
-  // Syntax for defining a function:
-  // function [funcation name]( [~parameters~] )
-  // {
-      // [function body]
-  //}
-
-
-  function Chart( txData, d3, scatterX )
-  // global variables accesible for all the code. For creating the function we want generalized them 
-  // rename variables based on the purpose that they served. 
-  {
-    HistogramBottom( txData, d3, scatterX );
-    HistogramLeft( txData );
-  }
-
-  function HistogramBottom( txData, d3, scatterX, )
-  {
-    var hist = d3.layout.histogram()
-      .value(function (d) {return d.unemployment; })
-      .bins (scatterX.ticks (binCount))
-      (txData);
-
-      // if I put only y - error: y is not a function and scatterplot does not work 
-      // if I put yh then line  258 = attribute height: Expected length, "NaN".
-
-    hy = d3.scale.linear()
-      .domain([0, d3.max(hist, function (bin) { return bin.length; })])
-      .range ([0, height]); 
     
-    var barWidth = x(hist[1].x) - x(hist[0].x) + 1 - 50;
-
-    var bars = svg.selectAll('.bar')
-      .data(hist); 
-
-    //ENTER 
-    bars.enter().append('rect')
-      .attr('class', 'bar')
-      .attr('x', function (d) { return x( d.x ) + 30;  })
-      .attr('width' , barWidth); 
-       
-    // (x.range()[1] - x.range()[0]) / data.length + 1); trying to make barWidht explict -- does not work 
-
-    // ALL BARS IN HIST 1 
-    
-    bars
-      .attr('y', function (bin) {return height - hy( bin.length ) * 0.1; })
-      .attr('height', function (bin) { return hy(bin.length) * 0.1; });
-
-  }
-
-  function HistogramLeft( txData )
-  {
-    // Function body
-    var hist2 = d3.layout.histogram()
-      .value(function ( data ) { return data.employment; })
-      .bins (y.ticks (binCounty))  
-      (txData);
-
-    x = d3.scale.linear()
-      .domain([0, d3.max(hist2, function (bin) { return bin.length; })])
-      .range ([0, width]);
-
-
-    var barHeight = y(hist2[0].x) - y(hist2[1].x) - 10;
-
-    var bars2 = svg.selectAll('.bar')
-      .data(hist2);
-
-    //do something with an object 
-    // putting space - 
-    bars2.enter().append('rect')
-      .attr('class', 'bar')
-      .attr('y', function (bin) { return y( bin.x );  }) // html position and this is not about the function 
-      .attr('height' , barHeight);
-
-    bars2
-      .attr('x', function (bin) { return 0; })
-      .attr('width', function (bin) { return x(bin.length) * 0.1; });
-
-  }
-
-
-
-
-  /*
-  function Chart( variable )
-  {
-    // If the type variable is equal to "histogram"
-    if( type == "histogram" )
-    {
-      // Create a histogram
-
-      if( orientation == "horizontal" )
-      {
-        // Create a horizontal histogram
-      }
-    }
-    else if( type == "scatterplot" )
-    {
-      // Create a scatterplot
-    }
-
-    var rangeMax = 0;
-
-    if( orientation == "horizontal" )
-    {
-      rangeMax = width;
-    }
-    else if( orientation == "vertical" )
-    {
-      rangeMax = height;
-    }
-
-    // Function body
-    var hist2 = d3.layout.histogram()
-      .value(function ( data ) { return data[variable]; }) // using the [] because it is a variable 
-      .bins (y.ticks (binCounty))  
-      (txData);
-
-    x = d3.scale.linear()
-      .domain([0, d3.max(hist2, function (bin) { return bin.length; })])
-      .range ([0, width]);
-
-
-    var barHeight = y(hist2[0].x) - y(hist2[1].x) - 10;
-
-    var bars2 = svg.selectAll('.bar')
-      .data(hist2);
-
-    //do something with an object 
-    // putting space - 
-    bars2.enter().append('rect')
-      .attr('class', 'bar')
-      .attr('y', function (bin) { return y( bin.x );  }) // html position and this is not about the function 
-      .attr('height' , barHeight);
-
-    bars2
-      .attr('x', function (bin) { return 0; })
-      .attr('width', function (bin) { return x(bin.length) * 0.1; });
-  }
-  */
-
-
-
- 
 
 </script>
 </body>
