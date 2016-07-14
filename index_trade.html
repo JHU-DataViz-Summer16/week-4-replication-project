@@ -297,9 +297,13 @@
     
 //    var barWidth = x(x.ticks()[1])/2;  
         
-    var barWidth = chart.x(xhist[2].x) - chart.x(xhist[1].x) -20;     
+//    var barWidth = chart.x(xhist[2].x) - chart.x(xhist[1].x) -20;     
 //    var barWidth = chart.x(xhist[2].x) - chart.x(xhist[1].x);             
-    var colWidth = chart.x(xhist[2].x) - chart.x(xhist[1].x);             
+    var colWidth = chart.x(xhist[1].x);  
+    var barWidth = colWidth - 20;
+        
+        
+        
         console.log('barw', barWidth, colWidth, chart.x(500), xhist[0].dx, chart.x(xhist[0].dx));
         console.log('barw2', chart.x(xhist[2].x), chart.x(xhist[1].x));
         
@@ -307,6 +311,8 @@
         console.log('xkee', chart.x(chart.x.ticks()[1]-chart.x.ticks()[0]));
         console.log('chart x bw', chart.x(barWidth));
 
+        var space = (colWidth-barWidth) / 2;
+        console.log('space', space);
         
     var xbars = chart.svg.selectAll('.bar')
         .data(xhist);
@@ -315,16 +321,16 @@
       xbars.enter()
         .append('rect')
         .attr('class', 'bar')
-///        .attr('transform', function(d, i) { return 'translate(' +  
+//        .attr('transform', function(d, i) { return 'translate(' +  
 //              (( chart.x(d.dx) - barWidth)/2) + ')'; })
 //              (( chart.x(d.x)) + 5) + ')'; })          
 ///              (( chart.x(d.x)) + (chart.x(d.dx) - barWidth)/2) + ')'; })                
           
 //        .attr('x', 0)                                     // orig
-//      .attr('transform', 'translate(5,0)')
+      .attr('transform', 'translate('+space+',0)')
         .attr('x', function (d) { return chart.x(d.x); } )  // CM
 //        .attr('x', function (d) { return chart.x(d.x) + (chart.x(d.dx) - chart.x(barWidth))/2  ; } )      
-        .attr('x', function (d) { return chart.x(d.x) +  (chart.x(d.dx) - barWidth)/2 -168.75 ; } )            
+//        .attr('x', function (d) { return chart.x(d.x) +  (chart.x(d.dx) - barWidth)/2 -168.75 ; } )            
 //        .attr('y', function(d) { return height-(d.y); })  // orig, working
         .attr('width', barWidth)
           .attr('y', height)
