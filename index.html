@@ -106,23 +106,23 @@
   d3.json('data.json', function (error, json) {
     if (error) { throw error; }
     data = json;
-    var chart = new Chart();
+    setup();
+    update();
   });
-      function Chart() {
-        var chart = this;
-
-        chart.svg = d3.select('#chart1')
+  function setup() {
+    // SVG
+    svg = d3.select('#chart')
       .append('svg')
       .attr('width', width + margin.right + margin.left)
       .attr('height', height + margin.top + margin.bottom)
       .append('g')
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
     // SCALES
-    chart.x = d3.scale.linear()
+    x = d3.scale.linear()
       .domain(d3.extent(data, function (a) {return a.year; }))
       .range([0, width])
       .nice();
-    chart.y = d3.scale.linear()
+    y = d3.scale.linear()
       .domain(d3.extent(data, function (a) {return a.value; }))
       .range([height, 0])
       .nice();
@@ -149,7 +149,7 @@
              .ticks(5);
    
     //Create X axis
-    var chart.gx = svg.append("g")
+    var gx = svg.append("g")
           .attr("class", "axis")
           .attr("transform", "translate(0," + height + ")")
           .append("text")
@@ -158,7 +158,7 @@
           .style("text-anchor", "end")
           .text("Year");
     //Create y axis
-  var chart.gy = svg.append("g")
+  var gy = svg.append("g")
       .attr("transform", "rotate(-90)")
       .attr("class", "axis")
       .append("text")
@@ -166,19 +166,19 @@
       .text("Incentive Value") 
       .attr("x", -10)
       .attr("y", -10);
-    var chart.gy = svg.append("g")
+    var gy = svg.append("g")
       .attr("class", "y axis")
       .call(yAxis);
-    chart.gy.selectAll("g").filter(function(d) { return d; })
+    gy.selectAll("g").filter(function(d) { return d; })
       .classed("minor", true);
     
-    var chart.gx = svg.append("g")
+    var gx = svg.append("g")
       .attr("class", "x axis")
       .call(xAxis);
       
-    chart.gx.select('g').filter(function(d) { return d; })
+    gx.select('g').filter(function(d) { return d; })
         .classed("minor", true);
-    chart.gy.selectAll("text")
+    gy.selectAll("text")
     .attr("x", 4)
     .attr("dy", -4);
       // EVENT HANDLERS
@@ -187,9 +187,7 @@
       update();
     });
   }
-    Chart.prototype.update = function() {
-      var chart = this;
-    }
+  function update() {
     // TRANSFORM
     txData = data.slice();
     if (options.location !== 'all') {
@@ -210,7 +208,7 @@
     // HISTOGRAMS
     var hist = d3.layout.histogram()
        .value(function (d) { return d.year; })
-       .bins(x.chart.ticks(binCount))
+       .bins(x.ticks(binCount))
        (txData);
     var histy = d3.layout.histogram()
         .value(function (d) { return d.value; })
@@ -218,12 +216,12 @@
     var hy = d3.scale.linear()
         .domain([0, d3.max(hist, function (d) { return d.length; })])
         .range([0, height]);
-    var barWidth = chart.x(hist[1].x) - chart.x(hist[0].x) + 1;
-    var bars = chart.svg.selectAll('bar')
+    var barWidth = x(hist[1].x) - x(hist[0].x) + 1;
+    var bars = svg.selectAll('bar')
         .data(hist);
     bars.enter().append('rect')
       .attr('class', 'bar')
-      .attr('x', function (d) { return chart.x(d.x); })
+      .attr('x', function (d) { return x(d.x); })
       .attr('width', barWidth);
     
     bars 
@@ -240,7 +238,7 @@
       .attr('y', function (d) { return height - hy(d.length); })
       .attr('height', function (d) { return hy(d.length); });
     // REGRESSION LINE
-  };
+  }
 </script>
 </body>
 </html>
