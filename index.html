@@ -82,6 +82,15 @@
       stroke: rgb(175, 80, 75);
       stroke-width: 2;
     }
+
+    .tooltip {
+      padding: .5em 1em;
+      background: rgba(0,0,0,.75);
+      color: #FFFFFF;
+      font-size: 10px;
+      font-weight: 500;
+      line-height: 1;
+    }
   </style>
 
 </head>
@@ -203,6 +212,13 @@
     
     gy.selectAll("text")
       .attr("x", -30);
+
+    chart.tooltip = d3.tip()
+      .attr("class", "tooltip")
+      .offset([-6,0])
+      .html(function (d) { return d.costs + ' in pc costs' ; }); 
+
+    chart.svg.call(chart.tooltip); 
   
     function formatCurrency(d) {
       var s = formatNumber(d / 1e3);
@@ -232,12 +248,17 @@
     // SCATTERPLOT
     var points = svg.selectAll('.point')
       .data(txData);
+
     points.enter().append('circle')
       .attr('class', 'point')
-      .attr('r', 2);
+      .attr('r', 2)
+      .on("mouseover", chart.tooltip.show)
+      .on("mouseout", chart.tooltip.hide); 
+
     points
       .attr('cx', function (a) { return x(a.costs); })
       .attr('cy', function (a) { return y(a.visits); });
+    
     points.exit().remove();
     
     // HISTOGRAMS
