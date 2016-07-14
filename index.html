@@ -207,18 +207,18 @@
       .attr('cy', function (d) { return y(d.value); });
     points.exit().remove();
     // HISTOGRAMS
-       hist = this.d3.layout.histogram()
+       hist = d3.layout.histogram()
        .value(function (d) { return d.year; })
        .bins(chart.x.ticks(binCount))
        (txData);
-    var histy = d3.layout.histogram()
+        histy = d3.layout.histogram()
         .value(function (d) { return d.value; })
-        .bins(y.ticks(binCounty))
-    var hy = d3.scale.linear()
+        .bins(chart.y.ticks(binCounty))
+        hy = this.d3.scale.linear()
         .domain([0, d3.max(hist, function (d) { return d.length; })])
         .range([0, height]);
-    var barWidth = x(hist[1].x) - x(hist[0].x) + 1;
-    var bars = svg.selectAll('bar')
+        barWidth = chart.x(hist[1].x) - chart.x(hist[0].x) + 1;
+        bars = chart.svg.selectAll('bar')
         .data(hist);
     bars.enter().append('rect')
       .attr('class', 'bar')
@@ -228,7 +228,7 @@
     bars 
       .attr('y', function (d) { return height - hy(d.length)/4; })
       .attr('height', function (d) { return hy(d.length)/4; });
-    var barsy = svg.selectAll('bar')
+    var barsy = chart.svg.selectAll('bar')
         .data(hist);
     bars.enter().append('rect')
       .attr('class', 'bar')
@@ -239,7 +239,7 @@
       .attr('y', function (d) { return height - hy(d.length); })
       .attr('height', function (d) { return hy(d.length); });
     // REGRESSION LINE
-  }
+  };
 </script>
 </body>
 </html>
