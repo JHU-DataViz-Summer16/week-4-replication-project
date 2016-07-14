@@ -118,11 +118,11 @@
       .append('g')
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
     // SCALES
-    x = d3.scale.linear()
+    chart.x = d3.scale.linear()
       .domain(d3.extent(data, function (a) {return a.year; }))
       .range([0, width])
       .nice();
-    y = d3.scale.linear()
+    chart.y = d3.scale.linear()
       .domain(d3.extent(data, function (a) {return a.value; }))
       .range([height, 0])
       .nice();
@@ -135,14 +135,14 @@
     //Define X axis
    
     var xAxis = d3.svg.axis()
-             .scale(x)
+             .scale(chart.x)
              .orient("bottom")
              .ticks(20)
              .tickSize(height + 15)
              .tickFormat(formatyears);
     //Define Y axis
     var yAxis = d3.svg.axis()
-             .scale(y)
+             .scale(chart.y)
              .tickSize(width)
              .tickFormat(formatmoney)
              .orient("right")
