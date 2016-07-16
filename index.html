@@ -140,7 +140,8 @@
   var binCount = 10;
 
   var MAX_RADIUS=25;
-
+  var TRANSITION_DURATION = 750;
+  
   // FETCH DATA
 
   d3.json('data.json', function(error, json){
@@ -158,8 +159,11 @@
       options.SOCGroup = d3.event.target.value;
       charts.forEach(function (d) {d.update(); }); 
     });
+
+ 
   });
 
+	
 
   function Chart(selector,columnX,columnY) {
     var chart = this;
@@ -281,6 +285,7 @@
 
   Chart.prototype.update = function () {
     var chart = this;
+    var t = d3.transition().duration(TRANSITION_DURATION)
 
     // TRANSFORM
     txData = data.slice();
@@ -301,6 +306,7 @@
 
       points.enter().append('circle')
       .attr('class','point')
+      .attr('r', 0)
       .on('mouseover', chart.tooltip2.show)
       .on('mouseout', chart.tooltip2.hide);
 
@@ -309,11 +315,15 @@
       .classed('Service', function (d) { return d.SuperGroup==='Service';})
       .classed('SalesOffice', function (d) { return d.SuperGroup==='SalesOffice';})
       .classed('ProdTransMat', function (d) { return d.SuperGroup==='ProdTransMat';})
+      .transition(t)
       .attr('r', function (d) { return chart.r(d.Total); })
       .attr('cx', function(d) { return chart.x(d[chart.columnX]); })
       .attr('cy',  function(d) { return chart.y(d[chart.columnY]); });
 
-      points.exit().remove();
+      points.exit()
+      .transition(t)
+      .attr('r', 0)
+      .remove();
 
 
     // HISTOGRAMS
