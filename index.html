@@ -52,7 +52,23 @@
     }
 
     .MgtProfRelated {
-      fill: rgba(98, 54, 164, .5);
+      stroke: rgb(98, 54, 164);
+      fill: rgba(98, 54, 164, .75);
+    }
+
+    .Service {
+      stroke: rgb(0, 204, 0);
+      fill: rgba(0, 204, 0, .75);
+    }
+
+    .SalesOffice {
+      stroke: rgb(225, 128, 0);
+      fill: rgba(225, 128, 0, .75);
+    }
+
+    .ProdTransMat {
+      stroke: rgb(255, 51, 51);
+      fill: rgba(255, 51, 51, .75);
     }
 
     .bar {
@@ -123,6 +139,8 @@
 
   var binCount = 10;
 
+  var MAX_RADIUS=25;
+
   // FETCH DATA
 
   d3.json('data.json', function(error, json){
@@ -170,6 +188,10 @@
       .range([height, 0])
       .nice();
     
+	chart.r = d3.scale.sqrt()
+	  .domain([0, d3.max(data, function (d) { return d.Total; })])
+	  .range([0, MAX_RADIUS]);
+
     // AXES
     var formatAsPercentage = d3.format(".0%");
 
@@ -271,6 +293,7 @@
     }
 
 
+
     // SCATTERPLOT
 
     var points=chart.svg.selectAll('.point')
@@ -278,12 +301,15 @@
 
       points.enter().append('circle')
       .attr('class','point')
-//      .attr('class', function(d) { return d.SuperGroup;})
-      .attr('r', 5)
       .on('mouseover', chart.tooltip2.show)
       .on('mouseout', chart.tooltip2.hide);
 
       points
+      .classed('MgtProfRelated', function (d) { return d.SuperGroup==='MgtProfRelated';})
+      .classed('Service', function (d) { return d.SuperGroup==='Service';})
+      .classed('SalesOffice', function (d) { return d.SuperGroup==='SalesOffice';})
+      .classed('ProdTransMat', function (d) { return d.SuperGroup==='ProdTransMat';})
+      .attr('r', function (d) { return chart.r(d.Total); })
       .attr('cx', function(d) { return chart.x(d[chart.columnX]); })
       .attr('cy',  function(d) { return chart.y(d[chart.columnY]); });
 
