@@ -3,53 +3,50 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Week 4: Replication Project</title>
+  <title>Boeing Incentives</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
   <style>
     .section {
       padding: 1em 0;
     }
-
     .header {
       background: linear-gradient(to bottom, #337ab7 0%, #135a97 100%);
       color: white;
       padding: 1em 0 2em;
     }
-
     svg {
       display: block;
       margin: 0 auto;
     }
-
     .axis path, .axis line {
       fill: none;
       stroke: #ccc;
       shape-rendering: crispEdges;
     }
-
+    .axis .minor line {
+    stroke: #777;
+    stroke-dasharray: 2,2;
+    }
+    
     .axis text {
       font-size: 11px;
     }
-
     .label {
       font-weight: 700;
     }
-
     .point {
       stroke: rgb(51, 122, 183);
       stroke-width: 1;
       fill: rgba(51, 122, 183, .5);
       opacity: .5;
     }
-
     .point.filtered {
       opacity: .05;
     }
-
     .bar {
       fill: rgb(51, 122, 183);
+      opacity: .3;
     }
-
     .line {
       stroke: rgb(175, 80, 75);
       stroke-width: 2;
@@ -59,21 +56,10 @@
 <body>
 <div class="header section">
   <div class="container">
-    <h1>Week 4: Replication Project</h1>
-    <p>Let's build a complex interactive graphic.</p>
+    <h1>Test</h1>
+    <p>Testing to see if this works.</p>
   </div>
 </div>
-<div class="controls section">
-  <div class="container">
-    <div class="btn-toolbar">
-      <label for="year-range">Year range: </label>
-      <select id="year-range">
-        <option value="all">All (1948&ndash;2016)</option>
-        <option value="1955-1971">1955&ndash;1971</option>
-        <option value="1974-1984">1974&ndash;1984</option>
-        <option value="1985-1992">1985&ndash;1992</option>
-        <option value="1997-2007">1997&ndash;2007</option>
-        <option value="2008-2016">2008&ndash;2016</option>
       </select>
     </div>
   </div>
@@ -83,95 +69,172 @@
     <div id="chart"></div>
   </div>
 </div>
-<script type="text/javascript" src="https://npmcdn.com/d3@3.5.17/d3.min.js"></script>
+<script type="text/javascript" src="https://npmcdn.com/d3@3.5.17/d4.min.js"></script>
 <script type="text/javascript" src="https://npmcdn.com/science@1.9.3/science.v1.min.js"></script>
 <script type="text/javascript" src="https://npmcdn.com/simple-statistics@2.0.0/dist/simple-statistics.min.js"></script>
+<script type="text/javascript" src="https://npmcdn.com/d3-tip@0.6.7/index.js"></script>
 <script>
   var data = [];
   var options = {
-    yearRange: 'all'
+    location: 'all'
   };
-
   var svg, x, y;
-
-  var margin = { top: 15, right: 15, bottom: 30, left: 45 };
-
-  var width = 640 - margin.right - margin.left;
-  var height = 400 - margin.top - margin.bottom;
-
+  var margin = { top: 15, right: 15, bottom: 30, left: 90 };
+  var width = 900 - margin.right - margin.left;
+  var height = 500 - margin.top - margin.bottom;
+  var binCount = 54
+  var binCounty = 15
   // FETCH DATA
-
   d3.json('data.json', function (error, json) {
     if (error) { throw error; }
-
     data = json;
-
-    setup();
-    update();
+    var chart = new Chart();
   });
-
-  function setup() {
-    // SVG
-
-    svg = d3.select('#chart')
+ function Chart() {
+     var chart = this;
+ 
+     chart.svg = d3.select('#chart1')
       .append('svg')
       .attr('width', width + margin.right + margin.left)
       .attr('height', height + margin.top + margin.bottom)
       .append('g')
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-
     // SCALES
-
-    x = d3.scale.linear()
-      .domain([0, d3.max(data, function (d) { return d.unemployment; })])
+    chart.x = d3.scale.linear()
+      .domain(d3.extent(data, function (a) {return a.year; }))
       .range([0, width])
       .nice();
-
-    y = d3.scale.linear()
-      .domain(d3.extent(data, function (d) { return d.inflation; }))
+    chart.y = d3.scale.linear()
+      .domain(d3.extent(data, function (a) {return a.value; }))
       .range([height, 0])
       .nice();
-
+    
     // AXES
+    // format x axis
+    var formatyears = d3.format("1000")
+    // format y axis
+    var formatmoney = d3.format("$1,000,000,000")
+    //Define X axis
+   
+    var xAxis = d3.svg.axis()
+             .scale(chart.x)
+             .orient("bottom")
+             .ticks(20)
+             .tickSize(height + 15)
+             .tickFormat(formatyears);
+    //Define Y axis
+    var yAxis = d3.svg.axis()
+             .scale(chart.y)
+             .tickSize(width)
+             .tickFormat(formatmoney)
+             .orient("right")
+             .ticks(5);
+   
+    //Create X axis
+     gx = this.svg.append("g")
+          .attr("class", "axis")
+          .attr("transform", "translate(0," + height + ")")
+          .append("text")
+          .attr("x", width)
+          .attr("y", 0)
+          .style("text-anchor", "end")
+          .text("Year");
+    //Create y axis
+      gy = this.svg.append("g")
+      .attr("transform", "rotate(-90)")
+      .attr("class", "axis")
+      .append("text")
+      .style("text-anchor", "end")
+      .text("Incentive Value") 
+      .attr("x", -10)
+      .attr("y", -10);
+      gy = this.svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis);
+    gy.selectAll("g").filter(function(d) { return d; })
+      .classed("minor", true);
+    
+      gx = this.svg.append("g")
+      .attr("class", "x axis")
+      .call(xAxis);
+      
+    gx.select('g').filter(function(d) { return d; })
+        .classed("minor", true);
+    gy.selectAll("text")
+    .attr("x", 4)
+    .attr("dy", -4);
+      // EVENT HANDLERS
+    d3.select('#location').on('change', function () {
+      options.location = d3.event.target.value;
 
-    // EVENT HANDLERS
 
-    d3.select('#year-range').on('change', function () {
-      options.yearRange = d3.event.target.value;
-      update();
+      chart.tooltip = d3.tip()
+         .attr('class', 'tooltip')
+         .offset([-6, 0])
+         .html(function(d) { return d.length });
+ 
+     chart.tooltip(chart.svg);
+ 
+     chart.update();
     });
   }
-
-  function update() {
+    Chart.prototype.update = function() {
+      var chart = this;
     // TRANSFORM
     txData = data.slice();
-
-    if (options.yearRange !== 'all') {
-      var yearRange = options.yearRange.split('-');
-      txData = txData.filter(function (d) {
-        return d.year >= yearRange[0] && d.year <= yearRange[1];
+    if (options.location !== 'all') {
+       txData = txData.filter(function (d) {
+        return d.location === options.location;
       });
     }
-
     // SCATTERPLOT
-
-    var points = svg.selectAll('.point')
+    points = this.svg.selectAll('.point')
       .data(txData);
-
     points.enter().append('circle')
       .attr('class', 'point')
       .attr('r', 5);
-
     points
-      .attr('cx', function (d) { return x(d.unemployment); })
-      .attr('cy', function (d) { return y(d.inflation); });
-
+      .attr('cx', function (d) { return x(d.year); })
+      .attr('cy', function (d) { return y(d.value); });
     points.exit().remove();
-
     // HISTOGRAMS
-
+       hist = d3.layout.histogram()
+       .value(function (d) { return d.year; })
+       .bins(chart.x.ticks(binCount))
+       (txData);
+        histy = d3.layout.histogram()
+        .value(function (d) { return d.value; })
+        .bins(chart.y.ticks(binCounty))
+        hy = this.d3.scale.linear()
+        .domain([0, d3.max(hist, function (d) { return d.length; })])
+        .range([0, height]);
+        barWidth = chart.x(hist[1].x) - chart.x(hist[0].x) + 1;
+        bars = chart.svg.selectAll('bar')
+        .data(hist);
+    bars.enter().append('rect')
+      .attr('class', 'bar')
+      .attr('x', function (d) { return x(d.x); })
+      .attr('width', barWidth);
+      .on('mouseover', chart.tooltip.show)
+      .on('mouseout', chart.tooltip.hide);;
+    
+    bars 
+      .attr('y', function (d) { return height - hy(d.length)/4; })
+      .attr('height', function (d) { return hy(d.length)/4; });
+    var barsy = chart.svg.selectAll('bar')
+        .data(hist);
+    bars.enter().append('rect')
+      .attr('class', 'bar')
+      .attr('y', function (d) { return y(d.y); })
+      .attr('width', barWidth);
+      .on('mouseover', chart.tooltip.show)
+      .on('mouseout', chart.tooltip.hide);
+    
+    bars 
+      .attr('y', function (d) { return height - hy(d.length); })
+      .attr('height', function (d) { return hy(d.length); });
     // REGRESSION LINE
-  }
+  };
 </script>
 </body>
 </html>
