@@ -76,13 +76,19 @@
       font-weight: 700;
       line-height: 1;
     }
+    .meanlabel{
+      font-size: 11px;
+      font-family: Arial;
+      font-weight: none;
+    }
+  
   </style>
 </head>
 <body>
 <div class="header section">
   <div class="container">
     <h1>Week 4: Replication Project</h1>
-    <p>Comparing congressional candidate partisanship to district partisanship</p>
+    <p>Comparing California congressional candidate partisanship to district partisanship</p>
   </div>
 </div>
 <div class="controls section">
@@ -107,7 +113,6 @@
 <script type="text/javascript" src="https://npmcdn.com/science@1.9.3/science.v1.min.js"></script>
 <script type="text/javascript" src="https://npmcdn.com/simple-statistics@2.0.0/dist/simple-statistics.min.js"></script>
 <script type="text/javascript" src="https://npmcdn.com/d3-tip@0.6.7/index.js"></script>
-<script type="text/javascript" src="https://npmcdn.com/d3-tip@0.6.7/index.js"></script> 
 <script>
   var data = [];
   var options = {
@@ -189,6 +194,17 @@
         .attr('dy', '.71em')
         .text("Candidate CF Score");
 
+    // //Tool Tip
+
+    chart.tip = d3.tip()
+      .attr('class', 'tooltip')
+      .offset([-2, 0])
+      .html(function(d) {
+        return d.name;
+      })
+
+    chart.svg.call(chart.tip);
+
     chart.update();
     
   }
@@ -220,7 +236,9 @@
       .classed("R", function (d) {return d.party === "rep";})
       .classed("D", function (d) {return d.party === "dem";})
       .attr('cx', function (d){return chart.x(d.cfScore) ;})
-      .attr('cy', function (d){return chart.y(d.distPart) ;});
+      .attr('cy', function (d){return chart.y(d.distPart) ;})
+      .on('mouseover', chart.tip.show)
+      .on('mouseout', chart.tip.hide);
 
     points.exit().remove();
     
@@ -245,7 +263,7 @@
     var barX = chart.svg.selectAll(".barX")
       .data(dataHistX);
 
-    barX.enter().append("g")
+    barX.enter()
       .append("rect")
       .attr("class", "barX")
       .attr("x", function (d) { return chart.x(d.x) + barWidthX/2; })
@@ -276,7 +294,7 @@
     var barY = chart.svg.selectAll(".barY")
       .data(dataHistY);
 
-    barY.enter().append("g")
+    barY.enter()
       .append("rect")
       .attr("class", "barY")
       .attr("y", function (d) { return chart.y(d.x) - (.75*barWidthY); })
@@ -295,7 +313,7 @@
     var line = chart.svg.selectAll(".line")
       .data(meanData);
 
-    line.enter().append("g")
+    line.enter()
       .append("line")
       .classed("line",true);
       
@@ -306,9 +324,21 @@
       .attr("y1",height-margin.top)
       .attr("y2",-margin.top);
 
-    line.exit().remove();
+    line.exit().transition().remove();
 
-    // //Tool Tip
+    var meanLabel = chart.svg.selectAll("text.meanlabel")
+      .data(meanData);
+      
+    meanLabel.enter()
+      .append("text")
+      .attr("class","meanlabel");
+    
+    meanLabel.text("Average CF Score: " + meanVal.toFixed(2))
+      .attr("x",chart.x(ss.mean(meanData))+5)
+      .attr("y",margin.top);
+
+    meanLabel.exit().remove();
+
   }
 
 </script>
