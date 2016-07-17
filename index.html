@@ -302,26 +302,27 @@
     // SCATTERPLOT
 
     var points=chart.svg.selectAll('.point')
-      .data(txData)
+      .data(txData, function (d) { return d.SOCName; })
 
       points.enter().append('circle')
       .attr('class','point')
-      .attr('r', 0)
       .on('mouseover', chart.tooltip2.show)
-      .on('mouseout', chart.tooltip2.hide);
+      .on('mouseout', chart.tooltip2.hide)
+      .attr('r', 0)
+      .transition().duration(TRANSITION_DURATION)
+      .attr('r', function (d) { return chart.r(d.Total); })
+      .attr('cx', function(d) { return chart.x(d[chart.columnX]); })
+      .attr('cy',  function(d) { return chart.y(d[chart.columnY]); });
 
       points
       .classed('MgtProfRelated', function (d) { return d.SuperGroup==='MgtProfRelated';})
       .classed('Service', function (d) { return d.SuperGroup==='Service';})
       .classed('SalesOffice', function (d) { return d.SuperGroup==='SalesOffice';})
       .classed('ProdTransMat', function (d) { return d.SuperGroup==='ProdTransMat';})
-      .transition(t)
-      .attr('r', function (d) { return chart.r(d.Total); })
-      .attr('cx', function(d) { return chart.x(d[chart.columnX]); })
-      .attr('cy',  function(d) { return chart.y(d[chart.columnY]); });
+      .sort(function (a, b) { return b.Total - a.Total; });
 
       points.exit()
-      .transition(t)
+      .transition().duration(TRANSITION_DURATION)
       .attr('r', 0)
       .remove();
 
