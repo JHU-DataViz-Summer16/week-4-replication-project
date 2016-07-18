@@ -13,6 +13,7 @@
     .header {text-align: left;}
     .point.filtered {opacity: .05;}
     .bar {fill: rgb(51, 122, 183);}
+    .axis path {display: none;}
 
     h1 {
       color:#5A5050;
@@ -30,8 +31,6 @@
       display: block;
       margin: 0 auto;
     }
-
-    .axis path {display: none;}
 
     .axis line {
       shape-rendering: crispEdges;
@@ -65,7 +64,7 @@
     .barX {
       opacity: .2;
       fill: #5A5050;
-      }
+    }
     
     .barY {
       opacity: .2;
@@ -117,6 +116,7 @@
 <script type="text/javascript" src="https://npmcdn.com/d3@3.5.17/d3.min.js"></script>
 <script type="text/javascript" src="https://npmcdn.com/science@1.9.3/science.v1.min.js"></script>
 <script type="text/javascript" src="https://npmcdn.com/simple-statistics@2.0.0/dist/simple-statistics.min.js"></script>
+<script type="text/javascript" src="https://npmcdn.com/d3-tip@0.6.7/index.js"></script>
 
 <script>
   var data = [];
@@ -124,10 +124,14 @@
     yearRange: 'all'
   };
 
-  var svg, x, y;
+  //var svg, x, y;
+
   var margin = { top: 15, right: 40, bottom: 40, left: 60 };
+
   var width = 800 - margin.right - margin.left;
   var height = 600 - margin.top - margin.bottom;
+
+  var binCount = 10; 
 
   // FETCH DATA
   d3.json('data.json', function (error, json) {
@@ -138,14 +142,16 @@
     var chart = new Chart(); 
 
   // EVENT HANDLERS
-  d3.select('#year-range').on('change', function () {
-    options.yearRange = d3.event.target.value;
-    chart.update();
+    d3.select('#year-range').on('change', function () {
+      options.yearRange = d3.event.target.value;
+      charts.forEach(function (chart) {chart.update(); });
     });
   });
 
-  function Chart() { 
+  function Chart(selector, variable, title) { 
     var chart = this; 
+
+    chart.variable = variable; 
 
     // SVG
     chart.svg = d3.select('#chart')
@@ -174,8 +180,8 @@
       .tickFormat(formatCurrency)
       .tickSize(height)
       .orient("bottom"); 
-    
-    svg.append("g")
+
+    chart.svg.append("g")
       .append("text")
       .attr("x", 190)
       .attr("y", 580)
@@ -184,11 +190,11 @@
       .style("font-weight", "bold")
       .text("Standardized, Risk-Adjusted Per Capita Medicare Spending");
     
-    var gx = svg.append("g")
+    var gx = chart.svg.append("g")
       .attr("class", "x axis")
       .call(xAxis);
-    
-    gx.selectAll("g").filter(function(a) {return a;})
+
+    gx.selectAll("g").filter(function(d) { return d; })
       .classed("minor", true);
     
     var yAxis = d3.svg.axis()
@@ -196,7 +202,7 @@
       .tickSize(width)
       .orient("right");
     
-    svg.append("g")
+    chart.svg.append("g")
       .append("text")
       .attr("transform","rotate(-90)")
       .attr("x", -250)
@@ -207,12 +213,12 @@
       .style("font-weight", "bold")
       .text("ER Visits per 100K");
     
-    var gy = svg.append("g")
+    var gy = chart.svg.append("g")
       .attr("class", "y axis")
       .call(yAxis);
-    
-    gy.selectAll("g").filter(function(a) {return a;})
-      .classed("minor", true);
+
+    gy.selectAll("g").filter(function(d) { return d; })
+          .classed("minor", true);
     
     gy.selectAll("text")
       .attr("x", -30);
@@ -226,9 +232,10 @@
   
     function formatCurrency(d) {
       var s = formatNumber(d / 1e3);
-      return d === x.domain()[1]
+      return d === chart.x.domain()[1]
       ? "$" + s + " thousand"
       : s;
+    } 
 
     chart.update(); 
   }
@@ -238,11 +245,13 @@
 
     // TRANSFORM
     txData = data.slice();
-      if (options.yearRange !== 'all') {
-        var yearRange = options.yearRange.split('-');
-        txData = txData.filter(function (d) {
+    
+    if (options.yearRange !== 'all') {
+      var yearRange = options.yearRange.split('-');
+      txData = txData.filter(function (d) {
         return d.year >= yearRange[0] && d.year <= yearRange[1]; 
-      }; 
+      });
+    }  
 
     // SCATTERPLOT
     var points = chart.svg.selectAll('.point')
@@ -263,7 +272,7 @@
     // HISTOGRAMS
     //x-axis
     var histogramX = d3.layout.histogram()
-      .bins(chart.x.ticks())
+      .bins(chart.x.ticks(binCount))
       .value(function (d) {return d[chart.costs]; } )
       (txData);
 
