@@ -144,7 +144,7 @@
   // EVENT HANDLERS
     d3.select('#year-range').on('change', function () {
       options.yearRange = d3.event.target.value;
-      charts.forEach(function (chart) {chart.update(); });
+      chart.update(); 
     });
   });
 
