@@ -60,7 +60,7 @@
 <body>
 <div class="header section">
   <div class="container">
-    <h1>Week 4: Federal Procurement Data System</h1>
+    <h1>Week 6: Federal Procurement Data System</h1>
     <p>Showing largest Federal contracts. Large dollar contracts do not constitute the largest percentage of total contract revenue</p>
   </div>
 </div>
@@ -137,6 +137,7 @@
   var options = {
     State: 'all'
   };
+  var svg, x, tooltip;
 
   var margin = {top:15, right:20, bottom:120, left:130};
 
@@ -153,7 +154,7 @@
     data=json;
 
     var charts = [
-      new Chart('#chart1', 'Percent_Total_Revenue','Annual_Contract_Revenue'),
+      new Chart('#chart1','Percent_Total_Revenue','Annual_Contract_Revenue'),
       new Chart('#chart2', 'Percent_Total_Revenue',' Annual_Contract_Revenue')
       ];
   
@@ -203,7 +204,7 @@
       chart.tooltip = d3.tip()
         .attr('class', 'tooltip')
         .offset([-6, 0])
-        .html(function(d) { return d.length + ' months'; });
+        .html(function(d) { return d.length + ' Bil dollars'; });
       
       chart.tooltip(chart.svg);
       
