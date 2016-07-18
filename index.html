@@ -17,7 +17,7 @@
     }
 
     svg {
-      font:16px sans-serif;
+    
       display: block;
       margin: 0 auto;
     }
@@ -28,18 +28,47 @@
       stroke: black;
       shape-rendering: crispEdges;
     }
+    
+    .axis.minor line {
+       stroke: #777;
+       stroke-dasharray: 2,2;
+     }
 
     .axis text {
-      font-family: ,bold,sans-serif;
+      font-family: bold,sans-serif;
       font-size: 11px;
     }
 
     .label {
       font-weight: 900;
     }
-
+    .point {
+       stroke: #003300;
+       stroke-width: 2;
+       fill: #009900;
+       opacity: .5;
+    }
+ 
+     .point.filtered {
+       opacity: .5;
+    }
+ 
+    body {
+       background-color: #e6ffe6;
+       font-family: times, sans-serif;
+    }
+    
+    .category-label {
+       margin-right: 10px;
+       color: #ffffff;
+    }
+    .line {
+       stroke: rgb(175, 80, 75);
+       stroke-width: 2;
+    }
     .bar  {
-      fill:blue;
+      fill:'e6f2ff',
+      opacity: .2;
     }
     
     .bar:hover{
@@ -50,8 +79,8 @@
       padding:.5em 1 em;
       background: rgba(0,0,0, .75);
       color: white;
-      font-size: 13px;
-      font-weight:700;
+      font-size: 11px;
+      font-weight:500;
       line-height: 1;
     }
 
@@ -127,10 +156,11 @@
 <div class="main section">
   <div class="container">
     <div id="chart1"></div>
-    <div id="chart2"></div>
   </div>
 </div>
 <script type="text/javascript" src="https://npmcdn.com/d3@3.5.17/d3.min.js"></script>
+<script type="text/javascript" src="https://npmcdn.com/science@1.9.3/science.v1.min.js"></script>
+ <script type="text/javascript" src="https://npmcdn.com/simple-statistics@2.0.0/dist/simple-statistics.min.js"></script>
 <script type="text/javascript" src="https://npmcdn.com/d3-tip@0.6.7/index.js"></script>
 <script>
   var data = [];
@@ -139,7 +169,7 @@
   };
   var svg, x, tooltip;
 
-  var margin = {top:15, right:20, bottom:120, left:130};
+  var margin = {top:15, right:20, bottom:120, left:230};
 
   var width= 800 - margin.left - margin.right;
   var height= 640 - margin.top - margin.bottom;
@@ -153,25 +183,20 @@
 
     data=json;
 
-    var charts = [
-      new Chart('#chart1','Percent_Total_Revenue','Annual_Contract_Revenue'),
-      new Chart('#chart2', 'Percent_Total_Revenue',' Annual_Contract_Revenue')
-      ];
+    var charts = new Chart();
   
     // EVENT HANDLERS
 
   d3.select('#state-filter').on('change', function () {
     options.State = d3.event.target.value;
-    charts.forEach(function (chart){chart.update(); });
+    charts.update()
   });
  }); 
 
-  function Chart(selector, variable, title) {
+  function Chart() {
     var chart =this;
-
-    chart.variable =variable
   
-    chart.svg = d3.select(selector)
+    chart.svg = d3.select('#chart1')
         .append('svg')
         .attr('width', width + margin.right + margin.left)
         .attr('height', height + margin.top + margin.bottom)
@@ -179,62 +204,125 @@
         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
       
       chart.x = d3.scale.linear()
-        .domain([0, d3.max(data, function (d) { return d[variable]; })])
+        .domain([0, d3.max(data, function (d) { return d.Percent_Total_Revenue; })])
         .rangeRound([0, width])
         .nice();
       
+      chart.y = d3.scale.linear()
+        .domain([0, d3.max(data, function (d) { return d.Annual_Contract_Revenue; })])
+        .rangeRound([height, 0])
+        .nice();
+
       var xAxis = d3.svg.axis()
         .scale(chart.x)
-        .ticks(binCount)
+        .tickSize(-height)
+        .ticks(10)
         .tickFormat(d3.format('.0%'))
         .orient('bottom');
       
-      chart.svg.append('g')
+      var yAxis = d3.svg.axis()
+         .scale(chart.y)
+         .ticks(10)
+         .orient("left")
+         .tickSize(-width, 0, 0) 
+
+      var gx = chart.svg.append('g')
         .attr('class', 'x axis')
-        .attr('transform', 'translate(0,' + (height) + ')')
+        .attr('transform', 'translate(0,' + (505) + ')')
         .call(xAxis)
-        .append('text')
-        .attr('class', 'label')
-        .attr('dy', '.71em')
-        .attr('y', 25)
-        .attr('x', width / 2)
-        .style('text-anchor', 'middle')
-        .text(title);
       
+      gx.selectAll("g").filter(function(d) { return d;})
+         .classed("minor", true);
+    
+      gx.selectAll("text")
+        .attr('x', 0)
+        .attr('y', 60);
+        //.attr("transform", "translate(0," + (height + margin.bottom) + ")")
+     
+      gx.append("text")
+        .attr("text-anchor", "middle")
+        .attr('x', 300)
+        .attr('y', 50)
+         //.attr("transform", "translate(" + (width /2) + " ," + (margin.bottom*.5) + ")")
+         .style("text-anchor", "middle")
+         .text("Percent Total Revenue");
+  
+      var gy= chart.svg.append("g")
+         .attr("class", "y axis")
+         .attr("transform", "translate(" + (0) + ",0)")
+         .call(yAxis)
+     
+      gy.selectAll("g").filter(function(d) { return d;})
+         .classed("minor", true);
+     
+      gy.selectAll("text") 
+        .attr("x", -10)
+        .attr("dy", 0);
+     
+      gy.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", -110)
+        .attr("x", margin.top - (height/2))
+        .attr("dy", ".71em")
+        .style("text-anchor", "middle")
+        .text("Annual Contract Revenue $$s");
+
+      //Tooltip
+
       chart.tooltip = d3.tip()
         .attr('class', 'tooltip')
-        .offset([-6, 0])
-        .html(function(d) { return d.length + ' Bil dollars'; });
+        .offset([-8, 0])
+        .html(function(d) { return d.length + ' Bil $s'; });
       
       chart.tooltip(chart.svg);
       
       chart.update();
     }
     Chart.prototype.update = function () {
+      
+      //Transform
+
       var chart = this;
 
       txData = data.slice();
-    
-    
+      
       if (options.State !== 'all') {
         txData = txData.filter(function(d) {return d.State === options.State;
         });
     }
-    var hist = d3.layout.histogram()
-      .value(function (d) { return d[chart.variable]; })
+    
+    // Scatterplot
+    var points = chart.svg.selectAll('.point') 
+       .data(txData);
+ 
+    points.enter().append('circle')  
+      .attr('class', 'point')
+      .attr('r', 5)
+      
+ 
+    points 
+      .attr('cx', function (d) { return chart.x(d.Percent_Total_Revenue); })
+      .attr('cy', function (d) { return chart.y(d.Annual_Contract_Revenue); });
+      
+    points.exit().remove();
+ 
+    //Histograms
+
+    var hist_x = d3.layout.histogram()
+      .value(function (d) { return d.Percent_Total_Revenue; })
       .bins(chart.x.ticks(binCount))
       (txData);
     
-    var y = d3.scale.linear()
-      .domain([0, d3.max(hist, function (d) { return d.length; })])
+    var y2 = d3.scale.linear()
+      .domain([0, d3.max(hist_x, function (d) { return d.length; })])
       .range([0, height]);
     
-    var barWidth = chart.x(hist[1].x) - chart.x(hist[0].x) + 1;
-    
-    var bars = chart.svg.selectAll('.bar')
-      .data(hist);
+    var barWidth = chart.x(hist_x[1].x) - chart.x(hist_x[0].x) *.6;
+     
+    var rectsX = chart.svg.selectAll('.bar')
+      .data(hist_x);
 
-    bars.enter().append('rect')
+    rectsX.enter().append('rect')
       .attr('class', 'bar')
       .attr('x', function (d) { return chart.x(d.x); })
       .attr('width', barWidth)
@@ -242,12 +330,53 @@
       .attr('height', 0)
       .on('mouseover', chart.tooltip.show)
       .on('mouseout', chart.tooltip.hide);
-    // ALL
-    bars
+    
+    rectsX
       .transition().duration(150).delay(function (d, i) { return i * 50; })
-      .attr('y', function (d) { return height - y(d.length); })
-      .attr('height', function (d) { return y(d.length); });
-  };
+      .attr({
+        y: function (d) { return height - y2(d.length);},
+        height: function (d) { return y2(d.length); },
+        fill: '#4da6ff',
+        opacity: .4
+      });
+
+      //Y Axis
+
+    var hist_y = d3.layout.histogram()
+      .value(function(d) { return d.Annual_Contract_Revenue; })
+      .bins(chart.y.ticks(10))
+      (txData);
+
+      console.log(hist_y)
+
+    var x2 = d3.scale.linear()
+      .domain([0, d3.max(hist_y, function(d) { return d.length; })])
+      .range([0, width]);
+
+    var barHeight2 = 0.6 * (height )
+    var barHeight = (chart.y(hist_y[1].x) - chart.y(hist_y[0].x)) * -.5;
+    
+    //console.log(barHeight2)
+
+    var rectsY = chart.svg.selectAll('.barY')
+      .data(hist_y);
+
+      rectsY.enter().append('rect')
+        .attr('class', 'barY')
+        .attr('x', 0)
+        .attr('width', 0)
+        .attr('y', function(d) {return chart.y(d.x); })
+        .attr('height', barHeight)
+        .on('mouseover', chart.tooltip.show)
+        .on('mouseout', chart.tooltip.hide);
+
+      rectsY
+        .attr({
+          width: function(d) { return x2(d.length);},
+        fill: '#006600',
+        opacity: .5
+        }); 
+      };
 </script>
 </body>
 </html>
