@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Week 4: Federal Procurement Procurement Data System</title>
+  <title>Week 6#: Federal Procurement Procurement Data System</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
   <style>
     .section {
@@ -28,13 +28,7 @@
       stroke: black;
       shape-rendering: crispEdges;
     }
-    .x.axis line {
-      stroke:#fff;
-    }
-    .x.axis .minor line {
-      stroke:#777;
-      stroke-dasharray: 2,2;
-    }
+
     .axis text {
       font-family: ,bold,sans-serif;
       font-size: 11px;
@@ -44,50 +38,30 @@
       font-weight: 900;
     }
 
-    .point {
-      stroke: rgb(51, 122, 183);
-      stroke-width: 1;
-      fill: rgba(51, 122, 183, .5);
-      opacity: .5;
+    .bar  {
+      fill:blue;
+    }
+    
+    .bar:hover{
+      fill:#337ab7;
+    }
+    
+    .tooltip {
+      padding:.5em 1 em;
+      background: rgba(0,0,0, .75);
+      color: white;
+      font-size: 13px;
+      font-weight:700;
+      line-height: 1;
     }
 
-    .point.filtered {
-      opacity: .05;
-    }
-
-    .xbar,.ybar {
-      fill: rgb(51, 122, 183);
-    }
-
-    .line {
-      stroke: rgb(175, 80, 75);
-      stroke-width: 2;
-    }
-     .category-label {
-       margin-right: 24px;
-       color: #ffffff;
-     }
-     text{
-        fill:black;
-      }
-     p {
-       margin-top: 5px;
-     }
- 
-     a {
-       font-size: 12px;
-       fill: #ffffff;   
-     }
-     h1 {
-       margin-bottom: 20px;
-     }
   </style>
 </head>
 <body>
 <div class="header section">
   <div class="container">
     <h1>Week 4: Federal Procurement Data System</h1>
-    <p>Large dollar contracts do not constitute the largest percentage of total contract revenue</p>
+    <p>Showing largest Federal contracts. Large dollar contracts do not constitute the largest percentage of total contract revenue</p>
   </div>
 </div>
 <div class="controls section">
@@ -96,83 +70,80 @@
       <label for="state-filter">State </label>
       <select id="state-filter">
          <option value="all">All</option>
-         <option value="AL">Alabama</option>
-         <option value="AK">Alaska</option>
-         <option value="AZ">Arizona</option>
-         <option value="AR">Arkansas</option>
-         <option value="CA">California</option>
-         <option value="CO">Colorado</option>
-         <option value="CT">Connecticut</option>
-         <option value="DE">Delaware</option>
-         <option value="FL">Florida</option>
-         <option value="GA">Georgia</option>
-         <option value="HI">Hawaii</option>
-         <option value="ID">Idaho</option>
-         <option value="IL">Illinois</option>
-         <option value="IN">Indiana</option>
-         <option value="IA">Iowa</option>
-         <option value="KS">Kansas</option>
-         <option value="KY">Kentucky</option>
-         <option value="LA">Louisiana</option>
-         <option value="ME">Maine</option>
-         <option value="MD">Maryland</option>
-         <option value="MA">Massachusetts</option>
-         <option value="MI">Michigan</option>
-         <option value="MN">Minnesota</option>
-         <option value="MS">Mississippi</option>
-         <option value="MO">Missouri</option>
-         <option value="MT">Montana</option>
-         <option value="NE">Nebraska</option>
-         <option value="NV">Nevada</option>
-         <option value="NH">New Hampshire</option>
-         <option value="NJ">New Jersey</option>
-         <option value="NM">New Mexico</option>
-         <option value="NY">New York</option>
-         <option value="NC">North Carolina</option>
-         <option value="ND">North Dakota</option>
-         <option value="OH">Ohio</option>
-         <option value="OK">Oklahoma</option>
-         <option value="OR">Oregon</option>
-         <option value="PA">Pennsylvania</option>
-         <option value="RI">Rhode Island</option>
-         <option value="SC">South Carolina</option>
-         <option value="SD">South Dakota</option>
-         <option value="TN">Tennessee</option>
-         <option value="TX">Texas</option>
-         <option value="UT">Utah</option>
-         <option value="VT">Vermont</option>
-         <option value="VA">Virginia</option>
-         <option value="WA">Washington</option>
-         <option value="WV">West Virginia</option>
-         <option value="WI">Wisconsin</option>
-         <option value="WY">Wyoming</option>
-         <option value="DC">Washington DC</option>
+         <option value="ALABAMA">Alabama</option>
+         <option value="ALASKA">Alaska</option>
+         <option value="ARIZONA">Arizona</option>
+         <option value="ARKANSAS">Arkansas</option>
+         <option value="CALIFORNIA">California</option>
+         <option value="COLORADO">Colorado</option>
+         <option value="CONNECTICUT">Connecticut</option>
+         <option value="DELAWARE">Delaware</option>
+         <option value="FLORIDA">Florida</option>
+         <option value="GEORGIA">Georgia</option>
+         <option value="HAWAII">Hawaii</option>
+         <option value="IDAHO">Idaho</option>
+         <option value="ILLINOIS">Illinois</option>
+         <option value="INDIANA">Indiana</option>
+         <option value="IOWA">Iowa</option>
+         <option value="KANSAS">Kansas</option>
+         <option value="KENTUCKY">Kentucky</option>
+         <option value="LOUISIANA">Louisiana</option>
+         <option value="MAINE">Maine</option>
+         <option value="MARYLAND">Maryland</option>
+         <option value="MASSACHUSETTS">Massachusetts</option>
+         <option value="MICHIGAN">Michigan</option>
+         <option value="MINNESOTA">Minnesota</option>
+         <option value="MISSISSIPPI">Mississippi</option>
+         <option value="MISSOURI">Missouri</option>
+         <option value="MONTANA">Montana</option>
+         <option value="NEBRASKA">Nebraska</option>
+         <option value="NEVADA">Nevada</option>
+         <option value="NEW HAMPSHIRE">New Hampshire</option>
+         <option value="NEW JERSEY">New Jersey</option>
+         <option value="NEW MEXICO">New Mexico</option>
+         <option value="NEW YORK">New York</option>
+         <option value="NORTH CAROLINA">North Carolina</option>
+         <option value="NORTH DAKOTA">North Dakota</option>
+         <option value="OHIO">Ohio</option>
+         <option value="OKLAHOMA">Oklahoma</option>
+         <option value="OREGON">Oregon</option>
+         <option value="PENNSYLVANIA">Pennsylvania</option>
+         <option value="RHODE ISLAND">Rhode Island</option>
+         <option value="SOUTH CAROLINA">South Carolina</option>
+         <option value="SOUTH DAKOTA">South Dakota</option>
+         <option value="TENNESSEE">Tennessee</option>
+         <option value="TEXAS">Texas</option>
+         <option value="UTAH">Utah</option>
+         <option value="VERMONT">Vermont</option>
+         <option value="VIRGINIA">Virginia</option>
+         <option value="WASHINGTON">Washington</option>
+         <option value="WEST VIRGINIA">West Virginia</option>
+         <option value="WISCONSIN">Wisconsin</option>
+         <option value="WYOMING">Wyoming</option>
       </select>
     </div>
   </div>
 </div>
 <div class="main section">
   <div class="container">
-    <div id="chart"></div>
+    <div id="chart1"></div>
+    <div id="chart2"></div>
   </div>
 </div>
 <script type="text/javascript" src="https://npmcdn.com/d3@3.5.17/d3.min.js"></script>
-<script type="text/javascript" src="https://npmcdn.com/science@1.9.3/science.v1.min.js"></script>
-<script type="text/javascript" src="https://npmcdn.com/simple-statistics@2.0.0/dist/simple-statistics.min.js"></script>
+<script type="text/javascript" src="https://npmcdn.com/d3-tip@0.6.7/index.js"></script>
 <script>
   var data = [];
   var options = {
     State: 'all'
   };
 
-  var svg, x, y;
-
-  var margin = {top:15, right:20, bottom:120, left:130}
-    padding = {top: 40, right: 75, bottom: 30, left:125};
-
+  var margin = {top:15, right:20, bottom:120, left:130};
 
   var width= 800 - margin.left - margin.right;
   var height= 640 - margin.top - margin.bottom;
+
+  var binCount =10;
 
   // FETCH DATA
 
@@ -181,130 +152,103 @@
 
     data=json;
 
-    setup();
-    update();
-  });
-  //call back function
-console.log()
- 
-  function setup() {
-    // SVG
-
-  svg = d3.select('#chart')
-      .append('svg')
-      .attr('width', width + margin.left + margin.right)
-      .attr('height',height + margin.top + margin.bottom)
-      .style('background-color', 'tan')
-      .append('g')
-      .attr('transform','translate(' + margin.left + ','+ margin.top + ')');
-
-    // SCALES
-    
-    x = d3.scale.linear()
-      .domain([0,d3.max(data, function(d){return d.Percent_Total_Revenue;})])
-      .range([0,width])
-      .nice();
-    
-    y = d3.scale.linear()
-      .domain(d3.extent(data, function(d){return d.Annual_Contract_Revenue;}))
-      .range([height,0])
-      .nice();  
-
-    // AXES
-
-  formatAxis = d3.format(".00%");
+    var charts = [
+      new Chart('#chart1', 'Percent_Total_Revenue','Annual_Contract_Revenue'),
+      new Chart('#chart2', 'Percent_Total_Revenue',' Annual_Contract_Revenue')
+      ];
   
-  var xAxis = d3.svg.axis()
-    .scale(x)
-    .tickSize(-height)
-    .orient("bottom")
-    .tickFormat(formatAxis);
-    
-
-  var ticks =x.ticks(10),
-    tickFormat = x.tickFormat(5, '+%'); 
-
-  var gx = svg.append('g')
-    .attr("class", "axis")
-    .attr("transform", "translate(0," + (505) + ")")
-    .call(xAxis);
-  
-  gx.selectAll("g").filter(function(d) { return d;})
-    .classed("minor", true); 
-  
-  gx.selectAll("text")
-    .attr('x', 0)
-    .attr('y', 47);
-  
- gx.append("text")
-    .attr('x', 200)
-    .attr('y', 30)
-    .style("text-anchor", "bottom")
-    .text("Contract Spend (in % Contribution)"); 
-
-  var formatPercent = d3.format(".0%");
-
-  var yAxis = d3.svg.axis()
-    .scale(y)
-    .tickSize(-width)
-    .orient('left')
-    .ticks (10); 
-
-  var gy = svg.append("g")
-      .attr("class", "axis")
-      .attr("transform", "translate(0," + (0) + ")")
-      .call(yAxis);
-
-  gy.selectAll("g").filter(function(d) { return d;})
-      .classed("minor", true);
- 
-  gy.selectAll("text") 
-        .attr("x", -10)
-        .attr("y", 1);
- 
-  gy.append("text")
-    .attr("y", -100)
-    .attr("x", -250)
-    .attr("transform", "rotate(270)")
-    .style("text-anchor", "middle")
-    .text("Contract Revenue");
-
     // EVENT HANDLERS
 
   d3.select('#state-filter').on('change', function () {
     options.State = d3.event.target.value;
-    update();
+    charts.forEach(function (chart){chart.update(); });
   });
-  }
+ }); 
 
-  function update() {
-    // TRANSFORM
-    txData = data.slice();
-    
-    console.log(data);
-    
-    if (options.State !== 'all') {
-      txData = txData.filter(function (d) {
-        return d.State=== options.State; 
-      });
+  function Chart(selector, variable, title) {
+    var chart =this;
+
+    chart.variable =variable
+  
+    chart.svg = d3.select(selector)
+        .append('svg')
+        .attr('width', width + margin.right + margin.left)
+        .attr('height', height + margin.top + margin.bottom)
+        .append('g')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+      
+      chart.x = d3.scale.linear()
+        .domain([0, d3.max(data, function (d) { return d[variable]; })])
+        .rangeRound([0, width])
+        .nice();
+      
+      var xAxis = d3.svg.axis()
+        .scale(chart.x)
+        .ticks(binCount)
+        .tickFormat(d3.format('.0%'))
+        .orient('bottom');
+      
+      chart.svg.append('g')
+        .attr('class', 'x axis')
+        .attr('transform', 'translate(0,' + (height) + ')')
+        .call(xAxis)
+        .append('text')
+        .attr('class', 'label')
+        .attr('dy', '.71em')
+        .attr('y', 25)
+        .attr('x', width / 2)
+        .style('text-anchor', 'middle')
+        .text(title);
+      
+      chart.tooltip = d3.tip()
+        .attr('class', 'tooltip')
+        .offset([-6, 0])
+        .html(function(d) { return d.length + ' months'; });
+      
+      chart.tooltip(chart.svg);
+      
+      chart.update();
     }
-    // SCATTERPLOT
-  var points=svg.selectAll('.point')
-    .data(data);
-    points.enter()
-    .append('circle')
-    .attr('class','point')
-    .attr('r', 5);
-    points
-    .attr('cx', function(d) {return x(d. Percent_Total_Revenue);})
-    .attr('cy', function(d) {return y(d. Annual_Contract_Revenue);});
-   
-    points.exit().remove();
-    // HISTOGRAMS
+    Chart.prototype.update = function () {
+      var chart = this;
 
+      txData = data.slice();
+    
+    
+      if (options.State !== 'all') {
+        txData = txData.filter(function(d) {return d.State === options.State;
+        });
+    }
+    var hist = d3.layout.histogram()
+      .value(function (d) { return d[chart.variable]; })
+      .bins(chart.x.ticks(binCount))
+      (txData);
+    
+    var y = d3.scale.linear()
+      .domain([0, d3.max(hist, function (d) { return d.length; })])
+      .range([0, height]);
+    
+    var barWidth = chart.x(hist[1].x) - chart.x(hist[0].x) + 1;
+    
+    var bars = chart.svg.selectAll('.bar')
+      .data(hist);
 
-    // REGRESSION LINE
-  }
+    bars.enter().append('rect')
+      .attr('class', 'bar')
+      .attr('x', function (d) { return chart.x(d.x); })
+      .attr('width', barWidth)
+      .attr('y', height)
+      .attr('height', 0)
+      .on('mouseover', chart.tooltip.show)
+      .on('mouseout', chart.tooltip.hide);
+    // ALL
+    bars
+      .transition().duration(150).delay(function (d, i) { return i * 50; })
+      .attr('y', function (d) { return height - y(d.length); })
+      .attr('height', function (d) { return y(d.length); });
+  };
 </script>
 </body>
 </html>
+   
+
