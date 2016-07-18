@@ -1,19 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Week 4: Replication Project</title>
+  <title>Replication Project</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-  <style>
-    .section {
-      padding: 1em 0;
-    }
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300,700' rel='stylesheet' type='text/css'>
 
-    .header {
-      background: linear-gradient(to bottom, #337ab7 0%, #135a97 100%);
-      color: white;
-      padding: 1em 0 2em;
+  <style>
+    .section {padding: 1em 0;} 
+    .header {text-align: left;}
+    .point.filtered {opacity: .05;}
+    .bar {fill: rgb(51, 122, 183);}
+    .axis path {display: none;}
+
+    h1 {
+      color:#5A5050;
+      font-family: 'Open Sans Condensed', Helvetica, sans-serif;
+      font-size: 300%;
+    } 
+
+    p {
+      color:#5A5050;
+      font-family: 'Open Sans Condensed', Helvetica, sans-serif;
+      font-size: 90%;
     }
 
     svg {
@@ -21,59 +32,77 @@
       margin: 0 auto;
     }
 
-    .axis path, .axis line {
-      fill: none;
-      stroke: #ccc;
+    .axis line {
       shape-rendering: crispEdges;
+      stroke: #000;
+    }
+
+    .axis .minor line {
+      stroke: #777;
+      stroke-dasharray: 2,2;
     }
 
     .axis text {
-      font-size: 11px;
+      font-family: 'Open Sans Condensed', Helvetica, sans-serif;
+      font-size: 12px;
+      color: #5A5050;
     }
 
     .label {
+      font-family: 'Open Sans Condensed', Helvetica, sans-serif;
       font-weight: 700;
+      color: #5A5050;
     }
 
     .point {
       stroke: rgb(51, 122, 183);
       stroke-width: 1;
       fill: rgba(51, 122, 183, .5);
-      opacity: .5;
+      opacity: .3;
     }
 
-    .point.filtered {
-      opacity: .05;
+    .barX {
+      opacity: .2;
+      fill: #5A5050;
     }
-
-    .bar {
-      fill: rgb(51, 122, 183);
+    
+    .barY {
+      opacity: .2;
+      fill: #5A5050;
     }
 
     .line {
       stroke: rgb(175, 80, 75);
       stroke-width: 2;
     }
+
+    .tooltip {
+      padding: .5em 1em;
+      background: rgba(0,0,0,.75);
+      color: #FFFFFF;
+      font-size: 10px;
+      font-weight: 500;
+      line-height: 1;
+    }
   </style>
+
 </head>
 <body>
 <div class="header section">
   <div class="container">
-    <h1>Week 4: Replication Project</h1>
-    <p>Let's build a complex interactive graphic.</p>
+    <h1>Per Capita Spending on Healthcare vs. ER Visits Among Medicare Beneficiaries</h1>
+    <p>Medicare Data on Geographic Variation</p>
+    <p>Note: Each point represents a county in the U.S.</p>
   </div>
 </div>
 <div class="controls section">
   <div class="container">
     <div class="btn-toolbar">
-      <label for="year-range">Year range: </label>
+      <label for="year-range">Years: </label>
       <select id="year-range">
-        <option value="all">All (1948&ndash;2016)</option>
-        <option value="1955-1971">1955&ndash;1971</option>
-        <option value="1974-1984">1974&ndash;1984</option>
-        <option value="1985-1992">1985&ndash;1992</option>
-        <option value="1997-2007">1997&ndash;2007</option>
-        <option value="2008-2016">2008&ndash;2016</option>
+        <option value="all">All (2007&ndash;2010)</option>
+        <option value="2007-2008">2007&ndash;2008</option>
+        <option value="2009-2010">2009&ndash;2010</option>
       </select>
     </div>
   </div>
@@ -83,95 +112,191 @@
     <div id="chart"></div>
   </div>
 </div>
+
 <script type="text/javascript" src="https://npmcdn.com/d3@3.5.17/d3.min.js"></script>
 <script type="text/javascript" src="https://npmcdn.com/science@1.9.3/science.v1.min.js"></script>
 <script type="text/javascript" src="https://npmcdn.com/simple-statistics@2.0.0/dist/simple-statistics.min.js"></script>
+<script type="text/javascript" src="https://npmcdn.com/d3-tip@0.6.7/index.js"></script>
+
 <script>
   var data = [];
   var options = {
     yearRange: 'all'
   };
 
-  var svg, x, y;
+  //var svg, x, y;
 
-  var margin = { top: 15, right: 15, bottom: 30, left: 45 };
+  var margin = { top: 15, right: 40, bottom: 40, left: 60 };
 
-  var width = 640 - margin.right - margin.left;
-  var height = 400 - margin.top - margin.bottom;
+  var width = 800 - margin.right - margin.left;
+  var height = 600 - margin.top - margin.bottom;
+
+  var binCount = 10; 
 
   // FETCH DATA
-
   d3.json('data.json', function (error, json) {
     if (error) { throw error; }
 
     data = json;
 
-    setup();
-    update();
+    var chart = new Chart(); 
+
+  // EVENT HANDLERS
+    d3.select('#year-range').on('change', function () {
+      options.yearRange = d3.event.target.value;
+      chart.update(); 
+    });
   });
 
-  function setup() {
-    // SVG
+  function Chart(selector, variable, title) { 
+    var chart = this; 
 
-    svg = d3.select('#chart')
+    chart.variable = variable; 
+
+    // SVG
+    chart.svg = d3.select('#chart')
       .append('svg')
       .attr('width', width + margin.right + margin.left)
       .attr('height', height + margin.top + margin.bottom)
       .append('g')
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-
+    
     // SCALES
-
-    x = d3.scale.linear()
-      .domain([0, d3.max(data, function (d) { return d.unemployment; })])
+    chart.x = d3.scale.linear()
+      .domain(d3.extent(data, function (a) {return a.costs; }))
       .range([0, width])
       .nice();
 
-    y = d3.scale.linear()
-      .domain(d3.extent(data, function (d) { return d.inflation; }))
+    chart.y = d3.scale.linear()
+      .domain(d3.extent(data, function (a) {return a.visits; }))
       .range([height, 0])
       .nice();
-
+    
     // AXES
+    var formatNumber = d3.format(".0f");
 
-    // EVENT HANDLERS
+    var xAxis = d3.svg.axis()
+      .scale(chart.x)
+      .tickFormat(formatCurrency)
+      .tickSize(height)
+      .orient("bottom"); 
 
-    d3.select('#year-range').on('change', function () {
-      options.yearRange = d3.event.target.value;
-      update();
-    });
+    chart.svg.append("g")
+      .append("text")
+      .attr("x", 190)
+      .attr("y", 580)
+      .style("text-anchor", "start")
+      .style("font-family", "Open Sans Condensed, Helvetica, sans-serif")
+      .style("font-weight", "bold")
+      .text("Standardized, Risk-Adjusted Per Capita Medicare Spending");
+    
+    var gx = chart.svg.append("g")
+      .attr("class", "x axis")
+      .call(xAxis);
+
+    gx.selectAll("g").filter(function(d) { return d; })
+      .classed("minor", true);
+    
+    var yAxis = d3.svg.axis()
+      .scale(chart.y)
+      .tickSize(width)
+      .orient("right");
+    
+    chart.svg.append("g")
+      .append("text")
+      .attr("transform","rotate(-90)")
+      .attr("x", -250)
+      .attr("y", -60)
+      .attr("dy", ".71em")
+      .style("text-anchor", "middle")
+      .style("font-family", "Open Sans Condensed, Helvetica, sans-serif")
+      .style("font-weight", "bold")
+      .text("ER Visits per 100K");
+    
+    var gy = chart.svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis);
+
+    gy.selectAll("g").filter(function(d) { return d; })
+          .classed("minor", true);
+    
+    gy.selectAll("text")
+      .attr("x", -30);
+
+    chart.tooltip = d3.tip()
+      .attr("class", "tooltip")
+      .offset([-6,0])
+      .html(function (d) {return d.costs + ' in per capita costs' ; }); 
+
+    chart.svg.call(chart.tooltip); 
+  
+    function formatCurrency(d) {
+      var s = formatNumber(d / 1e3);
+      return d === chart.x.domain()[1]
+      ? "$" + s + " thousand"
+      : s;
+    } 
+
+    chart.update(); 
   }
 
-  function update() {
+  Chart.prototype.update = function() { 
+    var chart = this; 
+
     // TRANSFORM
     txData = data.slice();
-
+    
     if (options.yearRange !== 'all') {
       var yearRange = options.yearRange.split('-');
       txData = txData.filter(function (d) {
-        return d.year >= yearRange[0] && d.year <= yearRange[1];
+        return d.year >= yearRange[0] && d.year <= yearRange[1]; 
       });
-    }
+    }  
 
     // SCATTERPLOT
-
-    var points = svg.selectAll('.point')
+    var points = chart.svg.selectAll('.point')
       .data(txData);
 
     points.enter().append('circle')
       .attr('class', 'point')
-      .attr('r', 5);
+      .attr('r', 2)
+      .on("mouseover", chart.tooltip.show)
+      .on("mouseout", chart.tooltip.hide); 
 
     points
-      .attr('cx', function (d) { return x(d.unemployment); })
-      .attr('cy', function (d) { return y(d.inflation); });
-
+      .attr('cx', function (a) { return chart.x(a.costs); })
+      .attr('cy', function (a) { return chart.y(a.visits); });
+    
     points.exit().remove();
-
+    
     // HISTOGRAMS
+    //x-axis
+    var histogramX = d3.layout.histogram()
+      .bins(chart.x.ticks())
+      .value(function (d) {return d.costs; } )
+      (txData);
+
+    var histy1 = d3.scale.linear()
+      .domain([0, d3.max(histogramX, function (d){ return d.length; } ) ])
+      .range([0, height]);
+    
+    var barWidthX = chart.x(histogramX[1].x) - chart.x(histogramX[0].x) + 1;
+
+    var barX = chart.svg.selectAll(".barX")
+      .data(histogramX);
+
+    barX.enter().append("rect")
+      .attr("class", "barX")
+      .attr("x", function (d) { return chart.x(d.x) ; })
+      .attr("width", barWidthX/2);
+
+    barX
+      .attr('height', function (d) {return histy1(d.length); })
+      .attr('y', function (d) {return height - histy1(d.length); });
 
     // REGRESSION LINE
   }
+  
 </script>
 </body>
 </html>
