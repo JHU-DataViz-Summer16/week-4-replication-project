@@ -272,8 +272,8 @@
     // HISTOGRAMS
     //x-axis
     var histogramX = d3.layout.histogram()
-      .bins(chart.x.ticks(binCount))
-      .value(function (d) {return d[chart.costs]; } )
+      .bins(chart.x.ticks())
+      .value(function (d) {return d.costs; } )
       (txData);
 
     var histy1 = d3.scale.linear()
