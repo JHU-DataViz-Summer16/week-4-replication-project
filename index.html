@@ -29,6 +29,7 @@
     .label {
       font-weight: 700;
     }
+    
     .point {
       stroke: rgb(51, 122, 183);
       stroke-width: 1;
@@ -97,7 +98,7 @@
     var options = {
     yearRange: 'all'
   };
-  var svg, x, y, xAxis, yAxis, xh, yh; 
+  var svg, x, y, xAxis, yAxis, h, hy; 
   var margin = { top: 15, right: 15, bottom: 30, left: 45 };
   var width = 640 - margin.right - margin.left;
   var height = 400 - margin.top - margin.bottom;
@@ -127,6 +128,8 @@
     setup();
     update();
   });
+  
+
   
   // EVENT HANDLERS
     d3.select('#year-range').on('change', function () {
@@ -209,6 +212,8 @@
         )
   }
   
+  
+
   function update() {
 
     // TRANSFORM: not using original data 
@@ -287,48 +292,82 @@
     //y - is setting the min and the max of the bin the it passes to each rect so the x, and y coordinates are set. 
     
 
-    var bars2 = svg.selectAll('.bar')
+    var bars2 = svg.selectAll('.bar2')
       .data(hist2);
 
+    
     //doing something with the object "bar2"
     bars2.enter().append('rect')
-      .attr('class', 'bar')
-      .attr('y', function (bin) { return y( bin.x );  }) // html position and this is not about the function 
+      .attr('class', 'bar2')
+      .attr('y', function (bin) { return y( bin.x ) - barHeight;  }) // html position and this is not about the function 
       .attr('height' , barHeight);
 
     bars2
-      .attr('x', function (bin) { return 0; })
+      .attr('x', function (bin) { return 0; }) 
       .attr('width', function (bin) { return x(bin.length) * 0.1; })
 
 
-  // REGRESSION LINE
-  // https://bl.ocks.org/ndarville/24759d6171c2cca0e57d (Source)
-  // 1st declaring the variable 
-
-  /*
-  var line = d3.svg.line()
-                // .interpolate("linear")
-                .x(function(d) { return x(d.employment); })
-                .y(function(d) { return y(d.unemployment); });
-
-    var regLine = ss.linear_regression().data(data.map(function(d) {
-                      return [+d.date, parseFloat(d[employment[0]])];
-                  })).line();
-
-    svg.append("path")
-                      .data(regLineData)
-                      .attr({
-                          "class": "reg",
-                          "d": line
-                      })
-                      .style("stroke", "777");
-    
-    } 
-    */
-    
+  }; 
 
     
+    // REGRESSION LINE
+    // https://bl.ocks.org/ndarville/24759d6171c2cca0e57d (Source)
+    // source 2: http://bl.ocks.org/tmcw/3931800 
+    // 1st declaring the variable 
 
-</script>
-</body>
+    x = d3.scale.linear()
+      .range([0, width]);
+
+    y = d3.scale.linear()
+      .range([height, 0]);
+    
+    var line = d3.svg.line()
+                  // .interpolate("linear")
+                  .x(function(d) { return x(d.employment); })
+                  .y(function(d) { return y(d.unemployment); });
+
+    x.domain(d3.extent(txData, function(d) { return d.employment; }));
+    y.domain(d3.extent(txData, function(d) { return d.unemployment; }));
+
+
+    // NOT TO DO THIS -- EVER 
+    //var regLine = ss.linearRegression()
+      //.data(txData.map( function(d) { return [d.unemployment, d.employment];
+      //})).line();
+
+    /*
+    var regLine = ss.linearRegression(
+      txData.map( function(d) { return [d.unemployment, d.employment]; })
+    );
+
+    var lin = ss.linearRegressionLine(regression);
+
+    var lindata = x.domain().map(function(x) {
+    return {
+      year: new year(x),
+      unemployment: lin(+x)
+      
+    svg.append("regLine")
+        .datum(data)
+        .attr("class", "line")
+        .attr("d", line);
+
+    svg.append("regLine")
+        .datum(lindata)
+        .attr("class", "reg")
+        .attr("d", line);
+
+      };
+  });
+  */    
+
+  </script>
+  </body>
 </html>
+    
+    
+
+
+
+  
+   
