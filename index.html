@@ -10,10 +10,19 @@
       padding: 1em 0;
     }
     .header {
-      background: linear-gradient(to bottom, #337ab7 0%, #135a97 100%);
+      background: linear-gradient(to bottom, #404040 0%, #262626 100%);
       color: white;
       padding: 1em 0 2em;
     }
+
+    .description div {
+        background-color: grey;
+        color: white;
+        margin: 20px 0 20px 0;
+        padding: 20px;
+        float:left
+    }
+
     svg {
       display: block;
       margin: 0 auto;
@@ -69,10 +78,20 @@
 <body>
 <div class="header section">
   <div class="container">
-    <h1>Week 4: Replication Project</h1>
-    <p>Colombia: Employment - Unemployment (2001 - 2016.</p>
+    <h1>Colombia</h1>
+    <p>Employment - Unemployment (2001 - 2016)</p>
   </div>
 </div>
+<div class= "description problem">
+      <div class="description">
+      <p>The rate of unemployment in Colombia, which had state in the double digit demonstrates the challenges that the Colombian labor market has being struggling with.  </p>
+      
+      <hr>
+
+      <p>Informal employment is one of the tangibles consequences of this high rate which over the past decade remains on +20%. </p>
+
+      </div>
+    </div>
 <div class="controls section">
   <div class="container">
     <div class="btn-toolbar">
@@ -175,12 +194,12 @@
         .attr("transform", "translate(0," + (height - xpadding) + ")")
         .call(xAxis)
         .append("text")
-         .text("employment (%)")
+         .text("Unemployment (%)")
          .attr("x", width - 63)
          .attr("y", 0)
          .attr("font-family", "sans-serif")
          .attr("font-size", "11px")
-         .attr("fill", "red");
+         .attr("fill", "grey");
       
       //Create Y axis
       svg.append("g")
@@ -188,12 +207,12 @@
         .attr("transform", "translate(" + ypadding + ",0)")
         .call(yAxis)
         .append("text")
-          .text("unemployment (%)")
+          .text("Employment (%)")
           .attr("x", 0)
           .attr("y", 0)
           .attr("font-family", "sans-serif")
           .attr("font-size", "11px")
-          .attr("fill", "blue");
+          .attr("fill", "grey");
            
       
     //CALLING THE GRID
