@@ -310,7 +310,7 @@
     
     var hist = d3.layout.histogram()
       .value(function (d) {return d[chart.variable1]; })
-      .bins (chart.x.ticks (5))
+      .bins (chart.x.ticks (4))
       (txData);
 
     chart.hy = d3.scale.linear()
@@ -353,7 +353,7 @@
 
     bars2.enter().append('rect')
       .attr('class', 'bar2')
-      .attr('y', function (bin) { return chart.y( bin.x );  }) // html position and this is not about the function 
+      .attr('y', function (bin) { return chart.y( bin.x + bin.dx/2 );  }) // html position and this is not about the function 
       .attr('height' , barHeight);
 
     bars2
