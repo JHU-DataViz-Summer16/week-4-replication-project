@@ -27,7 +27,7 @@ As we briefly showed in class, you'll probably need to use [Array.map()](https:/
 As we did [in class](https://github.com/JHU-DataViz-Summer16/week-6-class-demo), use [D3.tip](http://bl.ocks.org/Caged/6476579) to add tooltips to your data. Note that the D3.tip script is not currently included in your project, so you'll need to add the following code under the other `<script>` tags that import D3 and Simple Statistics (but above your own Javascript code):
 
 ```js
-<script type="text/javascript" src="https://npmcdn.com/d3-tip@0.6.7/index.js"></script>
+<script type="text/javascript" src="https://unpkg.com/d3-tip@0.6.7/index.js"></script>
 ```
 
 ## Task 4: Revised final project proposal
